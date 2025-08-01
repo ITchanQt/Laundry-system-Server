@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../config/db");
 
 const registerUser = (req, res) => {
-  const { username, email, password } = req.body;
+  const { user_fName, user_mName, user_lName, user_address, username, contactNum, email, password } = req.body;
 
   //Check if user already exists
   db.query(
@@ -19,8 +19,8 @@ const registerUser = (req, res) => {
 
       //Insery new user
       db.query(
-        "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-        [username, email, hashedPassword],
+        "INSERT INTO users (user_fName, user_mName, user_lName, user_address, username, contactNum, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [user_fName, user_mName, user_lName, user_address, username, contactNum, email, hashedPassword],
         (err, results) => {
           if (err) return res.status(500).json({ error: err.message });
           res.status(201).json({ message: "User registered successfully" });
