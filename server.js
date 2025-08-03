@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 require("dotenv").config();
 
 const authRoutes = require("./src/routes/authRoutes");
@@ -8,19 +9,22 @@ const authenticate = require("./src/middlewares/authMiddleware");
 
 const app = express();
 
-// app.use(cors({
-//     origin: "http://localhost:5000", //Frontend URL(Adjust as needed)
-//     credentials: true
-// }));
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5174', // Your frontend URL
+    credentials: true, 
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+// app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 //Public Routes
 app.use("/api/auth", authRoutes);
 
 //Protected Routes
-app.get("/api/protected", authenticate, (req, res) => {
+app.use("/api/protected", authenticate, (req, res) => {
     res.json({ message: `Hello ${req.user.username}, this is a prortected route!` });
 });
 

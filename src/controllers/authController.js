@@ -2,6 +2,33 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../config/db");
 
+const registerAdmin = (req, res) => {
+  const { admin_fName, admin_mName, admin_lName, admin_address, admin_username, admin_contactNum, email, password } = req.body;
+
+  db.query(
+    "SELECT * FROM admins WHERE email =?",
+    [email],
+    async (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length > 0)
+        return res.status(400).json({ message: "Email already exists" });
+
+      //Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      //Insert new admin
+      db.query(
+        "INSERT INTO admins (admin_fName, admin_mName, admin_lName, admin_address, admin_username, admin_contactNum, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [admin_fName, admin_mName, admin_lName, admin_address, admin_username, admin_contactNum, email, hashedPassword],
+        (err, results) => {
+          if (err) return res.status(500).json({ error: err.message });
+          res.status(201).json({ message: "Admin registered successfully" });
+        }
+      );
+    }
+  );
+};
+
 const registerUser = (req, res) => {
   const { user_fName, user_mName, user_lName, user_address, username, contactNum, email, password } = req.body;
 
@@ -31,43 +58,58 @@ const registerUser = (req, res) => {
 };
 
 const loginUser = (req, res) => {
-  const { email, password } = req.body;
+    const { email, password } = req.body;
 
-  db.query(
-    "SELECT * FROM users WHERE email = ?",
-    [email],
-    async (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (results.length === 0)
-        return res.status(400).json({ message: "Invalid credentials" });
+    // Add some debug logging
+    console.log('Login attempt:', { email });
 
-      const user = results[0];
-      const match = await bcrypt.compare(password, user.password);
+    db.query(
+        "SELECT * FROM users WHERE email = ?",
+        [email],
+        async (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: err.message });
+            }
 
-      if (!match)
-        return res.status(400).json({ message: "Invalid credentials" });
+            console.log('Query results:', results);
 
-      //Generate JWT token
-      const token = jwt.sign(
-        { id: user.id, email: user.email },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: "1h",
+            if (results.length === 0) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+
+            const user = results[0];
+            const match = await bcrypt.compare(password, user.password);
+
+            console.log('Password match:', match);
+
+            if (!match) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+
+            const token = jwt.sign(
+                { id: user.id, email: user.email },
+                process.env.JWT_SECRET,
+                { expiresIn: "1h" }
+            );
+
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                maxAge: 3600000,
+            });
+
+            res.json({
+                message: "Login successful",
+                user: { 
+                    id: user.id, 
+                    username: user.username, 
+                    email: user.email 
+                }
+            });
         }
-      );
-
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 3600000, // 1 hour
-      });
-      res.json({
-        message: "Login successful",
-        user: { id: user.id, username: user.username, email: user.email },
-      });
-    }
-  );
+    );
 };
 
 const logoutUser = (req, res) => {
@@ -79,4 +121,4 @@ const logoutUser = (req, res) => {
   )
 };
 
-module.exports = { registerUser, loginUser, logoutUser };
+module.exports = { registerUser, loginUser, logoutUser, registerAdmin };
