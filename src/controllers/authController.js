@@ -1,124 +1,56 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../config/db");
+const User = require("../models/User");
+const Admin = require("../models/Admin");
 
-const registerAdmin = (req, res) => {
-  const { admin_fName, admin_mName, admin_lName, admin_address, admin_username, admin_contactNum, email, password } = req.body;
-
-  db.query(
-    "SELECT * FROM admins WHERE email =?",
-    [email],
-    async (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (results.length > 0)
-        return res.status(400).json({ message: "Email already exists" });
-
-      //Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      //Insert new admin
-      db.query(
-        "INSERT INTO admins (admin_fName, admin_mName, admin_lName, admin_address, admin_username, admin_contactNum, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        [admin_fName, admin_mName, admin_lName, admin_address, admin_username, admin_contactNum, email, hashedPassword],
-        (err, results) => {
-          if (err) return res.status(500).json({ error: err.message });
-          res.status(201).json({ message: "Admin registered successfully" });
-        }
-      );
+const registerUser = async (req, res) => {
+  try {
+    const existingUser = await User.findByEmail(req.body.email);
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
     }
-  );
+
+    await User.create(req.body);
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-const registerUser = (req, res) => {
-  const { user_fName, user_mName, user_lName, user_address, username, contactNum, email, password } = req.body;
-
-  //Check if user already exists
-  db.query(
-    "SELECT * FROM users WHERE email = ?",
-    [email],
-    async (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (results.length > 0)
-        return res.status(400).json({ message: "Email already exists" });
-
-      //Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      //Insery new user
-      db.query(
-        "INSERT INTO users (user_fName, user_mName, user_lName, user_address, username, contactNum, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        [user_fName, user_mName, user_lName, user_address, username, contactNum, email, hashedPassword],
-        (err, results) => {
-          if (err) return res.status(500).json({ error: err.message });
-          res.status(201).json({ message: "User registered successfully" });
-        }
-      );
-    }
-  );
-};
-
-const loginUser = (req, res) => {
+const loginUser = async (req, res) => {
+  try {
     const { email, password } = req.body;
+    console.log("Login attempt:", { email });
 
-    // Add some debug logging
-    console.log('Login attempt:', { email });
+    const result = await User.login(email, password);
 
-    db.query(
-        "SELECT * FROM users WHERE email = ?",
-        [email],
-        async (err, results) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: err.message });
-            }
+    if (result.error) {
+      return res.status(400).json({ message: result.error });
+    }
 
-            console.log('Query results:', results);
+    res.cookie("token", result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 3600000,
+    });
 
-            if (results.length === 0) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
-
-            const user = results[0];
-            const match = await bcrypt.compare(password, user.password);
-
-            console.log('Password match:', match);
-
-            if (!match) {
-                return res.status(400).json({ message: "Invalid credentials" });
-            }
-
-            const token = jwt.sign(
-                { id: user.id, email: user.email },
-                process.env.JWT_SECRET,
-                { expiresIn: "1h" }
-            );
-
-            res.cookie("token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
-                maxAge: 3600000,
-            });
-
-            res.json({
-                message: "Login successful",
-                user: { 
-                    id: user.id, 
-                    username: user.username, 
-                    email: user.email 
-                }
-            });
-        }
-    );
+    res.json({
+      message: "Login successful",
+      user: result.user,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const logoutUser = (req, res) => {
-  res.clearCookies("token");
-  res.jsom(
-    {
-      message: 'Logged out successfully'
-    }
-  )
+  res.clearCookie("token"); // Fixed typo from clearCookies to clearCookie
+  res.json({ // Fixed typo from jsom to json
+    message: "Logged out successfully",
+  });
 };
 
-module.exports = { registerUser, loginUser, logoutUser, registerAdmin };
+module.exports = { registerUser, loginUser, logoutUser };
