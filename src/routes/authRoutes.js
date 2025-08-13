@@ -1,14 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { registerAdmin } = require("../controllers/adminController");
-const { registerLaundryShop, getAllShops } = require("../controllers/shopController");
-const { registerUser, loginUser, logoutUser } = require("../controllers/authController");
+const { logoutUser } = require("../controllers/authController");
+const { getAllShops } = require("../controllers/shopController");
+const authenticate = require("../middlewares/authMiddleware");
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/logout", logoutUser)
-router.post("/register-admin", registerAdmin);
-router.post("/register-laundry-shop", registerLaundryShop);
+// Protected routes that need authentication
+router.use(authenticate); // Apply authentication middleware to all routes below
+
+router.post("/logout", logoutUser);
 router.get("/laundry-shops", getAllShops);
 
 module.exports = router;
