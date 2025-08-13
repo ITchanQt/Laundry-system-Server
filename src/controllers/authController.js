@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../config/db");
 const User = require("../models/User");
 const Admin = require("../models/Admin");
-
+require ("dotenv").config();
 const registerUser = async (req, res) => {
   try {
     const existingUser = await User.findByEmail(req.body.email);
@@ -29,6 +29,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: result.error });
     }
 
+    // Return token in both cookie and response body
     res.cookie("token", result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -39,6 +40,7 @@ const loginUser = async (req, res) => {
     res.json({
       message: "Login successful",
       user: result.user,
+      token: `Bearer ${result.token}` // Add token to response
     });
   } catch (error) {
     console.error("Login error:", error);
