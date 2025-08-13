@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 
 const authRoutes = require("./src/routes/authRoutes");
+const publicRoutes = require("./src/routes/publicRoutes");
 const authenticate = require("./src/middlewares/authMiddleware");
 
 const app = express();
@@ -20,7 +21,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-//Public Routes
+// Public Routes (no authentication needed)
+app.use("/api/public", publicRoutes);
+
+// Protected Routes (authentication required)
 app.use("/api/auth", authRoutes);
 
 //Protected Routes
