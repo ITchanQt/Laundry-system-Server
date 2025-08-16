@@ -10,12 +10,12 @@ class User extends BaseModel {
     }
 
     static async create(userData) {
-        const { username, email, password, user_fName, user_mName, user_lName, user_address, contactNum } = userData;
+        const { username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status } = userData;
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const sql = `INSERT INTO users 
-            (username, email, password, user_fName, user_mName, user_lName, user_address, contactNum) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+            (username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         return this.query(sql, [
             username, 
@@ -25,7 +25,9 @@ class User extends BaseModel {
             user_mName, 
             user_lName, 
             user_address, 
-            contactNum
+            contactNum,
+            role,
+            status
         ]);
     }
 
@@ -64,6 +66,11 @@ class User extends BaseModel {
         } catch (error) {
             throw error;
         }
+    }
+    static async getAllUsers() {
+        const query = "SELECT * from users";
+        const results = await this.query(query);
+        return results; 
     }
 }
 
