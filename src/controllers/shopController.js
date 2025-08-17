@@ -34,5 +34,31 @@ const getAllShops = async (req, res) => {
   }
 };
 
+const editShop = async (req, res) => {
+    try {
+        const { owner_id } = req.params;
+        
+        if (!owner_id) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Owner ID is required' 
+            });
+        }
+
+        const updatedShop = await LaundryShops.editShopById(owner_id, req.body);
+        
+        res.status(200).json({
+            success: true,
+            message: "Shop updated successfully",
+            data: updatedShop
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 // Add getAllShops to exports
-module.exports = { registerLaundryShop, getAllShops };
+module.exports = { registerLaundryShop, getAllShops, editShop };
