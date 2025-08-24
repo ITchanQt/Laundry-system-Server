@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../config/db");
 const User = require("../models/User");
 const Admin = require("../models/Admin");
-require ("dotenv").config();
+require("dotenv").config();
 const registerUser = async (req, res) => {
   try {
     const existingUser = await User.findByEmail(req.body.email);
@@ -48,11 +48,40 @@ const loginUser = async (req, res) => {
   }
 };
 
+const loginAdmin = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        console.log("Admin login attempt:", { username });
+
+        const result = await Admin.login(username, password);
+        if (result.error) {
+            return res.status(400).json({ message: result.error });
+        }
+
+        res.cookie("admin_token", result.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 3600000
+        });
+
+        res.json({
+            message: "Admin login successful",
+            admin: result.admin,
+            token: `Bearer ${result.token}`
+        });
+    } catch (error) {
+        console.error("Admin login error:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const logoutUser = (req, res) => {
   res.clearCookie("token"); // Fixed typo from clearCookies to clearCookie
-  res.json({ // Fixed typo from jsom to json
+  res.json({
+    // Fixed typo from jsom to json
     message: "Logged out successfully",
   });
 };
 
-module.exports = { registerUser, loginUser, logoutUser };
+module.exports = { registerUser, loginUser, logoutUser, loginAdmin };
