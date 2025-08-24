@@ -1,31 +1,47 @@
 const BaseModel = require('./BaseModel');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 class Admin extends BaseModel {
-    static async findByEmail(email) {
-        const sql = "SELECT * FROM admins WHERE email = ?";
-        const results = await this.query(sql, [email]);
+    static async findByUsername(username) {
+        const sql = "SELECT * FROM admins WHERE admin_username = ?";
+        const results = await this.query(sql, [username]);
         return results[0];
     }
 
-    static async create(adminData) {
-        const { admin_username, email, password, admin_fName, admin_mName, admin_lName, admin_address, admin_contactNum } = adminData;
-        const hashedPassword = await bcrypt.hash(password, 10);
+    static async login(username, password) {
+        try {
+            const admin = await this.findByUsername(username);
+            if (!admin) {
+                return { error: "Invalid credentials" };
+            }
+            
+            const match = await bcrypt.compare(password, admin.password);
+            if (!match) {
+                return { error: "Invalid credentials" };
+            }
 
-        const sql = `INSERT INTO admins 
-            (admin_username, email, password, admin_fName, admin_mName, admin_lName, admin_address, admin_contactNum) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+            const token = jwt.sign(
+                { 
+                    id: admin.id, 
+                    username: admin.admin_username,
+                    role: 'admin'
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: "1h" }
+            );
 
-        return this.query(sql, [
-            admin_username, 
-            email, 
-            hashedPassword, 
-            admin_fName, 
-            admin_mName, 
-            admin_lName, 
-            admin_address, 
-            admin_contactNum
-        ]);
+            return {
+                token,
+                admin: {
+                    id: admin.id,
+                    username: admin.admin_username,
+                    role: 'admin'
+                }
+            };
+        } catch (error) {
+            throw error;
+        }
     }
 }
 
