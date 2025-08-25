@@ -7,6 +7,7 @@ require("dotenv").config();
 const authRoutes = require("./src/routes/authRoutes");
 const publicRoutes = require("./src/routes/publicRoutes");
 const authenticate = require("./src/middlewares/authMiddleware");
+const customerRoutes = require('./src/routes/customerRoutes');
 
 const app = express();
 
@@ -26,6 +27,8 @@ app.use("/api/public", publicRoutes);
 
 // Protected Routes (authentication required)
 app.use("/api/auth", authRoutes);
+
+app.use('/api/customers', customerRoutes);
 
 //Protected Routes
 app.use("/api/protected", authenticate, (req, res) => {
