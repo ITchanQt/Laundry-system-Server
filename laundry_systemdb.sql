@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 16, 2025 at 06:01 PM
+-- Generation Time: Aug 31, 2025 at 01:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,6 +52,84 @@ INSERT INTO `admins` (`id`, `admin_fName`, `admin_mName`, `admin_lName`, `admin_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `customers`
+--
+
+CREATE TABLE `customers` (
+  `cus_id` varchar(50) NOT NULL,
+  `cus_fName` varchar(100) NOT NULL,
+  `cus_lName` varchar(100) NOT NULL,
+  `cus_eMail` varchar(100) NOT NULL,
+  `cus_phoneNum` varchar(100) NOT NULL,
+  `cus_address` varchar(100) NOT NULL,
+  `cus_city` varchar(100) NOT NULL,
+  `cus_zipCode` varchar(100) NOT NULL,
+  `cus_type` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_phoneNum`, `cus_address`, `cus_city`, `cus_zipCode`, `cus_type`) VALUES
+('08252025-00001', 'John', 'Doe', 'john@example.com', '1234567890', '123 Main St', 'Anytown', '12345', 'regular'),
+('08252025-00002', 'John', 'Doe', 'example@john.com', '9876543210', '123 Main St', 'Anytown', '12345', 'regular'),
+('08252025-00003', 'Christian', 'Lamoste', 'christian@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'regular'),
+('08252025-00004', 'Christian', 'Lamoste', 'christian1@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'vip');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_receipt`
+--
+
+CREATE TABLE `customer_receipt` (
+  `laundryId` varchar(10) NOT NULL,
+  `cus_id` varchar(50) NOT NULL,
+  `cus_name` varchar(100) NOT NULL,
+  `cus_eMail` varchar(100) NOT NULL,
+  `cus_phoneNum` varchar(100) NOT NULL,
+  `batch` int(100) NOT NULL,
+  `shirts` int(100) NOT NULL,
+  `pants` int(100) NOT NULL,
+  `jeans` int(100) NOT NULL,
+  `shorts` int(100) NOT NULL,
+  `towels` int(100) NOT NULL,
+  `pillow_case` int(100) NOT NULL,
+  `bed_sheets` int(100) NOT NULL,
+  `kg` int(100) NOT NULL,
+  `washing` varchar(10) NOT NULL,
+  `num_items` int(100) NOT NULL,
+  `total_amount` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer_receipt`
+--
+
+INSERT INTO `customer_receipt` (`laundryId`, `cus_id`, `cus_name`, `cus_eMail`, `cus_phoneNum`, `batch`, `shirts`, `pants`, `jeans`, `shorts`, `towels`, `pillow_case`, `bed_sheets`, `kg`, `washing`, `num_items`, `total_amount`) VALUES
+('000001', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000002', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000003', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000004', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000005', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000006', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000007', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000008', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000009', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000010', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
+('000011', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 2, 1, 1, 0, 1, 2, 1, 5, 'True', 8, '250.00'),
+('000012', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 2, 1, 1, 0, 1, 2, 1, 5, 'True', 8, '250.00'),
+('000013', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 2, 1, 1, 0, 1, 2, 1, 5, 'True', 8, '250.00'),
+('000014', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 2, 1, 1, 0, 1, 2, 1, 5, 'True', 8, '250.00'),
+('000015', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 11, 1, 1, 1, 1, 1, 1, 1, '1', 0, '0'),
+('000016', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 2, 4, 3, 2, 5, 4, 4, 5, '1', 24, '441'),
+('000017', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 2, 1, 1, 1, 1, 1, 1, 5, '1', 8, '145'),
+('000018', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 10, 2, 2, 2, 2, 22, 2, 2, 2, '1', 0, '0');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `laundry_shops`
 --
 
@@ -73,10 +151,10 @@ CREATE TABLE `laundry_shops` (
 --
 
 INSERT INTO `laundry_shops` (`owner_id`, `owner_fName`, `owner_mName`, `owner_lName`, `owner_emailAdd`, `owner_contactNum`, `shop_address`, `shop_name`, `shop_status`, `shop_type`) VALUES
-(4, 'Alice', 'F.', 'Cooper', 'alice.cooper@example.com', '555-1001', '12 Market Street, Downtown', 'Alice\'s Boutique', '', 'clothing'),
-(5, 'Brian', 'G.', 'Lee', 'brian.lee@example.com', '555-1002', '45 River Avenue, Midtown', 'Lee\'s Electronics', '', 'electronics'),
-(6, 'Carla', 'H.', 'Martinez', 'carla.martinez@example.com', '555-1003', '78 Park Lane, Uptown', 'Carla\'s Café', '', 'food'),
-(7, 'Elena', 'J.', 'Santos', 'elena.santos@example.com', '555-1005', '99 Pine Street, Lakeside', 'Elena\'s Flowers', '', 'florist');
+(4, 'John', 'Doe', 'Smith', 'john@example.com', '09553472448', '123 Main St', 'Updated Shop Name', 'Inactive', 'Washing'),
+(5, 'Bagin', 'G.', 'Lee', 'brian.lee@example.com', '555-1002', '45 River Avenue, Midtown', 'Lee\'s Electronics', 'active', 'DryClean'),
+(6, 'Christian', 'M.', 'Lamoste', 'carla.martinez@example.com', '555-1003', '78 Park Lane, Uptown', 'Carla\'s Café', 'active', 'Washing, DryClean'),
+(7, 'Elena', 'J.', 'Santos', 'elena.santos@example.com', '09631199862', '99 Pine Street, Lakeside', 'Elena\'s Flowers', 'active', 'Washing, DryClean');
 
 -- --------------------------------------------------------
 
@@ -119,6 +197,20 @@ INSERT INTO `users` (`id`, `user_fName`, `user_mName`, `user_lName`, `user_addre
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `customers`
+--
+ALTER TABLE `customers`
+  ADD PRIMARY KEY (`cus_id`),
+  ADD UNIQUE KEY `cus_id` (`cus_id`),
+  ADD UNIQUE KEY `cus_eMail` (`cus_eMail`,`cus_phoneNum`);
+
+--
+-- Indexes for table `customer_receipt`
+--
+ALTER TABLE `customer_receipt`
+  ADD PRIMARY KEY (`laundryId`);
 
 --
 -- Indexes for table `laundry_shops`
