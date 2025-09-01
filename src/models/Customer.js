@@ -1,6 +1,12 @@
 const BaseModel = require("./BaseModel");
 
 class Customer extends BaseModel {
+  static async findAll() {
+    const sql = "SELECT * FROM customers";
+    const results = await this.query(sql);
+    return results;
+  }
+
   static async findByCustomerId(customerId) {
     const sql = "SELECT * FROM customers WHERE cus_id = ?";
     const results = await this.query(sql, [customerId]);
