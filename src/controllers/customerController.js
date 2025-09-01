@@ -70,8 +70,27 @@ const getAllCustomers = async (req, res) => {
     }
 };
 
+const createLaundryRecord = async (req, res) => {
+    try {
+        const result = await Customer.insertCustomerReceipt(req.body);
+        
+        res.status(201).json({
+            success: true,
+            message: "Laundry record created successfully",
+            laundryId: result.newLaundryId  // This will be the generated ID
+        });
+    } catch (error) {
+        console.error('Create laundry record error:', error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     registerCustomer,
     getCustomerById,
-    getAllCustomers
+    getAllCustomers,
+    createLaundryRecord
 };
