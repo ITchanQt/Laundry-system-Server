@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 31, 2025 at 01:50 PM
+-- Generation Time: Sep 03, 2025 at 09:18 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -64,18 +64,21 @@ CREATE TABLE `customers` (
   `cus_address` varchar(100) NOT NULL,
   `cus_city` varchar(100) NOT NULL,
   `cus_zipCode` varchar(100) NOT NULL,
-  `cus_type` varchar(100) NOT NULL
+  `cus_type` varchar(100) NOT NULL,
+  `registeredBy` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_phoneNum`, `cus_address`, `cus_city`, `cus_zipCode`, `cus_type`) VALUES
-('08252025-00001', 'John', 'Doe', 'john@example.com', '1234567890', '123 Main St', 'Anytown', '12345', 'regular'),
-('08252025-00002', 'John', 'Doe', 'example@john.com', '9876543210', '123 Main St', 'Anytown', '12345', 'regular'),
-('08252025-00003', 'Christian', 'Lamoste', 'christian@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'regular'),
-('08252025-00004', 'Christian', 'Lamoste', 'christian1@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'vip');
+INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_phoneNum`, `cus_address`, `cus_city`, `cus_zipCode`, `cus_type`, `registeredBy`) VALUES
+('08252025-00001', 'John', 'Doe', 'john@example.com', '1234567890', '123 Main St', 'Anytown', '12345', 'regular', ''),
+('08252025-00002', 'John', 'Doe', 'example@john.com', '9876543210', '123 Main St', 'Anytown', '12345', 'regular', ''),
+('08252025-00003', 'Christian', 'Lamoste', 'christian@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'regular', ''),
+('08252025-00004', 'Christian', 'Lamoste', 'christian1@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'vip', ''),
+('09032025-00001', 'Christian', 'Lamoste', 'christian@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
+('09032025-00002', 'Christian', 'Lamoste', 'christian1@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'vip', 'CUSTOMER');
 
 -- --------------------------------------------------------
 
@@ -249,6 +252,17 @@ ALTER TABLE `laundry_shops`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `customer_receipt`
+--
+ALTER TABLE `customer_receipt`
+  ADD CONSTRAINT `customer_receipt_ibfk_1` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`),
+  ADD CONSTRAINT `customer_receipt_ibfk_2` FOREIGN KEY (`cus_eMail`) REFERENCES `customers` (`cus_eMail`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

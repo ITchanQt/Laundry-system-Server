@@ -59,11 +59,12 @@ class Customer extends BaseModel {
         cus_city,
         cus_zipCode,
         cus_type,
+        registeredBy
       } = customerData;
 
       const sql = `INSERT INTO customers 
-                (cus_id, cus_fName, cus_lName, cus_eMail, cus_phoneNum, cus_address, cus_city, cus_zipCode, cus_type)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                (cus_id, cus_fName, cus_lName, cus_eMail, cus_phoneNum, cus_address, cus_city, cus_zipCode, cus_type, registeredBy)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       return this.query(sql, [
         cus_id,
@@ -75,6 +76,7 @@ class Customer extends BaseModel {
         cus_city,
         cus_zipCode,
         cus_type,
+        registeredBy
       ]);
     } catch (error) {
       throw new Error(`Failed to register customer: ${error.message}`);
