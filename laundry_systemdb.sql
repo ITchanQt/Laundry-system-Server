@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 03, 2025 at 09:18 AM
+-- Generation Time: Sep 17, 2025 at 01:04 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admins` (
-  `id` int(10) NOT NULL,
+  `admin_id` varchar(10) NOT NULL,
   `admin_fName` varchar(100) NOT NULL,
   `admin_mName` varchar(100) NOT NULL,
   `admin_lName` varchar(100) NOT NULL,
@@ -36,18 +36,32 @@ CREATE TABLE `admins` (
   `admin_username` varchar(100) NOT NULL,
   `admin_contactNum` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL
+  `password` varchar(100) NOT NULL,
+  `date_registered` date DEFAULT curdate(),
+  `role` varchar(50) DEFAULT 'Admin',
+  `status` varchar(50) DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admins`
 --
 
-INSERT INTO `admins` (`id`, `admin_fName`, `admin_mName`, `admin_lName`, `admin_address`, `admin_username`, `admin_contactNum`, `email`, `password`) VALUES
-(1, 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin1', '1234567890', 'admin@test.com', '$2b$10$bo/S4Tivbm8Aa9NlwCG7n.sh9Aq1llBUhpofzVI8jD9EZKXQ0WlTu'),
-(2, 'Christian', 'Macorol', 'Lamoste', 'Caparangsan Gandara Samar', 'Helloworld', '09631199862', 'testuser10@example.com', '$2b$10$RNm6zaxuDP0/NkauBg/WkuvqgsrJjTvphISH70KEGMiufaPlRixgi'),
-(3, 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld', '09631199862', 'emily.chen@nursing.edu', '$2b$10$qNsTE969JgHCPfNuyiGvaOI3kmA.tkoXSVqbAyf/Fvc4.P6/8/KtW'),
-(4, 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld', '09631199862', 'christianlamostem@gmail.com', '$2b$10$eeEHlmZBP9wlEJ6Bvd8fmORyeRsOvRiZ0h5e23jQHbaVd3eCR1bza');
+INSERT INTO `admins` (`admin_id`, `admin_fName`, `admin_mName`, `admin_lName`, `admin_address`, `admin_username`, `admin_contactNum`, `email`, `password`, `date_registered`, `role`, `status`) VALUES
+('LMSA-00000', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test1.com', '$2b$10$N39wD24E6ZfIe3XOcjDcQuegdkRPE91wDVQXYDuyMC1S/RVbHta4e', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00001', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test2.com', '$2b$10$TvqtYmynZShjp2eoLwmJTecIh19Uu0YKJMFX9U7eopUCK7hZP/JPu', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00002', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test3.com', '$2b$10$OSL73bzC/OIWgZ.IJNJzjuWOKsm8vgwJsroXmREXV3t3ZqKWCP8pW', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00003', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test4.com', '$2b$10$G8vRi.ljocN5kvt/KOCRFujQr962czsIR7CmiIIczQd4VdrAlSBYG', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00004', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test5.com', '$2b$10$eg4Okki86CcqBXj2gk3Vm.O9gTI/XCE6ad2CYDNNb2DmpjKJ4GWnO', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00005', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test6.com', '$2b$10$CheB4K5Xjb0H1ZD.QtyAdehhhX90myS2IZMRqXVj4NMMUyoLzmIii', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00006', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test7.com', '$2b$10$KceBME/zIfm5aYB3jOAG/OBWiQcI1Xve9070xnfus3K.8QAnLv.3a', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00007', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test8.com', '$2b$10$32m.SiIpXkYIAgaVHZrj8.Of46uGH/w2U0urioH9Sp7MIU4RsMNNq', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00008', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test9.com', '$2b$10$pJgUtpTu.5EsiiraTBzV6OoAEpwsoUdRVqdJdCKuE.gCz0ph3xJ..', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00009', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test10.com', '$2b$10$fss622MUdhcvAJXiXRECQ.JD97pTU4L19DFp/FKuiXVpYUeOYKe7e', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00010', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test11.com', '$2b$10$8h/6fVcr5rM9X4PpYHBFtuZGA6z/cEVzvv3LuDNFJXFJ.x08ltfkS', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00011', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test12.com', '$2b$10$AVQ66qTutIcDMBoThV6FgOmeO1dhAydCP.w/msG4n3b/0bdChXNSG', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00012', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09631199862', 'emily.chen@nursing.edu', '$2b$10$beNZ.T2pahBHpRPoKjws.uvwmMrf2W91yinbdys3j6mpuV4zzY9FO', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00013', 'Juan', 'Haha', 'Dela Cruz', 'Biringan City', 'JuanDC', '09876543211', 'JuanDC@sample.com', '$2b$10$Oyijtg5fVd8bPdjMIqTlY.Ft4Yakz8PReDmwEVfny1R0tZ2Den832', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00014', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin13', '0987654321', 'admin@test13.com', '$2b$10$5V7TX/ZKhQoz3DYJVu01BuiuzmchgNHWJ3V7ZPXxGHoP0I.JQAMyW', '2025-09-17', 'Admin', 'Active');
 
 -- --------------------------------------------------------
 
@@ -78,7 +92,9 @@ INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_p
 ('08252025-00003', 'Christian', 'Lamoste', 'christian@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'regular', ''),
 ('08252025-00004', 'Christian', 'Lamoste', 'christian1@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'vip', ''),
 ('09032025-00001', 'Christian', 'Lamoste', 'christian@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
-('09032025-00002', 'Christian', 'Lamoste', 'christian1@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'vip', 'CUSTOMER');
+('09032025-00002', 'Christian', 'Lamoste', 'christian1@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'vip', 'CUSTOMER'),
+('09032025-00003', 'Christian', 'Lamoste', 'christian2@example.com', '09631199861', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
+('09032025-00004', 'Christian', 'Lamoste', 'christian6@example.com', '09631199863', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN');
 
 -- --------------------------------------------------------
 
@@ -128,7 +144,12 @@ INSERT INTO `customer_receipt` (`laundryId`, `cus_id`, `cus_name`, `cus_eMail`, 
 ('000015', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 11, 1, 1, 1, 1, 1, 1, 1, '1', 0, '0'),
 ('000016', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 2, 4, 3, 2, 5, 4, 4, 5, '1', 24, '441'),
 ('000017', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 2, 1, 1, 1, 1, 1, 1, 5, '1', 8, '145'),
-('000018', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 10, 2, 2, 2, 2, 22, 2, 2, 2, '1', 0, '0');
+('000018', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 10, 2, 2, 2, 2, 22, 2, 2, 2, '1', 0, '0'),
+('000019', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 3, 3, 3, 3, 33, 3, 3, 3, '1', 51, '750'),
+('000020', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 0, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
+('000021', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 0, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
+('000022', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 111, 1, 1, 1, 1, 1, 1, 1, '1', 117, '1780'),
+('000023', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130');
 
 -- --------------------------------------------------------
 
@@ -137,7 +158,7 @@ INSERT INTO `customer_receipt` (`laundryId`, `cus_id`, `cus_name`, `cus_eMail`, 
 --
 
 CREATE TABLE `laundry_shops` (
-  `owner_id` int(20) NOT NULL,
+  `shop_id` varchar(10) NOT NULL,
   `owner_fName` varchar(100) NOT NULL,
   `owner_mName` varchar(100) NOT NULL,
   `owner_lName` varchar(100) NOT NULL,
@@ -145,19 +166,21 @@ CREATE TABLE `laundry_shops` (
   `owner_contactNum` varchar(100) NOT NULL,
   `shop_address` varchar(100) NOT NULL,
   `shop_name` varchar(100) NOT NULL,
-  `shop_status` varchar(100) NOT NULL,
-  `shop_type` varchar(100) NOT NULL
+  `shop_status` varchar(100) NOT NULL DEFAULT 'Active',
+  `shop_type` varchar(100) NOT NULL,
+  `date_registered` date DEFAULT curdate()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `laundry_shops`
 --
 
-INSERT INTO `laundry_shops` (`owner_id`, `owner_fName`, `owner_mName`, `owner_lName`, `owner_emailAdd`, `owner_contactNum`, `shop_address`, `shop_name`, `shop_status`, `shop_type`) VALUES
-(4, 'John', 'Doe', 'Smith', 'john@example.com', '09553472448', '123 Main St', 'Updated Shop Name', 'Inactive', 'Washing'),
-(5, 'Bagin', 'G.', 'Lee', 'brian.lee@example.com', '555-1002', '45 River Avenue, Midtown', 'Lee\'s Electronics', 'active', 'DryClean'),
-(6, 'Christian', 'M.', 'Lamoste', 'carla.martinez@example.com', '555-1003', '78 Park Lane, Uptown', 'Carla\'s Café', 'active', 'Washing, DryClean'),
-(7, 'Elena', 'J.', 'Santos', 'elena.santos@example.com', '09631199862', '99 Pine Street, Lakeside', 'Elena\'s Flowers', 'active', 'Washing, DryClean');
+INSERT INTO `laundry_shops` (`shop_id`, `owner_fName`, `owner_mName`, `owner_lName`, `owner_emailAdd`, `owner_contactNum`, `shop_address`, `shop_name`, `shop_status`, `shop_type`, `date_registered`) VALUES
+('LMSS-00001', 'Christian', 'M.', 'Lamoste', 'christian.lamoste3@example.com', '555-10053', '99 Pine Street, Lakeside', 'Itchan\'s Laundry3', 'active', 'Washing, DryClean', '2025-09-17'),
+('LMSS-00002', 'Christian', 'M.', 'Lamoste', 'christian.lamoste1@example.com', '555-10051', '99 Pine Street, Lakeside', 'Itchan\'s Laundry1', 'active', 'DryClean', '2025-09-17'),
+('LMSS-00003', 'Christian', 'M.', 'Lamoste', 'christian.lamoste@example.com', '555-1005', '99 Pine Street, Lakeside', 'Itchan\'s Laundry', 'Active', 'Washing', '2025-09-17'),
+('LMSS-00004', 'Christian', 'Macorol', 'Lamoste', 'emily.chen@nursing.edu', '09631199862', 'Purok 2', 'HAHA2', 'Active', 'Washing, DryClean', '2025-09-17'),
+('LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'testuser1@example.com', '09631199869', 'Purok 2', 'HAHA69', 'Active', 'DryClean', '2025-09-17');
 
 -- --------------------------------------------------------
 
@@ -198,7 +221,7 @@ INSERT INTO `users` (`id`, `user_fName`, `user_mName`, `user_lName`, `user_addre
 -- Indexes for table `admins`
 --
 ALTER TABLE `admins`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`admin_id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
@@ -219,7 +242,7 @@ ALTER TABLE `customer_receipt`
 -- Indexes for table `laundry_shops`
 --
 ALTER TABLE `laundry_shops`
-  ADD PRIMARY KEY (`owner_id`),
+  ADD PRIMARY KEY (`shop_id`),
   ADD UNIQUE KEY `owner_emailAdd` (`owner_emailAdd`),
   ADD UNIQUE KEY `owner_contactNum` (`owner_contactNum`),
   ADD UNIQUE KEY `shop_name` (`shop_name`);
@@ -234,18 +257,6 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT for dumped tables
 --
-
---
--- AUTO_INCREMENT for table `admins`
---
-ALTER TABLE `admins`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `laundry_shops`
---
-ALTER TABLE `laundry_shops`
-  MODIFY `owner_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
