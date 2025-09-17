@@ -19,41 +19,41 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    console.log("Login attempt:", { email });
+    try {
+        const { emailOrUsername, password } = req.body;
+        console.log("Login attempt:", { emailOrUsername });
 
-    const result = await User.login(email, password);
+        const result = await User.login(emailOrUsername, password);
 
-    if (result.error) {
-      return res.status(400).json({ message: result.error });
+        if (result.error) {
+            return res.status(400).json({ message: result.error });
+        }
+
+        res.cookie("token", result.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 3600000,
+        });
+
+        res.json({
+            message: "Login successful",
+            user: result.user,
+            token: `Bearer ${result.token}`
+        });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ error: error.message });
     }
-
-    // Return token in both cookie and response body
-    res.cookie("token", result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 3600000,
-    });
-
-    res.json({
-      message: "Login successful",
-      user: result.user,
-      token: `Bearer ${result.token}` // Add token to response
-    });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ error: error.message });
-  }
 };
 
 const loginAdmin = async (req, res) => {
     try {
-        const { username, password } = req.body;
-        console.log("Admin login attempt:", { username });
+        const { emailOrUsername, password } = req.body;
+        console.log("Admin login attempt:", { emailOrUsername });
 
-        const result = await Admin.login(username, password);
+        const result = await Admin.login(emailOrUsername, password);
+
         if (result.error) {
             return res.status(400).json({ message: result.error });
         }

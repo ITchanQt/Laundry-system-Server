@@ -35,22 +35,27 @@ class User extends BaseModel {
         return bcrypt.compare(plainPassword, hashedPassword);
     }
 
-    static async login(email, password) {
+    static async findByEmailOrUsername(emailOrUsername) {
+        const sql = "SELECT * FROM users WHERE email = ? OR username = ?";
+        const results = await this.query(sql, [emailOrUsername, emailOrUsername]);
+        return results[0];
+    }
+
+    static async login(emailOrUsername, password) {
         try {
-            const user = await this.findByEmail(email);
+            const user = await this.findByEmailOrUsername(emailOrUsername);
             
             if (!user) {
                 return { error: "Invalid credentials" };
             }
 
             const match = await bcrypt.compare(password, user.password);
-            
             if (!match) {
                 return { error: "Invalid credentials" };
             }
 
             const token = jwt.sign(
-                { id: user.id, email: user.email },
+                { id: user.id, email: user.email, role: 'user' },
                 process.env.JWT_SECRET,
                 { expiresIn: "1h" }
             );
@@ -60,13 +65,15 @@ class User extends BaseModel {
                 user: {
                     id: user.id,
                     username: user.username,
-                    email: user.email
+                    email: user.email,
+                    role: 'user'
                 }
             };
         } catch (error) {
             throw error;
         }
     }
+
     static async getAllUsers() {
         const query = "SELECT * from users";
         const results = await this.query(query);
