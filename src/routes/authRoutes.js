@@ -10,7 +10,7 @@ const { registerLaundryShop, editShop } = require("../controllers/shopController
 // Protected routes that need authentication
 // router.use(authenticate); // Apply authentication middleware to all routes below
 
-router.post("/register", registerUser);
+router.post("/register-user", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/register-admin", registerAdmin);

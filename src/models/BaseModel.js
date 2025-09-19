@@ -1,13 +1,14 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
 class BaseModel {
     static async query(sql, params) {
-        return new Promise((resolve, reject) => {
-            db.query(sql, params, (error, results) => {
-                if (error) reject(error);
-                resolve(results);
-            });
-        });
+        try {
+            const [results] = await pool.execute(sql, params);
+            return results;
+        } catch (error) {
+            console.error('Database query error:', error);
+            throw error;
+        }
     }
 }
 
