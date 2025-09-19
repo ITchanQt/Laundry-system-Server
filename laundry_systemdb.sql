@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 17, 2025 at 01:04 PM
+-- Generation Time: Sep 19, 2025 at 01:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,7 +39,7 @@ CREATE TABLE `admins` (
   `password` varchar(100) NOT NULL,
   `date_registered` date DEFAULT curdate(),
   `role` varchar(50) DEFAULT 'Admin',
-  `status` varchar(50) DEFAULT 'Active'
+  `status` varchar(50) DEFAULT 'Pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -61,7 +61,8 @@ INSERT INTO `admins` (`admin_id`, `admin_fName`, `admin_mName`, `admin_lName`, `
 ('LMSA-00011', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin2', '0987654321', 'admin@test12.com', '$2b$10$AVQ66qTutIcDMBoThV6FgOmeO1dhAydCP.w/msG4n3b/0bdChXNSG', '2025-09-17', 'Admin', 'Active'),
 ('LMSA-00012', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09631199862', 'emily.chen@nursing.edu', '$2b$10$beNZ.T2pahBHpRPoKjws.uvwmMrf2W91yinbdys3j6mpuV4zzY9FO', '2025-09-17', 'Admin', 'Active'),
 ('LMSA-00013', 'Juan', 'Haha', 'Dela Cruz', 'Biringan City', 'JuanDC', '09876543211', 'JuanDC@sample.com', '$2b$10$Oyijtg5fVd8bPdjMIqTlY.Ft4Yakz8PReDmwEVfny1R0tZ2Den832', '2025-09-17', 'Admin', 'Active'),
-('LMSA-00014', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin13', '0987654321', 'admin@test13.com', '$2b$10$5V7TX/ZKhQoz3DYJVu01BuiuzmchgNHWJ3V7ZPXxGHoP0I.JQAMyW', '2025-09-17', 'Admin', 'Active');
+('LMSA-00014', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin13', '0987654321', 'admin@test13.com', '$2b$10$5V7TX/ZKhQoz3DYJVu01BuiuzmchgNHWJ3V7ZPXxGHoP0I.JQAMyW', '2025-09-17', 'Admin', 'Active'),
+('LMSA-00015', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'JuanDC', '09876543211', 'testuser22@example.com', '$2b$10$MUEFLGU0mJmeIcXUiaGyh.c2.uqD7Qhtj.O03hGuaaWQSbdwH6djS', '2025-09-19', 'Admin', 'Active');
 
 -- --------------------------------------------------------
 
@@ -94,7 +95,8 @@ INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_p
 ('09032025-00001', 'Christian', 'Lamoste', 'christian@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
 ('09032025-00002', 'Christian', 'Lamoste', 'christian1@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'vip', 'CUSTOMER'),
 ('09032025-00003', 'Christian', 'Lamoste', 'christian2@example.com', '09631199861', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
-('09032025-00004', 'Christian', 'Lamoste', 'christian6@example.com', '09631199863', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN');
+('09032025-00004', 'Christian', 'Lamoste', 'christian6@example.com', '09631199863', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
+('09192025-00001', 'Christian', 'Lamoste', 'christian69@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'vip', 'ADMIN');
 
 -- --------------------------------------------------------
 
@@ -149,7 +151,9 @@ INSERT INTO `customer_receipt` (`laundryId`, `cus_id`, `cus_name`, `cus_eMail`, 
 ('000020', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 0, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
 ('000021', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 0, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
 ('000022', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 111, 1, 1, 1, 1, 1, 1, 1, '1', 117, '1780'),
-('000023', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130');
+('000023', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
+('000024', '09032025-00002', 'Christian Lamoste', 'christian1@example.com', '09553472448', 10, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
+('000025', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130');
 
 -- --------------------------------------------------------
 
@@ -176,8 +180,8 @@ CREATE TABLE `laundry_shops` (
 --
 
 INSERT INTO `laundry_shops` (`shop_id`, `owner_fName`, `owner_mName`, `owner_lName`, `owner_emailAdd`, `owner_contactNum`, `shop_address`, `shop_name`, `shop_status`, `shop_type`, `date_registered`) VALUES
-('LMSS-00001', 'Christian', 'M.', 'Lamoste', 'christian.lamoste3@example.com', '555-10053', '99 Pine Street, Lakeside', 'Itchan\'s Laundry3', 'active', 'Washing, DryClean', '2025-09-17'),
-('LMSS-00002', 'Christian', 'M.', 'Lamoste', 'christian.lamoste1@example.com', '555-10051', '99 Pine Street, Lakeside', 'Itchan\'s Laundry1', 'active', 'DryClean', '2025-09-17'),
+('LMSS-00001', 'Christian', '', 'Lamoste', 'christian.lamoste3@example.com', '555-10053', '99 Pine Street, Lakeside', 'Itchan\'s Laundry3', 'active', 'Washing, DryClean', '2025-09-17'),
+('LMSS-00002', 'Christian', 'b.', 'Lamoste', 'christian.lamoste1@example.com', '555-10051', '99 Pine Street, Lakeside', 'Itchan\'s Laundry1', 'active', 'Washing, DryClean', '2025-09-17'),
 ('LMSS-00003', 'Christian', 'M.', 'Lamoste', 'christian.lamoste@example.com', '555-1005', '99 Pine Street, Lakeside', 'Itchan\'s Laundry', 'Active', 'Washing', '2025-09-17'),
 ('LMSS-00004', 'Christian', 'Macorol', 'Lamoste', 'emily.chen@nursing.edu', '09631199862', 'Purok 2', 'HAHA2', 'Active', 'Washing, DryClean', '2025-09-17'),
 ('LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'testuser1@example.com', '09631199869', 'Purok 2', 'HAHA69', 'Active', 'DryClean', '2025-09-17');
@@ -189,9 +193,9 @@ INSERT INTO `laundry_shops` (`shop_id`, `owner_fName`, `owner_mName`, `owner_lNa
 --
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+  `user_id` varchar(11) NOT NULL,
   `user_fName` varchar(255) NOT NULL,
-  `user_mName` varchar(255) NOT NULL,
+  `user_mName` varchar(100) DEFAULT NULL,
   `user_lName` varchar(255) NOT NULL,
   `user_address` varchar(255) NOT NULL,
   `username` varchar(100) DEFAULT NULL,
@@ -199,19 +203,37 @@ CREATE TABLE `users` (
   `email` varchar(100) DEFAULT NULL,
   `role` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
-  `password` varchar(255) DEFAULT NULL
+  `password` varchar(255) DEFAULT NULL,
+  `date_registered` date NOT NULL DEFAULT curdate(),
+  `registered_by` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `user_fName`, `user_mName`, `user_lName`, `user_address`, `username`, `contactNum`, `email`, `role`, `status`, `password`) VALUES
-(10, 'John', 'A.', 'Doe', '123 Elm Street, Springfield', 'john.doe', '555-1234', 'john.doe@example.com', 'admin', 'active', '$2b$10$N8Onqeq/.M2zFzd6apXunuG7tW2yN.T/A5AxWlUM4NPwHS3AN4c7.'),
-(11, 'Jane', 'B.', 'Smith', '456 Oak Avenue, Rivertown', 'jane.smith', '555-5678', 'jane.smith@example.com', 'user', 'active', '$2b$10$XNwYGgk7xclgto6Qotb9ruLBfhRZCTfAvIwhjd69f/0CYbmpWotFS'),
-(12, 'Michael', 'C.', 'Johnson', '789 Maple Lane, Lakeview', 'michael.johnson', '555-9012', 'michael.johnson@example.com', 'staff', 'inactive', '$2b$10$.ifL4RSXN.OSlwg/EPcLfe1ycdMz0qH0UzLgKnLFDn1N4JYmpuSBi'),
-(13, 'Emily', 'D.', 'Williams', '321 Birch Blvd, Mountainview', 'emily.williams', '555-3456', 'emily.williams@example.com', 'user', 'active', '$2b$10$A2MEi6WC7jeyz3t2MTqzfO845LOvL0.B4chVvVYx4.SlveFflc7xm'),
-(14, 'David', 'E.', 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david.brown@example.com', 'staff', 'active', '$2b$10$1fsIMUj7rDj1IAKmkYfm6ehGegFGAelIvA7Dz8b.o1TVg/WTe4.2u');
+INSERT INTO `users` (`user_id`, `user_fName`, `user_mName`, `user_lName`, `user_address`, `username`, `contactNum`, `email`, `role`, `status`, `password`, `date_registered`, `registered_by`) VALUES
+('LMSU-00001', 'David', 'E.', 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david.brown@example.com', 'staff', 'active', '$2b$10$bZzYRfyufmuS7Gwl/hEoHOIRM7xaEc34UKfRD4wqf62LhPOAV1zPe', '2025-09-19', ''),
+('LMSU-00002', 'David', 'E.', 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david1.brown@example.com', 'staff', 'active', '$2b$10$AJmvfxy5jCcVfMKQvGJMOuxpy8Qy730Gei4mt/khMNZuHXTzA358i', '2025-09-19', ''),
+('LMSU-00003', 'David', 'E.', 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david2.brown@example.com', 'staff', 'active', '$2b$10$7hu1.9gVd7Qnlg/HFdqZMe.KQjfYjsKmt6LYFp4BCUg7BVjT3CdsG', '2025-09-19', ''),
+('LMSU-00004', 'David', 'E.', 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david3.brown@example.com', 'staff', 'active', '$2b$10$08.ZHwCSciqm6ekmBVypjOazlA5oFhRvMCRUnM8VgeuKTgwtdEZoC', '2025-09-19', ''),
+('LMSU-00005', 'David', NULL, 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david4.brown@example.com', 'staff', 'active', '$2b$10$2Q6n8TdvOB7ygFwZzoKUUeXBGt4/XPxCnCbJsou/jNn7xshn9t99u', '2025-09-19', ''),
+('LMSU-00006', 'David', NULL, 'Brown', '654 Cedar Road, Foresthill', NULL, '555-7890', 'david5.brown@example.com', 'staff', 'active', '$2b$10$mTw4nV8qVmqd2LarTN3C/uIIbWVjvtvKnKzfcFosCoAMM4HMRWlma', '2025-09-19', ''),
+('LMSU-00007', 'Christian', '', 'Lamoste', 'Purok 2', NULL, '0987654321', 'christianmacorol2002@gmail.com', 'staff', 'Active', '$2b$10$UlItkV5FYxcCXFw32aPHaeoIxlkSRhqxMnZk/dxRPzU/Yoysdae0C', '2025-09-19', ''),
+('LMSU-00008', 'Christian', '', 'Lamoste', 'Gandara Samar', NULL, '0987654321', 'christianmacorol@gmail.com', 'customer', 'Active', '$2b$10$pbuwNdqOMHzF/7dgj0A9iORJDZ/3kCOKbRLdjjmj6LASly0DL/pt2', '2025-09-19', ''),
+('LMSU-00009', 'David', 'E.', 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david6.brown@example.com', 'staff', 'active', '$2b$10$zXP.jHCZ5T4XurbWxbElM.67DGPjd6kWSuMCGwl5ijHLlunyyFOTa', '2025-09-19', ''),
+('LMSU-00010', 'David', 'E.', 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david69.brown@example.com', 'staff', 'active', '$2b$10$w3KNnmDSg.WH32DUkBnXTOVi.ruqQwLoRJh.NBV6Hy30o4FmoPiFW', '2025-09-19', ''),
+('LMSU-00011', 'David', NULL, 'Brown', '654 Cedar Road, Foresthill', NULL, '555-7890', 'david01.brown@example.com', 'staff', 'active', '$2b$10$GD6mf5CnueM7zejglJDN2O05tfNFY7vQEdphzAZ6nJwpHbUbjZw.a', '2025-09-19', ''),
+('LMSU-00012', 'David', NULL, 'Brown', '654 Cedar Road, Foresthill', NULL, '555-7890', 'david02.brown@example.com', 'Staff', 'active', '$2b$10$xkQ4E/6sNJM3fQATO3r3yeOSXI1oFlTW9bw49xGbNQbJlq5ygU6U.', '2025-09-19', ''),
+('LMSU-00013', 'David', 'E.', 'Brown', '654 Cedar Road, Foresthill', 'david.brown', '555-7890', 'david03.brown@example.com', 'Staff', 'active', '$2b$10$68OKqSEbxJHHUJCkb.luHe4LVQO8Bi5.8CMIhNR8KNQRmblyNzmGm', '2025-09-19', ''),
+('LMSU-00014', 'David', NULL, 'Brown', '654 Cedar Road, Foresthill', NULL, '555-7890', 'david04.brown@example.com', 'Staff', 'active', '$2b$10$4VAiVhLRwGaMXzv23g2ZJOxefHeM3T99tCm2j/GvxmGUESBKIZYrO', '2025-09-19', ''),
+('LMSU-00015', 'John', NULL, 'Doe', 'Biringan City', NULL, '0987654321', 'John.doe@test.com', 'Staff', 'Active', '$2b$10$6eG/7OxrIyPaYg9uO7OGUeIrdt3jn8epJkbna/ELJm3/4Hip9iYsO', '2025-09-19', ''),
+('LMSU-00016', 'David', 'null', 'Brown', '654 Cedar Road, Foresthill', 'null', '555-7890', 'david05.brown@example.com', 'Staff', 'active', '$2b$10$WE3uBj8YtaQVe1I21UDdxOBnumfshRVqAO8Mcip4GVqFVWT9NcHdO', '2025-09-19', ''),
+('LMSU-00017', 'David', 'null', 'Brown', '654 Cedar Road, Foresthill', 'null', '555-7890', 'david06.brown@example.com', 'Staff', 'active', '$2b$10$gpx4gkxBBC/KOqFEg/vntus5VAnuFnN0aPWCUBZBFNNGqeSFqdl96', '2025-09-19', 'Admin'),
+('LMSU-00018', 'Christian', NULL, 'Lamoste', 'Purok 2', NULL, '0987654321', 'emily.chen@nursing.edu', 'Staff', 'Active', '$2b$10$ckmWmK0fSUE7ayKMXuBPUuvtfBDaoOiY9g9Pp16bRQfdJnImplZOq', '2025-09-19', 'Admin'),
+('LMSU-00019', 'Juan', NULL, 'Dela cruz', 'Biringan City', NULL, '0987654321', 'juan.dc@test.com', 'Customer', 'Active', '$2b$10$qzGWvgXZHddknuW2czUQaOED0JhCgNdsiCfqQgqHfWEhEvTc6eVLe', '2025-09-19', 'Admin'),
+('LMSU-00020', 'Christian', NULL, 'Lamoste', 'Purok 2', NULL, '0987654321', 'christianlamostem@gmail.com', 'Staff', 'Active', '$2b$10$UXHVC/fRwl5bQ6Ezvc3gnOczkRn49qswwHLNCTRaqJLHRFgmnHfxG', '2025-09-19', 'Admin'),
+('LMSU-00021', 'Christian', NULL, 'Lamoste', 'Gandara Samar', NULL, '0987654321', 'testuser10@example.com', 'Customer', 'Active', '$2b$10$GhcyHI6R4pP47g1k5vsYR./vIg9dpY8stMriNinHtMjpOKRZaGi5W', '2025-09-19', 'Admin');
 
 --
 -- Indexes for dumped tables
@@ -251,18 +273,8 @@ ALTER TABLE `laundry_shops`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `email` (`email`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables

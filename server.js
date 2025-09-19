@@ -11,11 +11,23 @@ const customerRoutes = require('./src/routes/customerRoutes');
 
 const app = express();
 
+
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+
 app.use(cors({
-    origin: 'http://localhost:5173', // Your frontend URL
-    credentials: true, 
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 // app.use(cors());
 app.use(express.json());

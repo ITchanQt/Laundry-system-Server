@@ -9,15 +9,38 @@ class User extends BaseModel {
         return results[0];
     }
 
+    static async generateUserId() {
+    try {
+      // Get the highest admin ID
+      const sql = "SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1";
+      const results = await this.query(sql);
+
+      let nextNumber = 1;
+      if (results && results.length > 0) {
+        const lastId = results[0].user_id;
+        const lastNumber = parseInt(lastId.split('-')[1]);
+        nextNumber = lastNumber + 1;
+      }
+
+      // Format: LMSU-00001
+      return `LMSU-${String(nextNumber).padStart(5, '0')}`;
+    } catch (error) {
+      throw new Error(`Failed to generate admin ID: ${error.message}`);
+    }
+  }
+
     static async create(userData) {
-        const { username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status } = userData;
+        try {
+        const user_id = await this.generateUserId();
+        const { username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status, registered_by } = userData;
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const sql = `INSERT INTO users 
-            (username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            (user_id, username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status, registered_by) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         return this.query(sql, [
+            user_id,
             username, 
             email, 
             hashedPassword, 
@@ -27,8 +50,13 @@ class User extends BaseModel {
             user_address, 
             contactNum,
             role,
-            status
+            status,
+            registered_by
         ]);
+        } catch (error) {
+            throw new Error(`Failed to create user: ${error.message}`);
+        }
+
     }
 
     static async verifyPassword(plainPassword, hashedPassword) {
