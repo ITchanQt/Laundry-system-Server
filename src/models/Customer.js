@@ -54,16 +54,16 @@ class Customer extends BaseModel {
         cus_fName,
         cus_lName,
         cus_eMail,
+        cus_role = "CUSTOMER",
+        cus_status,
         cus_phoneNum,
         cus_address,
-        cus_city,
-        cus_zipCode,
-        cus_type,
-        registeredBy
+        cus_username,
+        registeredBy = "Customer"
       } = customerData;
 
       const sql = `INSERT INTO customers 
-                (cus_id, cus_fName, cus_lName, cus_eMail, cus_phoneNum, cus_address, cus_city, cus_zipCode, cus_type, registeredBy)
+                (cus_id, cus_fName, cus_lName, cus_eMail, cus_role, cus_status, cus_phoneNum, cus_address, cus_username, registeredBy)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       return this.query(sql, [
@@ -71,11 +71,11 @@ class Customer extends BaseModel {
         cus_fName,
         cus_lName,
         cus_eMail,
+        cus_role,
+        cus_status,
         cus_phoneNum,
         cus_address,
-        cus_city,
-        cus_zipCode,
-        cus_type,
+        cus_username,
         registeredBy
       ]);
     } catch (error) {
