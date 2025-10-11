@@ -30,13 +30,35 @@ class User extends BaseModel {
   }
 
     static async create(userData) {
-        try {
+    try {
+        // Generate user ID
         const user_id = await this.generateUserId();
-        const { username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status, registered_by } = userData;
+
+        // Destructure with default values
+        const { 
+            username, 
+            email, 
+            password,
+            user_fName,
+            user_mName = null, // Optional field
+            user_lName,
+            user_address = null, // Optional field
+            contactNum,
+            role = 'Customer', // Default role
+            status = 'active', // Default status
+            registered_by = "Admin" // Optional field
+        } = userData;
+
+        // Validate required fields
+        if (!username || !email || !password || !user_fName || !user_lName || !contactNum) {
+            throw new Error('Missing required fields');
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const sql = `INSERT INTO users 
-            (user_id, username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status, registered_by) 
+            (user_id, username, email, password, user_fName, user_mName, user_lName, 
+             user_address, contactNum, role, status, registered_by) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         return this.query(sql, [
@@ -45,7 +67,7 @@ class User extends BaseModel {
             email, 
             hashedPassword, 
             user_fName, 
-            user_mName, 
+            user_mName,
             user_lName, 
             user_address, 
             contactNum,
@@ -53,11 +75,10 @@ class User extends BaseModel {
             status,
             registered_by
         ]);
-        } catch (error) {
-            throw new Error(`Failed to create user: ${error.message}`);
-        }
-
+    } catch (error) {
+        throw new Error(`Failed to create user: ${error.message}`);
     }
+  }
 
     static async verifyPassword(plainPassword, hashedPassword) {
         return bcrypt.compare(plainPassword, hashedPassword);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 19, 2025 at 01:08 PM
+-- Generation Time: Oct 11, 2025 at 10:58 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -75,28 +75,28 @@ CREATE TABLE `customers` (
   `cus_fName` varchar(100) NOT NULL,
   `cus_lName` varchar(100) NOT NULL,
   `cus_eMail` varchar(100) NOT NULL,
+  `cus_role` varchar(100) NOT NULL,
+  `cus_status` varchar(50) NOT NULL DEFAULT 'PENDING',
   `cus_phoneNum` varchar(100) NOT NULL,
   `cus_address` varchar(100) NOT NULL,
-  `cus_city` varchar(100) NOT NULL,
-  `cus_zipCode` varchar(100) NOT NULL,
-  `cus_type` varchar(100) NOT NULL,
-  `registeredBy` varchar(50) NOT NULL
+  `cus_username` varchar(100) NOT NULL,
+  `registeredBy` varchar(50) NOT NULL,
+  `date_registered` date NOT NULL DEFAULT curdate()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_phoneNum`, `cus_address`, `cus_city`, `cus_zipCode`, `cus_type`, `registeredBy`) VALUES
-('08252025-00001', 'John', 'Doe', 'john@example.com', '1234567890', '123 Main St', 'Anytown', '12345', 'regular', ''),
-('08252025-00002', 'John', 'Doe', 'example@john.com', '9876543210', '123 Main St', 'Anytown', '12345', 'regular', ''),
-('08252025-00003', 'Christian', 'Lamoste', 'christian@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'regular', ''),
-('08252025-00004', 'Christian', 'Lamoste', 'christian1@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'vip', ''),
-('09032025-00001', 'Christian', 'Lamoste', 'christian@example.com', '09631199862', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
-('09032025-00002', 'Christian', 'Lamoste', 'christian1@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'vip', 'CUSTOMER'),
-('09032025-00003', 'Christian', 'Lamoste', 'christian2@example.com', '09631199861', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
-('09032025-00004', 'Christian', 'Lamoste', 'christian6@example.com', '09631199863', 'Purok 2', 'Gandara', '6706', 'regular', 'ADMIN'),
-('09192025-00001', 'Christian', 'Lamoste', 'christian69@example.com', '09553472448', 'Purok 2', 'Gandara', '6706', 'vip', 'ADMIN');
+INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_role`, `cus_status`, `cus_phoneNum`, `cus_address`, `cus_username`, `registeredBy`, `date_registered`) VALUES
+('10112025-00011', 'John', 'Doe', 'example@john80.com', '', 'PENDING', '9876543210', 'itchan', '123 Main St', 'Customer', '2025-10-11'),
+('10112025-00012', 'John', 'Doe', 'example@john81.com', '', 'PENDING', '9876543210', 'itchan', '123', 'Customer', '2025-10-11'),
+('10112025-00013', 'John', 'Doe', 'example@john82.com', '', 'PENDING', '9876543210', 'itchan', 'Caparangasan', 'Customer', '2025-10-11'),
+('10112025-00014', 'John', 'Doe', 'example@john84.com', '', 'PENDING', '9876543210', 'Caparangasan', 'itchan', 'Customer', '2025-10-11'),
+('10112025-00015', 'John', 'Doe', 'example@john85.com', '', 'PENDING', '9876543210', 'Caparangasan', 'itchan123', 'Customer', '2025-10-11'),
+('10112025-00016', 'Christian', 'Lamoste', 'itchan@test.com', '', 'PENDING', '0987654321', 'Caparangasan Gandara, Samar', 'ITchanQt', 'ADMIN', '2025-10-11'),
+('10112025-00017', 'John', 'Doe', 'example@john45.com', 'CUSTOMER', 'PENDING', '9876543210', 'Caparangasan', 'itchan12', 'Customer', '2025-10-11'),
+('10112025-00018', 'John', 'Doe', 'example@john46.com', 'CUSTOMER', 'ACTIVE', '9876543210', 'Caparangasan', 'itchan2', 'Customer', '2025-10-11');
 
 -- --------------------------------------------------------
 
@@ -123,37 +123,6 @@ CREATE TABLE `customer_receipt` (
   `num_items` int(100) NOT NULL,
   `total_amount` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `customer_receipt`
---
-
-INSERT INTO `customer_receipt` (`laundryId`, `cus_id`, `cus_name`, `cus_eMail`, `cus_phoneNum`, `batch`, `shirts`, `pants`, `jeans`, `shorts`, `towels`, `pillow_case`, `bed_sheets`, `kg`, `washing`, `num_items`, `total_amount`) VALUES
-('000001', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000002', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000003', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000004', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000005', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000006', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000007', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000008', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000009', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000010', '08252023-00001', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, ''),
-('000011', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 2, 1, 1, 0, 1, 2, 1, 5, 'True', 8, '250.00'),
-('000012', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 2, 1, 1, 0, 1, 2, 1, 5, 'True', 8, '250.00'),
-('000013', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 2, 1, 1, 0, 1, 2, 1, 5, 'True', 8, '250.00'),
-('000014', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 2, 1, 1, 0, 1, 2, 1, 5, 'True', 8, '250.00'),
-('000015', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 1, 11, 1, 1, 1, 1, 1, 1, 1, '1', 0, '0'),
-('000016', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 2, 4, 3, 2, 5, 4, 4, 5, '1', 24, '441'),
-('000017', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 2, 1, 1, 1, 1, 1, 1, 5, '1', 8, '145'),
-('000018', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 10, 2, 2, 2, 2, 22, 2, 2, 2, '1', 0, '0'),
-('000019', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 3, 3, 3, 3, 33, 3, 3, 3, '1', 51, '750'),
-('000020', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 0, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
-('000021', '08252025-00001', 'John Doe', 'john@example.com', '1234567890', 0, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
-('000022', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 111, 1, 1, 1, 1, 1, 1, 1, '1', 117, '1780'),
-('000023', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
-('000024', '09032025-00002', 'Christian Lamoste', 'christian1@example.com', '09553472448', 10, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
-('000025', '08252025-00003', 'Christian Lamoste', 'christian@example.com', '09553472448', 10, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130');
 
 -- --------------------------------------------------------
 
@@ -233,7 +202,9 @@ INSERT INTO `users` (`user_id`, `user_fName`, `user_mName`, `user_lName`, `user_
 ('LMSU-00018', 'Christian', NULL, 'Lamoste', 'Purok 2', NULL, '0987654321', 'emily.chen@nursing.edu', 'Staff', 'Active', '$2b$10$ckmWmK0fSUE7ayKMXuBPUuvtfBDaoOiY9g9Pp16bRQfdJnImplZOq', '2025-09-19', 'Admin'),
 ('LMSU-00019', 'Juan', NULL, 'Dela cruz', 'Biringan City', NULL, '0987654321', 'juan.dc@test.com', 'Customer', 'Active', '$2b$10$qzGWvgXZHddknuW2czUQaOED0JhCgNdsiCfqQgqHfWEhEvTc6eVLe', '2025-09-19', 'Admin'),
 ('LMSU-00020', 'Christian', NULL, 'Lamoste', 'Purok 2', NULL, '0987654321', 'christianlamostem@gmail.com', 'Staff', 'Active', '$2b$10$UXHVC/fRwl5bQ6Ezvc3gnOczkRn49qswwHLNCTRaqJLHRFgmnHfxG', '2025-09-19', 'Admin'),
-('LMSU-00021', 'Christian', NULL, 'Lamoste', 'Gandara Samar', NULL, '0987654321', 'testuser10@example.com', 'Customer', 'Active', '$2b$10$GhcyHI6R4pP47g1k5vsYR./vIg9dpY8stMriNinHtMjpOKRZaGi5W', '2025-09-19', 'Admin');
+('LMSU-00021', 'Christian', NULL, 'Lamoste', 'Gandara Samar', NULL, '0987654321', 'testuser10@example.com', 'Customer', 'Active', '$2b$10$GhcyHI6R4pP47g1k5vsYR./vIg9dpY8stMriNinHtMjpOKRZaGi5W', '2025-09-19', 'Admin'),
+('LMSU-00022', 'Christian', NULL, 'Lamoste', 'Purok 2', 'christian.lamoste', '0987654334', 'christianmacorol02@gmail.com', 'Staff', 'active', '$2b$10$BgyQjX3L9ApiEJC9Y5lkDeCEwGoC2mG4WDqLESx6zwDjL0zNPiRkK', '2025-10-11', 'Admin'),
+('LMSU-00023', 'ITCHAN', NULL, 'MACOROL', 'Caparangasan Gandara, Samar', 'itchan.macorol', '09123456789', 'christianlamoste2002@gmail.com', 'Customer', 'active', '$2b$10$LasCm0aCUbR6fQQLayBP1eYDskTXhNvwnCI.MCA.LaazxJP.5/xTO', '2025-10-11', 'Admin');
 
 --
 -- Indexes for dumped tables
@@ -252,7 +223,8 @@ ALTER TABLE `admins`
 ALTER TABLE `customers`
   ADD PRIMARY KEY (`cus_id`),
   ADD UNIQUE KEY `cus_id` (`cus_id`),
-  ADD UNIQUE KEY `cus_eMail` (`cus_eMail`,`cus_phoneNum`);
+  ADD UNIQUE KEY `cus_eMail` (`cus_eMail`,`cus_phoneNum`),
+  ADD UNIQUE KEY `cus_username` (`cus_username`);
 
 --
 -- Indexes for table `customer_receipt`
@@ -275,17 +247,6 @@ ALTER TABLE `laundry_shops`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `email` (`email`);
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `customer_receipt`
---
-ALTER TABLE `customer_receipt`
-  ADD CONSTRAINT `customer_receipt_ibfk_1` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`),
-  ADD CONSTRAINT `customer_receipt_ibfk_2` FOREIGN KEY (`cus_eMail`) REFERENCES `customers` (`cus_eMail`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
