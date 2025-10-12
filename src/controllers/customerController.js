@@ -88,9 +88,34 @@ const createLaundryRecord = async (req, res) => {
     }
 };
 
+const editCustomer = async (req, res) => {
+    try {
+        const { customerId } = req.params;
+        if (!customerId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Customer ID is required'
+            });
+        }
+
+        const updatedCustomer = await Customer.editCustomerbyId(customerId, req.body);
+        res.status(200).json({
+            success: true,
+            message: 'Customer updated successfully',
+            data: updatedCustomer
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     registerCustomer,
     getCustomerById,
     getAllCustomers,
-    createLaundryRecord
+    createLaundryRecord,
+    editCustomer
 };
