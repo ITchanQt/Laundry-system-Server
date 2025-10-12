@@ -54,12 +54,12 @@ class Customer extends BaseModel {
         cus_fName,
         cus_lName,
         cus_eMail,
-        cus_role = "CUSTOMER",
-        cus_status,
+        cus_role = "CUSTOMER", 
+        cus_status = "PENDING",
         cus_phoneNum,
         cus_address,
         cus_username,
-        registeredBy = "Customer"
+        registeredBy
       } = customerData;
 
       const sql = `INSERT INTO customers 
@@ -183,6 +183,64 @@ class Customer extends BaseModel {
       throw new Error(`Failed to insert customer receipt: ${error.message}`);
     }
   }
+
+  static async editCustomerbyId(customerId, updateData) {
+    try {
+        if (!customerId) {
+            throw new Error("Customer ID is required");
+        }
+
+        // First check if customer exists
+        const customer = await this.findByCustomerId(customerId);
+        if (!customer) {
+            throw new Error("Customer not found");
+        }
+
+        // Prepare update data with existing values as fallback
+        const updatedData = {
+            cus_fName: updateData.cus_fName || customer.cus_fName,
+            cus_lName: updateData.cus_lName || customer.cus_lName,
+            cus_eMail: updateData.cus_eMail || customer.cus_eMail,
+            cus_role: updateData.cus_role || customer.cus_role,
+            cus_status: updateData.cus_status || customer.cus_status,
+            cus_phoneNum: updateData.cus_phoneNum || customer.cus_phoneNum,
+            cus_address: updateData.cus_address || customer.cus_address,
+            cus_username: updateData.cus_username || customer.cus_username
+        };
+
+        const query = `UPDATE customers
+            SET cus_fName = ?,
+                cus_lName = ?,
+                cus_eMail = ?,
+                cus_role = ?,
+                cus_status = ?,
+                cus_phoneNum = ?,
+                cus_address = ?,
+                cus_username = ?
+            WHERE cus_id = ?`;
+          
+        const result = await this.query(query, [
+            updatedData.cus_fName,
+            updatedData.cus_lName,
+            updatedData.cus_eMail,
+            updatedData.cus_role,
+            updatedData.cus_status,
+            updatedData.cus_phoneNum,
+            updatedData.cus_address,
+            updatedData.cus_username,
+            customerId
+        ]);
+
+        if (result.affectedRows === 0) {
+            throw new Error("Failed to update customer");
+        }
+
+        // Return updated customer data
+        return this.findByCustomerId(customerId);
+    } catch (error) {
+        throw new Error(`Failed to update customer: ${error.message}`);
+    }
+}
 }
 
 module.exports = Customer;
