@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 11, 2025 at 10:58 AM
+-- Generation Time: Oct 12, 2025 at 08:03 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -89,14 +89,13 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_role`, `cus_status`, `cus_phoneNum`, `cus_address`, `cus_username`, `registeredBy`, `date_registered`) VALUES
-('10112025-00011', 'John', 'Doe', 'example@john80.com', '', 'PENDING', '9876543210', 'itchan', '123 Main St', 'Customer', '2025-10-11'),
-('10112025-00012', 'John', 'Doe', 'example@john81.com', '', 'PENDING', '9876543210', 'itchan', '123', 'Customer', '2025-10-11'),
-('10112025-00013', 'John', 'Doe', 'example@john82.com', '', 'PENDING', '9876543210', 'itchan', 'Caparangasan', 'Customer', '2025-10-11'),
-('10112025-00014', 'John', 'Doe', 'example@john84.com', '', 'PENDING', '9876543210', 'Caparangasan', 'itchan', 'Customer', '2025-10-11'),
-('10112025-00015', 'John', 'Doe', 'example@john85.com', '', 'PENDING', '9876543210', 'Caparangasan', 'itchan123', 'Customer', '2025-10-11'),
-('10112025-00016', 'Christian', 'Lamoste', 'itchan@test.com', '', 'PENDING', '0987654321', 'Caparangasan Gandara, Samar', 'ITchanQt', 'ADMIN', '2025-10-11'),
-('10112025-00017', 'John', 'Doe', 'example@john45.com', 'CUSTOMER', 'PENDING', '9876543210', 'Caparangasan', 'itchan12', 'Customer', '2025-10-11'),
-('10112025-00018', 'John', 'Doe', 'example@john46.com', 'CUSTOMER', 'ACTIVE', '9876543210', 'Caparangasan', 'itchan2', 'Customer', '2025-10-11');
+('10112025-00017', 'HAHA,', 'HAHA', 'example@john45.com', 'CUSTOMER', 'INACTIVE', '9876543210', 'Caparangasan', 'itchan12', 'Customer', '2025-10-11'),
+('10112025-00018', 'HEHE', 'HEHE', 'example@john46.com', 'STAFF', 'ACTIVE', '9876543210', 'Caparangasan', 'itchan2', 'Customer', '2025-10-11'),
+('10122025-00001', 'Dela', 'Juan', 'juandc1234@test.com', 'STAFF', 'ACTIVE', '0987666666', '456 Updated Street', 'JuanDC69', 'Customer', '2025-10-12'),
+('10122025-00008', 'Christian', 'Lamoste', 'christian101@example.com', 'CUSTOMER', 'PENDING', '09631199529', 'Biringan City', 'Kanor', 'Customer', '2025-10-12'),
+('10122025-00009', 'Christian', 'Lamoste', 'example@john46.com', 'CUSTOMER', 'PENDING', '09631199862', 'Purok 2', 'jojo543', 'Customer', '2025-10-12'),
+('10122025-00010', 'Itchan', 'Qt', 'example@john21.com', 'CUSTOMER', 'PENDING', '9876543210', 'Caparangasan', 'itchan.Qt', 'Customer', '2025-10-12'),
+('10122025-00011', 'Christian', 'Lamoste', 'christian109@example.com', 'STAFF', 'INACTIVE', '0987654324', 'Purok 2', 'Itchan619', 'Customer', '2025-10-12');
 
 -- --------------------------------------------------------
 
@@ -224,13 +223,16 @@ ALTER TABLE `customers`
   ADD PRIMARY KEY (`cus_id`),
   ADD UNIQUE KEY `cus_id` (`cus_id`),
   ADD UNIQUE KEY `cus_eMail` (`cus_eMail`,`cus_phoneNum`),
-  ADD UNIQUE KEY `cus_username` (`cus_username`);
+  ADD UNIQUE KEY `cus_username` (`cus_username`),
+  ADD UNIQUE KEY `cus_eMail_2` (`cus_eMail`,`cus_phoneNum`,`cus_username`);
 
 --
 -- Indexes for table `customer_receipt`
 --
 ALTER TABLE `customer_receipt`
-  ADD PRIMARY KEY (`laundryId`);
+  ADD PRIMARY KEY (`laundryId`),
+  ADD KEY `customer_receipt_ibfk_2` (`cus_eMail`),
+  ADD KEY `fk_customer_receipt_customer` (`cus_id`);
 
 --
 -- Indexes for table `laundry_shops`
@@ -247,6 +249,16 @@ ALTER TABLE `laundry_shops`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `customer_receipt`
+--
+ALTER TABLE `customer_receipt`
+  ADD CONSTRAINT `fk_customer_receipt_customer` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
