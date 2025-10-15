@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { registerCustomer, getCustomerById, getAllCustomers, createLaundryRecord, editCustomer } = require('../controllers/customerController');
 const authenticate = require('../middlewares/authMiddleware');
+const validateApiKey = require('../middlewares/apiKeyMiddleware');
+
+// Apply API key validation to all routes
+// router.use(validateApiKey);
 
 // Protected routes
 // router.use(authenticate);

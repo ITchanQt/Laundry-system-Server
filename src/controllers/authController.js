@@ -50,7 +50,15 @@ const loginUser = async (req, res) => {
 const loginAdmin = async (req, res) => {
     try {
         const { emailOrUsername, password } = req.body;
-        console.log("Admin login attempt:", { emailOrUsername });
+        const apiKey = req.headers['x-api-key'];
+
+        // Validate API key
+        if (!apiKey || apiKey !== process.env.API_KEY) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid or missing API key'
+            });
+        }
 
         const result = await Admin.login(emailOrUsername, password);
 
@@ -58,17 +66,11 @@ const loginAdmin = async (req, res) => {
             return res.status(400).json({ message: result.error });
         }
 
-        res.cookie("admin_token", result.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 3600000
-        });
-
         res.json({
             message: "Admin login successful",
             admin: result.admin,
-            token: `Bearer ${result.token}`
+            token: `Bearer ${result.token}`,
+            apiKey: process.env.API_KEY // Include API key in response
         });
     } catch (error) {
         console.error("Admin login error:", error);
