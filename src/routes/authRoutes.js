@@ -6,6 +6,10 @@ const { getAllShops } = require("../controllers/shopController");
 const authenticate = require("../middlewares/authMiddleware");
 const { getAllUsers} = require("../controllers/userController")
 const { registerLaundryShop, editShop } = require("../controllers/shopController");
+const validateApiKey = require('../middlewares/apiKeyMiddleware');
+
+// Apply API key validation to all routes
+router.use(validateApiKey);
 
 // Protected routes that need authentication
 // router.use(authenticate); // Apply authentication middleware to all routes below
