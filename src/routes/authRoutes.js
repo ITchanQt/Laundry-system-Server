@@ -21,7 +21,7 @@ router.post("/register-admin", registerAdmin);
 router.get("/laundry-shops", getAllShops);
 router.get("/users", getAllUsers);
 router.post("/register-laundry-shop", registerLaundryShop);
-router.put("/edit-shop/:owner_id", editShop);
+router.put("/edit-shop/:shop_id", editShop);
 router.get('/admins', getAllAdmins);
 
 // Protected admin routes

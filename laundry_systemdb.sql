@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 12, 2025 at 08:03 AM
+-- Generation Time: Oct 16, 2025 at 08:11 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -62,7 +62,15 @@ INSERT INTO `admins` (`admin_id`, `admin_fName`, `admin_mName`, `admin_lName`, `
 ('LMSA-00012', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09631199862', 'emily.chen@nursing.edu', '$2b$10$beNZ.T2pahBHpRPoKjws.uvwmMrf2W91yinbdys3j6mpuV4zzY9FO', '2025-09-17', 'Admin', 'Active'),
 ('LMSA-00013', 'Juan', 'Haha', 'Dela Cruz', 'Biringan City', 'JuanDC', '09876543211', 'JuanDC@sample.com', '$2b$10$Oyijtg5fVd8bPdjMIqTlY.Ft4Yakz8PReDmwEVfny1R0tZ2Den832', '2025-09-17', 'Admin', 'Active'),
 ('LMSA-00014', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin13', '0987654321', 'admin@test13.com', '$2b$10$5V7TX/ZKhQoz3DYJVu01BuiuzmchgNHWJ3V7ZPXxGHoP0I.JQAMyW', '2025-09-17', 'Admin', 'Active'),
-('LMSA-00015', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'JuanDC', '09876543211', 'testuser22@example.com', '$2b$10$MUEFLGU0mJmeIcXUiaGyh.c2.uqD7Qhtj.O03hGuaaWQSbdwH6djS', '2025-09-19', 'Admin', 'Active');
+('LMSA-00015', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'JuanDC', '09876543211', 'testuser22@example.com', '$2b$10$MUEFLGU0mJmeIcXUiaGyh.c2.uqD7Qhtj.O03hGuaaWQSbdwH6djS', '2025-09-19', 'Admin', 'Active'),
+('LMSA-00016', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin13', '0987654321', 'admin@test33.com', '$2b$10$wZYa7W9dYZUWqpuNGD/.iuZ2DLxgcceA0jLCjOypO03zbPDBHb/3S', '2025-10-15', 'Admin', 'Active'),
+('LMSA-00017', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin13', '0987654321', 'admin@test43.com', '$2b$10$vfQ4sulmP.BlK8qaI6DKEuDsKl/VWHqJiubp3p9Ll13aJr.Hldgpi', '2025-10-15', 'Admin', 'Active'),
+('LMSA-00018', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin13', '0987654321', 'admin@test493.com', '$2b$10$2CJpeldyvW7zvEj70wWjY.k2cT4z249rXMH5TlbOlW0EX.vpAan8a', '2025-10-15', 'Admin', 'Active'),
+('LMSA-00019', 'Admin', 'Middle', 'Test', '123 Admin Street', 'admin13', '0987654321', 'admin@test498.com', '$2b$10$x5dd0mVJ8GWairr2htS0/uBLzqOkKFeBFHDgon1HL7w0kPgYWMkqC', '2025-10-15', 'Admin', 'Active'),
+('LMSA-00020', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'JuanDc', '09631199862', 'christian109@example.com', '$2b$10$6ctLSidhaCt0NkouK5FNCOiuNx9hWpnEdeEuU2nOoyuVW.98rv3/.', '2025-10-15', 'Admin', 'Active'),
+('LMSA-00021', 'HAHA', 'HAHA', 'HAHA', 'Biringan City', 'itchaQT', '09876543231', 'itchan02@gmail.com', '$2b$10$HyBlTF./VuGfamwONiZlhuPxxV3QEHtOFbn2df0x8gM1Qd2ftuDE.', '2025-10-15', 'Admin', 'Active'),
+('LMSA-00022', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'itchaQT', '09631199862', 'christian100@example.com', '$2b$10$wiHdm8L.NaJi/XaOw9DVZ.SN6zNlyURFbzQVUCYyCPR1TkSi8NFlC', '2025-10-15', 'Admin', 'Active'),
+('LMSA-00023', 'Pining', 'Gar', 'Siya', 'Caparangsan Gandara Samar', 'pining', '09876543265', 'pininggarsiya@sample.com', '$2b$10$PxKTPV58BFJN1mWLDIfZRO8byLn20lHxvVxA48.YN01sw4KXcTfCK', '2025-10-15', 'Admin', 'Active');
 
 -- --------------------------------------------------------
 
@@ -89,13 +97,13 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_lName`, `cus_eMail`, `cus_role`, `cus_status`, `cus_phoneNum`, `cus_address`, `cus_username`, `registeredBy`, `date_registered`) VALUES
-('10112025-00017', 'HAHA,', 'HAHA', 'example@john45.com', 'CUSTOMER', 'INACTIVE', '9876543210', 'Caparangasan', 'itchan12', 'Customer', '2025-10-11'),
+('10112025-00017', 'HAHA,', 'HAHA', 'example@john45.com', 'CUSTOMER', 'ACTIVE', '9876543210', 'Caparangasan', 'itchan12', 'Customer', '2025-10-11'),
 ('10112025-00018', 'HEHE', 'HEHE', 'example@john46.com', 'STAFF', 'ACTIVE', '9876543210', 'Caparangasan', 'itchan2', 'Customer', '2025-10-11'),
-('10122025-00001', 'Dela', 'Juan', 'juandc1234@test.com', 'STAFF', 'ACTIVE', '0987666666', '456 Updated Street', 'JuanDC69', 'Customer', '2025-10-12'),
+('10122025-00001', 'Juan', 'Dela cruz', 'juan.dc1234.com', 'CUSTOMER', 'ACTIVE', '0987666666', '456 Updated Street', 'JuanDC69', 'Customer', '2025-10-12'),
 ('10122025-00008', 'Christian', 'Lamoste', 'christian101@example.com', 'CUSTOMER', 'PENDING', '09631199529', 'Biringan City', 'Kanor', 'Customer', '2025-10-12'),
 ('10122025-00009', 'Christian', 'Lamoste', 'example@john46.com', 'CUSTOMER', 'PENDING', '09631199862', 'Purok 2', 'jojo543', 'Customer', '2025-10-12'),
 ('10122025-00010', 'Itchan', 'Qt', 'example@john21.com', 'CUSTOMER', 'PENDING', '9876543210', 'Caparangasan', 'itchan.Qt', 'Customer', '2025-10-12'),
-('10122025-00011', 'Christian', 'Lamoste', 'christian109@example.com', 'STAFF', 'INACTIVE', '0987654324', 'Purok 2', 'Itchan619', 'Customer', '2025-10-12');
+('10122025-00011', 'Christian', 'Lamoste', 'christian109@example.com', 'STAFF', 'ACTIVE', '0987654324', 'Purok 2', 'Itchan619', 'Customer', '2025-10-12');
 
 -- --------------------------------------------------------
 
@@ -132,7 +140,7 @@ CREATE TABLE `customer_receipt` (
 CREATE TABLE `laundry_shops` (
   `shop_id` varchar(10) NOT NULL,
   `owner_fName` varchar(100) NOT NULL,
-  `owner_mName` varchar(100) NOT NULL,
+  `owner_mName` varchar(100) DEFAULT NULL,
   `owner_lName` varchar(100) NOT NULL,
   `owner_emailAdd` varchar(100) NOT NULL,
   `owner_contactNum` varchar(100) NOT NULL,
@@ -148,11 +156,19 @@ CREATE TABLE `laundry_shops` (
 --
 
 INSERT INTO `laundry_shops` (`shop_id`, `owner_fName`, `owner_mName`, `owner_lName`, `owner_emailAdd`, `owner_contactNum`, `shop_address`, `shop_name`, `shop_status`, `shop_type`, `date_registered`) VALUES
-('LMSS-00001', 'Christian', '', 'Lamoste', 'christian.lamoste3@example.com', '555-10053', '99 Pine Street, Lakeside', 'Itchan\'s Laundry3', 'active', 'Washing, DryClean', '2025-09-17'),
+('LMSS-00001', 'Christian', 'Leoprdas', 'Lamoste', 'christian.lamoste3@example.com', '555-10053', '99 Pine Street, Lakeside', 'Itchan\'s Laundry321', 'active', 'Washing', '2025-09-17'),
 ('LMSS-00002', 'Christian', 'b.', 'Lamoste', 'christian.lamoste1@example.com', '555-10051', '99 Pine Street, Lakeside', 'Itchan\'s Laundry1', 'active', 'Washing, DryClean', '2025-09-17'),
 ('LMSS-00003', 'Christian', 'M.', 'Lamoste', 'christian.lamoste@example.com', '555-1005', '99 Pine Street, Lakeside', 'Itchan\'s Laundry', 'Active', 'Washing', '2025-09-17'),
 ('LMSS-00004', 'Christian', 'Macorol', 'Lamoste', 'emily.chen@nursing.edu', '09631199862', 'Purok 2', 'HAHA2', 'Active', 'Washing, DryClean', '2025-09-17'),
-('LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'testuser1@example.com', '09631199869', 'Purok 2', 'HAHA69', 'Active', 'DryClean', '2025-09-17');
+('LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'testuser1@example.com', '09631199869', 'Purok 2', 'HAHA69', 'Active', 'DryClean', '2025-09-17'),
+('LMSS-00006', 'Juan', 'haha', 'Dela cruz', 'example@john46.com', '09876543211', 'Biringan City', 'HAHA', 'Active', 'Washing, DryClean', '2025-10-15'),
+('LMSS-00007', 'HAHA', 'HAHA', 'HAHA', 'example@john45.com', '09876543214', 'Gandara Samar', 'HAHAHAHA', 'Active', 'DryClean', '2025-10-15'),
+('LMSS-00008', 'Christian', 'Macorol', 'Lamoste', 'example8@john45.com', '09631199895', 'Purok 2', 'HAHA698', 'Active', 'Washing', '2025-10-15'),
+('LMSS-00009', 'christian', 'macorol', 'lamoste', 'example@john459.com', '09876543343', 'Biringan City', 'Panlabhanan', 'Active', 'Washing, DryClean', '2025-10-15'),
+('LMSS-00010', 'christian', 'macorol', 'lamoste', 'example@johhn459.com', '09876543340', 'Biringan City', 'Panlabhanan1', 'Active', 'Washing, DryClean', '2025-10-15'),
+('LMSS-00011', 'itchan', 'bote', 'macorol', 'sample01@test.com', '09876544647', 'Biringan City', 'itchan123', 'Active', 'Washing, DryClean', '2025-10-15'),
+('LMSS-00012', 'itchan', 'bote', 'macorol', 'sample02@test.com', '09876544648', 'Biringan City', 'Itchan\'s Laundry123', 'Active', 'Washing, DryClean', '2025-10-15'),
+('LMSS-00013', 'Christian', 'Lopez', 'Lamoste', 'lamoste@sample.com', '09876543245', 'Brgy. Panabatan Sta. Margarita, Samar', 'itchnQt4ever69', 'Active', 'Washing, DryClean', '2025-10-16');
 
 -- --------------------------------------------------------
 
@@ -203,7 +219,8 @@ INSERT INTO `users` (`user_id`, `user_fName`, `user_mName`, `user_lName`, `user_
 ('LMSU-00020', 'Christian', NULL, 'Lamoste', 'Purok 2', NULL, '0987654321', 'christianlamostem@gmail.com', 'Staff', 'Active', '$2b$10$UXHVC/fRwl5bQ6Ezvc3gnOczkRn49qswwHLNCTRaqJLHRFgmnHfxG', '2025-09-19', 'Admin'),
 ('LMSU-00021', 'Christian', NULL, 'Lamoste', 'Gandara Samar', NULL, '0987654321', 'testuser10@example.com', 'Customer', 'Active', '$2b$10$GhcyHI6R4pP47g1k5vsYR./vIg9dpY8stMriNinHtMjpOKRZaGi5W', '2025-09-19', 'Admin'),
 ('LMSU-00022', 'Christian', NULL, 'Lamoste', 'Purok 2', 'christian.lamoste', '0987654334', 'christianmacorol02@gmail.com', 'Staff', 'active', '$2b$10$BgyQjX3L9ApiEJC9Y5lkDeCEwGoC2mG4WDqLESx6zwDjL0zNPiRkK', '2025-10-11', 'Admin'),
-('LMSU-00023', 'ITCHAN', NULL, 'MACOROL', 'Caparangasan Gandara, Samar', 'itchan.macorol', '09123456789', 'christianlamoste2002@gmail.com', 'Customer', 'active', '$2b$10$LasCm0aCUbR6fQQLayBP1eYDskTXhNvwnCI.MCA.LaazxJP.5/xTO', '2025-10-11', 'Admin');
+('LMSU-00023', 'ITCHAN', NULL, 'MACOROL', 'Caparangasan Gandara, Samar', 'itchan.macorol', '09123456789', 'christianlamoste2002@gmail.com', 'Customer', 'active', '$2b$10$LasCm0aCUbR6fQQLayBP1eYDskTXhNvwnCI.MCA.LaazxJP.5/xTO', '2025-10-11', 'Admin'),
+('LMSU-00024', 'Pining', NULL, 'Garcia', 'Biringan City', 'pining.garcia', '09876543234', 'pininggarsiya@sample.com', 'Staff', 'active', '$2b$10$/a2FRweL3YaoAW3r2pSjFuhG99vQG/ih53/qQTizB3lcQ7WnSks1G', '2025-10-16', 'Admin');
 
 --
 -- Indexes for dumped tables
