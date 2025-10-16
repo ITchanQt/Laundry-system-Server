@@ -29,48 +29,67 @@ class Admin extends BaseModel {
     }
   }
 
-  static async crateAdmin(adminData) {
+  static async createAdmin(adminData) {
     try {
-      const admin_id = await this.generateAdminId();
-      const {
-        admin_fName,
-        admin_mName,
-        admin_lName,
-        admin_address,
-        admin_username,
-        admin_contactNum,
-        email,
-        password,
-      } = adminData;
-      
-      const hashedPassword = await bcrypt.hash(password, 10);
+        const admin_id = await this.generateAdminId();
+        
+        // Set default values and validate required fields
+        const {
+            admin_fName,
+            admin_mName = null, // Optional field
+            admin_lName,
+            admin_address,
+            admin_username,
+            admin_contactNum,
+            email,
+            role = 'Admin',     // Default value
+            status = 'Active',   // Default value
+            password
+        } = adminData;
 
-      const sql = `
-        INSERT INTO admins (
-          admin_id,
-          admin_fName, 
-          admin_mName, 
-          admin_lName, 
-          admin_address, 
-          admin_username, 
-          admin_contactNum, 
-          email, 
-          password
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        // Validate required fields
+        if (!admin_fName || !admin_lName || !admin_username || 
+            !admin_contactNum || !email || !password) {
+            throw new Error('Missing required fields');
+        }
 
-      return this.query(sql, [
-        admin_id,
-        admin_fName,
-        admin_mName,
-        admin_lName,
-        admin_address,
-        admin_username,
-        admin_contactNum,
-        email,
-        hashedPassword,
-      ]);
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const sql = `
+            INSERT INTO admins (
+                admin_id,
+                admin_fName, 
+                admin_mName, 
+                admin_lName, 
+                admin_address, 
+                admin_username, 
+                admin_contactNum, 
+                email,
+                role,
+                status, 
+                password
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        const params = [
+            admin_id,
+            admin_fName,
+            admin_mName,
+            admin_lName,
+            admin_address || null,  // Convert empty string to null
+            admin_username,
+            admin_contactNum,
+            email,
+            role,
+            status,
+            hashedPassword
+        ];
+
+        // Debug log
+        console.log('Creating admin with params:', params.map(p => p === null ? 'NULL' : p));
+
+        return await this.query(sql, params);
     } catch (error) {
-      throw new Error(`Failed to create admin: ${error.message}`);
+        throw new Error(`Failed to create admin: ${error.message}`);
     }
   }
 

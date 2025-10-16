@@ -31,7 +31,7 @@ class User extends BaseModel {
 
     static async create(userData) {
     try {
-        // Generate user ID
+        // Generate user ID 
         const user_id = await this.generateUserId();
 
         // Destructure with default values
