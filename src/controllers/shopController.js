@@ -36,16 +36,20 @@ const getAllShops = async (req, res) => {
 
 const editShop = async (req, res) => {
     try {
-        const { owner_id } = req.params;
+        const { shop_id } = req.params;
         
-        if (!owner_id) {
+        if (!shop_id) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Owner ID is required' 
+                error: 'Shop ID is required' 
             });
         }
 
-        const updatedShop = await LaundryShops.editShopById(owner_id, req.body);
+        // Log incoming data
+        console.log('Received update data:', req.body);
+        console.log('Shop ID:', shop_id);
+
+        const updatedShop = await LaundryShops.editShopById(shop_id, req.body);
         
         res.status(200).json({
             success: true,
@@ -53,6 +57,7 @@ const editShop = async (req, res) => {
             data: updatedShop
         });
     } catch (error) {
+        console.error('Shop update error:', error);
         res.status(400).json({
             success: false,
             error: error.message
