@@ -10,6 +10,6 @@ router.post("/login", loginUser);
 router.post("/admin/login", loginAdmin);
 router.post("/register-admin", registerAdmin);
 router.post("/register-laundry-shop", registerLaundryShop);
-router.put("/edit-shop/:owner_id", editShop);
+router.put("/edit-shop/:shop_id", editShop);
 
 module.exports = router;

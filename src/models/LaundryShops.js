@@ -76,35 +76,20 @@ class LaundryShops extends BaseModel {
 
   static async editShopById(shop_id, shopData) {
     try {
-      if (!shop_id) {
-        throw new Error("Owner ID is required");
-      }
-
-      // Validate required fields
-      const requiredFields = [
-        "owner_fName",
-        // "owner_emailAdd",
-        "owner_contactNum",
-        "shop_name",
-      ];
-
-      for (const field of requiredFields) {
-        if (!shopData[field]) {
-          throw new Error(`${field} is required`);
+        if (!shop_id) {
+            throw new Error("Shop ID is required");
         }
-      }
 
-      // First check if shop exists
-      const shopExists = await this.findById(shop_id);
-      if (!shopExists) {
-        throw new Error("Shop not found");
-      }
+        // First check if shop exists
+        const shopExists = await this.findById(shop_id);
+        if (!shopExists) {
+            throw new Error("Shop not found");
+        }
 
-      const query = `UPDATE laundry_shops 
+        const query = `UPDATE laundry_shops 
             SET owner_fName = ?,
                 owner_mName = ?,
                 owner_lName = ?,
-
                 owner_contactNum = ?,
                 shop_address = ?,
                 shop_name = ?,
@@ -112,27 +97,30 @@ class LaundryShops extends BaseModel {
                 shop_type = ?
             WHERE shop_id = ?`;
 
-      const result = await this.query(query, [
-        shopData.owner_fName,
-        shopData.owner_mName,
-        shopData.owner_lName,
-        // shopData.owner_emailAdd,
-        shopData.owner_contactNum,
-        shopData.shop_address,
-        shopData.shop_name,
-        shopData.shop_status,
-        shopData.shop_type,
-        shop_id,
-      ]);
+        const params = [
+            shopData.owner_fName,
+            shopData.owner_mName || "",
+            shopData.owner_lName,
+            shopData.owner_contactNum,
+            shopData.shop_address,
+            shopData.shop_name,
+            shopData.shop_status || 'active',
+            shopData.shop_type,
+            shop_id
+        ];
 
-      if (result.affectedRows === 0) {
-        throw new Error("Failed to update shop");
-      }
+        console.log('Update params:', params);
 
-      // Return updated shop data
-      return this.findById(shop_id);
+        const result = await this.query(query, params);
+
+        if (result.affectedRows === 0) {
+            throw new Error("Failed to update shop");
+        }
+
+        return await this.findById(shop_id);
     } catch (error) {
-      throw error;
+        console.error('Shop update error:', error);
+        throw error;
     }
   }
 }
