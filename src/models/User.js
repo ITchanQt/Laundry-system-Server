@@ -3,6 +3,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 class User extends BaseModel {
+    static async findByUserId(userId) {
+        const sql = "SELECT * FROM users WHERE user_id = ?";
+        const results = await this.query(sql, [userId]);
+        return results[0];
+    }
+
     static async findByEmail(email) {
         const sql = "SELECT * FROM users WHERE email = ?";
         const results = await this.query(sql, [email]);
@@ -40,13 +46,13 @@ class User extends BaseModel {
             email, 
             password,
             user_fName,
-            user_mName = null, // Optional field
+            user_mName = null,
             user_lName,
-            user_address = null, // Optional field
+            user_address = null,
             contactNum,
-            role = 'Customer', // Default role
-            status = 'active', // Default status
-            registered_by = "Admin" // Optional field
+            role = 'Customer',
+            status = 'Pending',
+            registered_by
         } = userData;
 
         // Validate required fields
@@ -127,6 +133,64 @@ class User extends BaseModel {
         const query = "SELECT * from users";
         const results = await this.query(query);
         return results; 
+    }
+
+    static async editUserByID(userId, updateData) {
+        try {
+            if (!userId) {
+                throw new Error('User ID is required for update');
+            }
+
+            const user = await this.findByUserId(userId);
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            const updatedData = {
+                user_fName: updateData.user_fName || user.user_fName,
+                user_mName: updateData.user_mName || user.user_mName,
+                user_lName: updateData.user_lName || user.user_lName,
+                username: updateData.username || user.username,
+                email: updateData.email || user.email,
+                user_address: updateData.user_address || user.user_address,
+                contactNum: updateData.contactNum || user.contactNum,
+                role: updateData.role || user.role,
+                status: updateData.status || user.status,
+            };
+
+            const query = `UPDATE users
+                SET user_fName = ?,
+                    user_mName = ?,
+                    user_lName = ?,
+                    username = ?,
+                    email = ?,
+                    user_address = ?,
+                    contactNum = ?,
+                    role = ?,
+                    status = ?
+                WHERE user_id = ?`;
+
+            const result = await this.query(query, [
+                updatedData.user_fName,
+                updatedData.user_mName,
+                updatedData.user_lName,
+                updatedData.username,
+                updatedData.email,
+                updatedData.user_address,
+                updatedData.contactNum,
+                updatedData.role,
+                updatedData.status,
+                userId
+            ]);
+
+            if (result.affectedRows === 0) {
+                throw new Error('Failed to update user');
+            };
+
+            return this.findByUserId(userId);
+        } catch (error) {
+            throw new Error(`Failed to update user: ${error.message}`);
+        }
     }
 }
 
