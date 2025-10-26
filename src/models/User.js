@@ -50,9 +50,9 @@ class User extends BaseModel {
             user_lName,
             user_address = null,
             contactNum,
-            role = 'Customer',
-            status = 'Pending',
-            registered_by
+            role,
+            status = 'ACTIVE',
+            registered_by = "ADMIN"
         } = userData;
 
         // Validate required fields
