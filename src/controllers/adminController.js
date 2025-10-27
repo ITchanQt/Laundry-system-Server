@@ -56,7 +56,62 @@ const getAllAdmins = async (req, res) => {
   }
 };
 
+const findAdminByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const admin = await Admin.findByEmail(email);
+    if (!admin) {
+      res.status(404).json({
+        success: false,
+        message: "Admin not found"
+      });
+    }
+
+      const {
+      admin_id, 
+      admin_fName,
+      admin_mName,
+      admin_lName,
+      admin_address,
+      admin_contactNum
+    } = admin;
+
+    res.status(200).json({
+      success: true,
+      data: {
+          admin_id,
+          admin_fName,
+          admin_mName,
+          admin_lName,
+          admin_address,
+          admin_contactNum
+      },
+    });
+  } catch (error) {
+    console.log("Find admin by email error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const searchAdminsByEmail = async (req, res) => {
+  try {
+    const { email } = req.query; // e.g. /admin/search?email=adm
+    const admins = await Admin.searchByEmail(email);
+
+    res.status(200).json({
+      success: true,
+      data: admins,
+    });
+  } catch (error) {
+    console.error("Search admin by email error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   registerAdmin,
   getAllAdmins,
+  findAdminByEmail,
+  searchAdminsByEmail
 };

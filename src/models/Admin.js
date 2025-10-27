@@ -152,6 +152,27 @@ class Admin extends BaseModel {
       throw new Error(`Failed to fetch admins: ${error.message}`);
     }
   }
+
+  static async findByEmail(admin_email) {
+    try {
+      const sql = "SELECT * FROM admins WHERE email = ?";
+      const results = await this.query(sql, [admin_email]);
+      return results[0];
+    } catch (error) {
+      throw new Error(`Failed to find admin by email: ${error.message}`);
+    }
+  } 
+
+  static async searchByEmail(partialEmail) {
+  try {
+    const sql = "SELECT admin_id, email, admin_fName, admin_mName, admin_lName, admin_address, admin_contactNum FROM admins WHERE email LIKE ?";
+    const results = await this.query(sql, [`%${partialEmail}%`]);
+    return results;
+  } catch (error) {
+    throw new Error(`Failed to search admins by email: ${error.message}`);
+  }
+}
+
 }
 
 module.exports = Admin;
