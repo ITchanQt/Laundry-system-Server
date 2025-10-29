@@ -30,7 +30,7 @@ const editUser = async (req, res) => {
             success: true,
             message: "User updated successfully",
             data: updatedUser
-        })
+        });
     } catch (error) {
         res.status(400).json({
             success: false,
@@ -39,4 +39,19 @@ const editUser = async (req, res) => {
     }
 }
 
-module.exports = { getAllUsers, editUser };
+const getUsersByIdOrNameWithCustomerRole = async (req, res) => {
+    try {
+        const customers = await User.searchUserByIdOrNameWithCustomerRole();
+        res.status(200).json({
+            success: true,
+            data: customers,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        })
+    }
+}
+
+module.exports = { getAllUsers, editUser, getUsersByIdOrNameWithCustomerRole };

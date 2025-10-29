@@ -4,7 +4,7 @@ const { registerUser, logoutUser, loginUser, } = require("../controllers/authCon
 const { registerAdmin, getAllAdmins, findAdminByEmail, searchAdminsByEmail } = require("../controllers/adminController");
 const { getAllShops } = require("../controllers/shopController");
 const authenticate = require("../middlewares/authMiddleware");
-const { getAllUsers, editUser } = require("../controllers/userController")
+const { getAllUsers, editUser, getUsersByIdOrNameWithCustomerRole } = require("../controllers/userController")
 const { registerLaundryShop, editShop } = require("../controllers/shopController");
 const validateApiKey = require('../middlewares/apiKeyMiddleware');
 
@@ -26,6 +26,7 @@ router.get('/admins', getAllAdmins);
 router.put("/edit-user/:userId", editUser);
 // router.get('/admin/:email', findAdminByEmail);
 router.get('/admin/search', searchAdminsByEmail);
+router.get('/users/search/', getUsersByIdOrNameWithCustomerRole)
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

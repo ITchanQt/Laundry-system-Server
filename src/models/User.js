@@ -192,6 +192,17 @@ class User extends BaseModel {
             throw new Error(`Failed to update user: ${error.message}`);
         }
     }
+
+    static async searchUserByIdOrNameWithCustomerRole() {
+        try {
+            const sql = `SELECT * FROM users
+                         WHERE role = 'Customer'`;
+            const results = await this.query(sql);
+            return results;
+        } catch (error) {
+            throw new Error(`Failed to search users: ${error.message}`);
+        }
+    }
 }
 
 module.exports = User;
