@@ -35,6 +35,7 @@ class LaundryShops extends BaseModel {
   static async create(shopData) {
     const shop_id = await this.generateShopId();
     const {
+      admin_id,
       owner_fName,
       owner_mName,
       owner_lName,
@@ -46,11 +47,12 @@ class LaundryShops extends BaseModel {
     } = shopData;
 
     const sql = `INSERT INTO laundry_shops 
-            (shop_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, shop_type) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            (shop_id, admin_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, shop_type) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     return this.query(sql, [
       shop_id,
+      admin_id,
       owner_fName,
       owner_mName,
       owner_lName,
