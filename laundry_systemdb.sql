@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 29, 2025 at 09:34 AM
+-- Generation Time: Oct 30, 2025 at 10:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -73,7 +73,8 @@ INSERT INTO `admins` (`admin_id`, `admin_fName`, `admin_mName`, `admin_lName`, `
 ('LMSA-00023', 'Pining', 'Gar', 'Siya', 'Caparangsan Gandara Samar', 'pining', '09876543265', 'pininggarsiya@sample.com', '$2b$10$PxKTPV58BFJN1mWLDIfZRO8byLn20lHxvVxA48.YN01sw4KXcTfCK', '2025-10-15', 'Admin', 'Active'),
 ('LMSA-00024', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'pining', '09631199862', 'example@john46.com', '$2b$10$r5H5Tu7C/g9gTzOINv6RGux6r2seAnZsBTYCoW0cx/VwOp3CWvxT.', '2025-10-28', 'Admin', 'Active'),
 ('LMSA-00025', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09999999999', 'example@john45.com', '$2b$10$CaeHkukwNixLAlVnQmxsAOggfVGULNJtu/dL38L.guAi8XGVFyqzi', '2025-10-28', 'Admin', 'Active'),
-('LMSA-00026', 'Tina', 'Kalo', 'Moran', 'Brgy. Panabatan Sta. Margarita, Samar', 'tina.moran', '09999999998', 'tina.moran@sample.com', '$2b$10$lPz5gzRkndDACrp0XmE95.094Z6JhjANGMJmtu79o3KUMoT8Jzjoi', '2025-10-28', 'Admin', 'Active');
+('LMSA-00026', 'Tina', 'Kalo', 'Moran', 'Brgy. Panabatan Sta. Margarita, Samar', 'tina.moran', '09999999998', 'tina.moran@sample.com', '$2b$10$lPz5gzRkndDACrp0XmE95.094Z6JhjANGMJmtu79o3KUMoT8Jzjoi', '2025-10-28', 'Admin', 'Active'),
+('LMSA-00027', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'pining', '09999999998', 'example@john46.con', '$2b$10$Oor3oK0ShRQwwGXr70IcRuU8rfG1d9g.TrQXqG7r9iuZR6ITIqMeK', '2025-10-29', 'Admin', 'Active');
 
 -- --------------------------------------------------------
 
@@ -103,7 +104,7 @@ CREATE TABLE `customers` (
 INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_mName`, `cus_lName`, `cus_eMail`, `cus_role`, `cus_status`, `cus_phoneNum`, `cus_address`, `cus_username`, `registeredBy`, `date_registered`) VALUES
 ('10112025-00017', 'HAHA,', NULL, 'HAHA', 'example@john45.com', 'CUSTOMER', 'ACTIVE', '9876543210', 'Caparangasan', 'itchan12', 'Customer', '2025-10-11'),
 ('10112025-00018', 'HEHE', NULL, 'HEHE', 'example@john46.com', 'CUSTOMER', 'INACTIVE', '9876543210', 'Caparangasan', 'itchan2', 'Customer', '2025-10-11'),
-('10122025-00001', 'Juan', NULL, 'Dela cruz', 'juan.dc1234.com', 'CUSTOMER', 'ACTIVE', '0987666666', '456 Updated Street', 'JuanDC69', 'Customer', '2025-10-12'),
+('10122025-00001', 'Juan23', NULL, 'Dela cruz', 'juan.dc1234.com', 'CUSTOMER', 'ACTIVE', '0987666666', '456 Updated Street', 'JuanDC69', 'Customer', '2025-10-12'),
 ('10122025-00008', 'Christian', NULL, 'Lamoste', 'christian101@example.com', 'CUSTOMER', 'PENDING', '09631199529', 'Biringan City', 'Kanor', 'Customer', '2025-10-12'),
 ('10122025-00009', 'Christian', NULL, 'Lamoste', 'example@john46.com', 'CUSTOMER', 'PENDING', '09631199862', 'Purok 2', 'jojo543', 'Customer', '2025-10-12'),
 ('10122025-00010', 'Itchan', NULL, 'Qt', 'example@john21.com', 'CUSTOMER', 'PENDING', '9876543210', 'Caparangasan', 'itchan.Qt', 'Customer', '2025-10-12'),
@@ -145,7 +146,8 @@ CREATE TABLE `customer_receipt` (
 
 INSERT INTO `customer_receipt` (`laundryId`, `cus_id`, `cus_name`, `cus_address`, `cus_phoneNum`, `batch`, `shirts`, `pants`, `jeans`, `shorts`, `towels`, `pillow_case`, `bed_sheets`, `kg`, `washing`, `num_items`, `total_amount`) VALUES
 ('10292025-00001', 'LMSU-00014', 'John Doe', '123 Main St, City', '1234567890', 1, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
-('10292025-00002', 'LMSU-00036', 'User1 User1', 'Biringan City', '0987654312', 1, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130');
+('10292025-00002', 'LMSU-00036', 'User1 User1', 'Biringan City', '0987654312', 1, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130'),
+('10292025-00003', 'LMSU-00036', 'User1 User1', 'Biringan City', '0987654312', 1, 1, 1, 1, 1, 1, 1, 1, 1, '1', 7, '130');
 
 -- --------------------------------------------------------
 
@@ -176,6 +178,45 @@ INSERT INTO `laundry_shops` (`shop_id`, `admin_id`, `owner_fName`, `owner_mName`
 ('LMSS-00001', 'LMSA-00020', 'Christian', 'Huhu', 'Lamoste', 'christian109@example.com', '09631199862', 'Purok 2', 'itchan123', 'Active', 'Washing, DryClean', '2025-10-27'),
 ('LMSS-00002', 'LMSA-00021', 'HAHA', 'HAHA', 'HAHA', 'itchan02@gmail.com', '09876543231', 'Biringan City', 'itchan1234', 'Active', 'Washing, DryClean', '2025-10-27'),
 ('LMSS-00003', 'LMSA-00012', 'Christian', 'Macorol', 'Lamoste', 'emily.chen@nursing.edu', '09631199863', 'Purok 2', 'itchan69', 'Active', 'Washing', '2025-10-28');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shop_inventory`
+--
+
+CREATE TABLE `shop_inventory` (
+  `item_id` varchar(100) NOT NULL,
+  `shop_id` varchar(100) DEFAULT NULL,
+  `item_name` varchar(100) NOT NULL,
+  `item_description` varchar(255) DEFAULT NULL,
+  `item_quantity` int(10) NOT NULL,
+  `item_uPrice` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `item_reoderLevel` int(10) NOT NULL,
+  `date_added` date DEFAULT curdate()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shop_inventory`
+--
+
+INSERT INTO `shop_inventory` (`item_id`, `shop_id`, `item_name`, `item_description`, `item_quantity`, `item_uPrice`, `item_reoderLevel`, `date_added`) VALUES
+('LMSI-00001', '00001', 'Laundry Detergent', 'Fabric conditioner', 1500, 30.00, 500, '2025-10-30'),
+('LMSI-00002', '00001', 'Fabric Softener', 'Kuan HAHAHA', 80, 18.75, 30, '2025-10-30'),
+('LMSI-00003', '00001', 'Soap1234', 'HUHUHU', 100, 10.00, 10, '2025-10-30'),
+('LMSI-00004', '00001', 'Soap', '', 45, 15.00, 20, '2025-10-30'),
+('LMSI-00005', '00001', 'Chlorine', 'Kuan HAHAHA', 12, 4.99, 5, '2025-10-30'),
+('LMSI-00006', '00001', 'Downey', 'Fabric conditioner', 10, 8.00, 4, '2025-10-30'),
+('LMSI-00007', '00001', 'haha', 'HAHAHA', 12, 13.00, 12, '2025-10-30'),
+('LMSI-00008', '00001', 'Bleach123', 'HAHAH', 12, 12.00, 12, '2025-10-30'),
+('LMSI-00009', '00001', 'Hajdn', 'Kuan HAHAHA', 12, 11.98, 12, '2025-10-30'),
+('LMSI-00010', '00001', 'Bleach1234', 'HAHAHA', 12, 11.99, 1, '2025-10-30'),
+('LMSI-00011', '00001', 'Chlorine1', 'Hahaha', 10, 18.98, 1, '2025-10-30'),
+('LMSI-00012', '00001', 'Hajd', 'hahaha', 12, 12.00, 8, '2025-10-30'),
+('LMSI-00013', '00001', 'Ambot', 'hahaha', 12, 12.00, 8, '2025-10-30'),
+('LMSI-00014', '00001', 'Ambot1', 'hahaha', 12, 12.00, 8, '2025-10-30'),
+('LMSI-00015', '00001', 'Ambot4', 'hahaha', 12, 12.00, 8, '2025-10-30'),
+('LMSI-00016', '00001', 'Bleach15', 'bisan ano', 32, 10.00, 12, '2025-10-30');
 
 -- --------------------------------------------------------
 
@@ -244,7 +285,8 @@ INSERT INTO `users` (`user_id`, `user_fName`, `user_mName`, `user_lName`, `user_
 ('LMSU-00054', 'Kina', 'Mot', 'Fukiko', 'Brgy. Ilo Sta. Margarita, Samar', 'KinaMotFukiko', '99999999998', 'kina.motfukiko13@test.com', 'CUSTOMER', 'Pending', '$2b$10$k88BkqMGflRk./Mk7ZgYuuKCMUbUhCubfTC.EtGWvbXjOZ6aBc5Qa', '2025-10-28', 'Customer'),
 ('LMSU-00055', 'Hello', 'haha', 'World', 'Brgy. Ilo Sta. Margarita, Samar', 'Heloworld', '99999999997', 'helo.world@sample.com', 'CUSTOMER', 'Pending', '$2b$10$CHhq6CRY6.7Rqa64SXwheeG0YBOsI9kZ2/LIRctQaxEpCS8cRZxoy', '2025-10-28', 'Customer'),
 ('LMSU-00056', 'Helo ', 'Haha', 'World', 'Brgy. Panabatan Sta. Margarita, Samar', 'HeloWorld', '99999999996', 'helo.world123@sample.com', 'staff', 'Active', '$2b$10$b7UtoI1J4ccrBrJOTGohEeR9AhJLKzLr8n5x9JKa0.s5FCYUDjBgC', '2025-10-28', 'ADMIN'),
-('LMSU-00057', 'huhgu', 'huhu', 'huhu', 'Brgy. Panabatan Sta. Margarita, Samar', 'huhuhuhuhhu', '99999999995', 'huhu.huhu@gmail.com', 'customer', 'Active', '$2b$10$YehUU4iE6Hh2GX/eWX47KOkkL1DOZV2laOGACXIBIxTk9hxNjy.uy', '2025-10-28', 'ADMIN');
+('LMSU-00057', 'huhgu', 'huhu', 'huhu', 'Brgy. Panabatan Sta. Margarita, Samar', 'huhuhuhuhhu', '99999999995', 'huhu.huhu@gmail.com', 'customer', 'Active', '$2b$10$YehUU4iE6Hh2GX/eWX47KOkkL1DOZV2laOGACXIBIxTk9hxNjy.uy', '2025-10-28', 'ADMIN'),
+('LMSU-00058', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Erenas San Jorge, Samar', 'itchanQT', '99999999994', 'itchanQt@sample.com', 'customer', 'Active', '$2b$10$Ggb.zPG2VTc3siJ2qOYNDO.WCy0JKdbLE0BE8WAs2bW/s5GOcUERK', '2025-10-30', 'ADMIN');
 
 --
 -- Indexes for dumped tables
@@ -282,6 +324,13 @@ ALTER TABLE `laundry_shops`
   ADD UNIQUE KEY `owner_emailAdd` (`owner_emailAdd`),
   ADD UNIQUE KEY `owner_contactNum` (`owner_contactNum`),
   ADD UNIQUE KEY `shop_name` (`shop_name`);
+
+--
+-- Indexes for table `shop_inventory`
+--
+ALTER TABLE `shop_inventory`
+  ADD PRIMARY KEY (`item_id`),
+  ADD UNIQUE KEY `item_name` (`item_name`);
 
 --
 -- Indexes for table `users`

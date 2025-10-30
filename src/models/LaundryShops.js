@@ -125,6 +125,135 @@ class LaundryShops extends BaseModel {
         throw error;
     }
   }
+
+  //-----SHOP INVENTORY API's-------//
+
+  static async getShopInventoryByName(item_name) {
+    try {
+      const sql = "SELECT * FROM shop_inventory WHERE item_name = ?";
+      const results = await this.query(sql, [item_name]);
+      return results[0];
+    } catch (error) {
+      throw new Error(`Failed to get shop inventory by name: ${error.message}`);
+    }
+  }
+
+  static async generateItemId() {
+    try {
+      // Get the highest admin ID
+      const sql = "SELECT item_id FROM shop_inventory ORDER BY item_id DESC LIMIT 1";
+      const results = await this.query(sql);
+
+      let nextNumber = 1;
+      if (results && results.length > 0) {
+        const lastId = results[0].item_id;
+        const lastNumber = parseInt(lastId.split('-')[1]);
+        nextNumber = lastNumber + 1;
+      }
+
+      // Format: LMSI-00001
+      return `LMSI-${String(nextNumber).padStart(5, '0')}`;
+    } catch (error) {
+      throw new Error(`Failed to generate item ID: ${error.message}`);
+    }
+  }
+
+    static async findItemById(item_id) {
+    const sql = "SELECT * FROM shop_inventory WHERE item_id = ?";
+    const results = await this.query(sql, [item_id]);
+    return results[0];
+  }
+
+  static async addShopInventory(inventoryData) {
+    
+    try {
+      const item_id = await this.generateItemId();
+      const {
+        shop_id,
+        item_name,
+        item_description = '',
+        item_quantity,
+        item_uPrice,
+        item_reoderLevel
+      } = inventoryData;
+
+      const sql = `INSERT INTO shop_inventory
+                   (item_id,
+                    shop_id,
+                    item_name,
+                    item_description,
+                    item_quantity,
+                    item_uPrice,
+                    item_reoderLevel)
+                  VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+       return this.query(sql, [
+        item_id,
+        shop_id,
+        item_name,
+        item_description,
+        item_quantity,
+        item_uPrice,
+        item_reoderLevel
+       ]);
+    } catch (error) {
+      throw new Error(`Failed to create shop inventory: ${error.message}`);
+    }
+  }
+
+  static async findAllShopInventory() {
+    try {
+      const sql = "SELECT * FROM shop_inventory";
+      const results = await this.query(sql);
+      return results
+    } catch (error) {
+      throw new Error(`Failed to get all shop inventory: ${error.message}`);
+    }
+  }
+
+  static async editShopInventoryById(item_id, inventoryData) {
+    try {
+      if (!item_id) {
+        throw new Error('Item id is required');
+      }
+
+      const itemExist = await this.findItemById(item_id);
+      if (!itemExist) {
+        throw new Error('Item not found');
+      }
+
+      const sql = `UPDATE shop_inventory
+                   SET item_name = ?,
+                       item_description = ?,
+                       item_quantity = ?,
+                       item_uPrice = ?,
+                       item_reoderLevel = ?
+                   WHERE item_id = ?`;
+
+      const params = [
+        inventoryData.item_name,
+        inventoryData.item_description || '',
+        inventoryData.item_quantity,
+        inventoryData.item_uPrice,
+        inventoryData.item_reoderLevel,
+        item_id
+      ];
+
+      console.log('Update params:', params);
+
+      const result = await this.query(sql, params);
+
+      if (result.affectedRows === 0) {
+        throw new Error('Failed to update item');
+      }
+
+      return await this.findItemById(item_id);
+    } catch (error) {
+      console.error('Item update error:', error);
+      throw error;
+    }
+  }
 }
+
 
 module.exports = LaundryShops;

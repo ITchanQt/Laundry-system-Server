@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 const { registerUser, logoutUser, loginUser, } = require("../controllers/authController");
 const { registerAdmin, getAllAdmins, findAdminByEmail, searchAdminsByEmail } = require("../controllers/adminController");
-const { getAllShops } = require("../controllers/shopController");
 const authenticate = require("../middlewares/authMiddleware");
 const { getAllUsers, editUser, getUsersByIdOrNameWithCustomerRole } = require("../controllers/userController")
-const { registerLaundryShop, editShop } = require("../controllers/shopController");
+const { getAllShops, registerLaundryShop, editShop, addShopInventory, getAllShopInventoryItems, editItemById } = require("../controllers/shopController");
 const validateApiKey = require('../middlewares/apiKeyMiddleware');
 
 // Apply API key validation to all routes
@@ -26,7 +25,12 @@ router.get('/admins', getAllAdmins);
 router.put("/edit-user/:userId", editUser);
 // router.get('/admin/:email', findAdminByEmail);
 router.get('/admin/search', searchAdminsByEmail);
-router.get('/users/search/', getUsersByIdOrNameWithCustomerRole)
+router.get('/users/search/', getUsersByIdOrNameWithCustomerRole);
+
+//-----SHOP INVENTORY API's-------//
+router.post('/add-shop-inventory', addShopInventory);
+router.get('/shop-inventory-items', getAllShopInventoryItems);
+router.put('/edit-inventory-item/:item_id', editItemById);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

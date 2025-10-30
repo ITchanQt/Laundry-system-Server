@@ -10,10 +10,10 @@ const registerLaundryShop = async (req, res) => {
       owner_contactNum
     );
     if (existingShop) {
-      return res.status(400).json({ message: "Shop already exists" });
+      return res.status(500).json({ message: "Shop already exists" });
     }
     await LaundryShops.create(req.body);
-    res.status(201).json({ message: "Laundry shop registered successfully" });
+    res.status(200).json({ message: "Laundry shop registered successfully" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -58,12 +58,83 @@ const editShop = async (req, res) => {
         });
     } catch (error) {
         console.error('Shop update error:', error);
-        res.status(400).json({
+        res.status(500).json({
             success: false,
             error: error.message
         });
     }
 };
 
+//-----SHOP INVENTORY API's-------//
+
+const addShopInventory = async (req, res) => {
+  try {
+    const { item_name } = req.body;
+    const existingItem = await LaundryShops.getShopInventoryByName(item_name);
+    if (existingItem) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Item already exists"
+      });
+    }
+    await LaundryShops.addShopInventory(req.body);
+    res.status(200).json({
+      status: true,
+      message: "Item added successfully"
+    });
+  console.log('Item added: ', req.body);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+const getAllShopInventoryItems = async (req, res) => {
+  try {
+    const items = await LaundryShops.findAllShopInventory();
+    res.status(200).json({
+      success: true,
+      data: items
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+const editItemById = async (req, res) => {
+  try {
+    const { item_id } = req.params;
+    if (!item_id) {
+      return res.status(400).json({
+        success: false,
+        error: "Item ID is required"
+      });
+    }
+    const updatedItem = await LaundryShops.editShopInventoryById(item_id, req.body);
+      res.status(200).json({
+        success: true,
+        message: "Item updated successfully",
+        data: updatedItem
+      });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 // Add getAllShops to exports
-module.exports = { registerLaundryShop, getAllShops, editShop };
+module.exports = {
+                  registerLaundryShop,
+                  getAllShops,
+                  editShop,
+                  addShopInventory,
+                  getAllShopInventoryItems,
+                  editItemById
+                };
