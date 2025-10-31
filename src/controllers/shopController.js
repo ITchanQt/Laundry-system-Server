@@ -2,20 +2,43 @@ const LaundryShops = require("../models/LaundryShops");
 
 const registerLaundryShop = async (req, res) => {
   try {
-    const { owner_emailAdd, owner_contactNum, shop_name } = req.body;
-    // Fix: Change findByShop to findByName and fix parameter order
+    const {
+      admin_id,
+      owner_emailAdd,
+      owner_contactNum,
+      shop_name,
+    } = req.body;
+
+    // Check if the shop already exists
     const existingShop = await LaundryShops.findByName(
       shop_name,
       owner_emailAdd,
       owner_contactNum
     );
+
     if (existingShop) {
-      return res.status(500).json({ message: "Shop already exists" });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Shop already exists" 
+      });
     }
-    await LaundryShops.create(req.body);
-    res.status(200).json({ message: "Laundry shop registered successfully" });
+
+    // Create the shop and auto-update admin table
+    const result = await LaundryShops.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Laundry shop registered successfully",
+      shop_id: result.shop_id,
+      admin_id: result.admin_id
+    });
+
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    console.error("Register laundry shop error:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 };
 

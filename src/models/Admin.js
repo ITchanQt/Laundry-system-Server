@@ -122,7 +122,8 @@ class Admin extends BaseModel {
             { 
                 id: admin.admin_id, 
                 username: admin.admin_username,
-                role: 'admin'
+                role: 'admin',
+                shop_id: admin.shop_id  // Include shop_id in token
             },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
@@ -134,7 +135,8 @@ class Admin extends BaseModel {
                 id: admin.admin_id,
                 username: admin.admin_username,
                 email: admin.email,
-                role: 'admin'
+                role: 'admin',
+                shop_id: admin.shop_id || null
             }
         };
     } catch (error) {
