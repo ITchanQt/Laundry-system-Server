@@ -33,7 +33,10 @@ class LaundryShops extends BaseModel {
   }
 
   static async create(shopData) {
+  try {
+    // Generate a new shop ID
     const shop_id = await this.generateShopId();
+
     const {
       admin_id,
       owner_fName,
@@ -46,11 +49,14 @@ class LaundryShops extends BaseModel {
       shop_type,
     } = shopData;
 
-    const sql = `INSERT INTO laundry_shops 
-            (shop_id, admin_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, shop_type) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    // Insert new shop
+    const insertShopSql = `
+      INSERT INTO laundry_shops 
+      (shop_id, admin_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, shop_type)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
-    return this.query(sql, [
+    await this.query(insertShopSql, [
       shop_id,
       admin_id,
       owner_fName,
@@ -62,7 +68,20 @@ class LaundryShops extends BaseModel {
       shop_name,
       shop_type,
     ]);
+
+    // Automatically update the admin's shop_id
+    const updateAdminSql = `UPDATE admins SET shop_id = ? WHERE admin_id = ?`;
+    await this.query(updateAdminSql, [shop_id, admin_id]);
+
+    // Return both for confirmation
+    return { success: true, shop_id, admin_id };
+
+  } catch (error) {
+    console.error("Error creating laundry shop:", error);
+    throw new Error(`Failed to create laundry shop: ${error.message}`);
   }
+}
+
 
   static async getAllShops() {
     const sql = "SELECT * FROM laundry_shops";
