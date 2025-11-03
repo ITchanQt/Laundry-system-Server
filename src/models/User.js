@@ -42,6 +42,7 @@ class User extends BaseModel {
 
         // Destructure with default values
         const { 
+            shop_id,
             username, 
             email, 
             password,
@@ -52,7 +53,7 @@ class User extends BaseModel {
             contactNum,
             role,
             status = 'ACTIVE',
-            registered_by = "ADMIN"
+            registered_by = 'ADMIN'
         } = userData;
 
         // Validate required fields
@@ -63,12 +64,13 @@ class User extends BaseModel {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const sql = `INSERT INTO users 
-            (user_id, username, email, password, user_fName, user_mName, user_lName, 
+            (user_id, shop_id, username, email, password, user_fName, user_mName, user_lName, 
              user_address, contactNum, role, status, registered_by) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         return this.query(sql, [
             user_id,
+            shop_id,
             username, 
             email, 
             hashedPassword, 
