@@ -128,6 +128,7 @@ class Customer extends BaseModel {
 
       // Set default values for optional fields
       const {
+        shop_id,
         batch = 0,
         shirts = 0,
         pants = 0,
@@ -144,7 +145,8 @@ class Customer extends BaseModel {
 
       const sql = `
             INSERT INTO customer_receipt (
-                laundryId, 
+                laundryId,
+                shop_id, 
                 cus_id, 
                 cus_name, 
                 cus_address, 
@@ -161,10 +163,11 @@ class Customer extends BaseModel {
                 kg, 
                 num_items, 
                 total_amount
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       await this.query(sql, [
         newLaundryId,
+        shop_id,
         customer.user_id,
         `${customer.user_fName} ${customer.user_lName}`,
         customer.user_address,

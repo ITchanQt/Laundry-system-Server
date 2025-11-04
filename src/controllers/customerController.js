@@ -77,12 +77,13 @@ const createLaundryRecord = async (req, res) => {
         res.status(201).json({
             success: true,
             message: "Laundry record created successfully",
-            laundryId: result.newLaundryId  // This will be the generated ID
+            laundryId: result.newLaundryId  
         });
     } catch (error) {
         console.error('Create laundry record error:', error);
         res.status(400).json({
             success: false,
+            message: "Invalid customer ID", // This error message is for passing to frontend
             error: error.message
         });
     }

@@ -3,7 +3,7 @@ const router = express.Router();
 const { registerUser, logoutUser, loginUser, } = require("../controllers/authController");
 const { registerAdmin, getAllAdmins, findAdminByEmail, searchAdminsByEmail } = require("../controllers/adminController");
 const authenticate = require("../middlewares/authMiddleware");
-const { getAllUsers, editUser, getUsersByIdOrNameWithCustomerRole } = require("../controllers/userController")
+const { getAllUsers, editUser, getUsersByIdOrNameWithCustomerRole, getUserByIdAndShopId } = require("../controllers/userController")
 const { getAllShops, registerLaundryShop, editShop, addShopInventory, getAllShopInventoryItems, editItemById } = require("../controllers/shopController");
 const validateApiKey = require('../middlewares/apiKeyMiddleware');
 
@@ -25,7 +25,8 @@ router.get('/admins', getAllAdmins);
 router.put("/edit-user/:userId", editUser);
 // router.get('/admin/:email', findAdminByEmail);
 router.get('/admin/search', searchAdminsByEmail);
-router.get('/users/search/', getUsersByIdOrNameWithCustomerRole);
+router.get('/users/search/:shop_id', getUsersByIdOrNameWithCustomerRole);
+router.get('/users/search/:shop_id/:user_id', getUserByIdAndShopId);
 
 //-----SHOP INVENTORY API's-------//
 router.post('/add-shop-inventory', addShopInventory);

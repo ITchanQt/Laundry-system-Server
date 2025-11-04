@@ -195,11 +195,25 @@ class User extends BaseModel {
         }
     }
 
-    static async searchUserByIdOrNameWithCustomerRole() {
+    static async searchUserByIdOrNameWithCustomerRole(shop_id) {
         try {
             const sql = `SELECT * FROM users
-                         WHERE role = 'Customer'`;
-            const results = await this.query(sql);
+                         WHERE role = 'Customer'
+                         AND shop_id = ?`;
+            const results = await this.query(sql, [shop_id]);
+            return results;
+        } catch (error) {
+            throw new Error(`Failed to search users: ${error.message}`);
+        }
+    }
+
+    static async findUserByIdAndShopId(shop_id, user_id){
+        try {
+            const sql = `SELECT * FROM users
+                         WHERE role = 'Customer'
+                         AND shop_id = ?
+                         AND user_id = ?`;
+            const results = await this.query(sql, [shop_id, user_id]);
             return results;
         } catch (error) {
             throw new Error(`Failed to search users: ${error.message}`);
