@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 04, 2025 at 09:08 AM
+-- Generation Time: Nov 05, 2025 at 09:06 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -143,6 +143,7 @@ CREATE TABLE `laundry_shops` (
   `owner_contactNum` varchar(100) NOT NULL,
   `shop_address` varchar(100) NOT NULL,
   `shop_name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
   `shop_status` varchar(100) NOT NULL DEFAULT 'Active',
   `shop_type` varchar(100) NOT NULL,
   `date_registered` date DEFAULT curdate()
@@ -152,13 +153,81 @@ CREATE TABLE `laundry_shops` (
 -- Dumping data for table `laundry_shops`
 --
 
-INSERT INTO `laundry_shops` (`shop_id`, `admin_id`, `owner_fName`, `owner_mName`, `owner_lName`, `owner_emailAdd`, `owner_contactNum`, `shop_address`, `shop_name`, `shop_status`, `shop_type`, `date_registered`) VALUES
-('LMSS-00001', 'LMSA-00020', 'Christian', 'Huhu', 'Lamoste', 'christian109@example.com', '09631199862', 'Purok 2', 'itchan123', 'Active', 'Washing, DryClean', '2025-10-27'),
-('LMSS-00002', 'LMSA-00021', 'HAHA', 'HAHA', 'HAHA', 'itchan02@gmail.com', '09876543231', 'Biringan City', 'itchan1234', 'Active', 'Washing, DryClean', '2025-10-27'),
-('LMSS-00003', 'LMSA-00012', 'Christian', 'Macorol', 'Lamoste', 'emily.chen@nursing.edu', '09631199863', 'Purok 2', 'itchan69', 'Active', 'Washing', '2025-10-28'),
-('LMSS-00004', 'LMSA-00025', 'Christian', 'Macorol', 'Lamoste', 'example@john45.com', '09999999999', 'Purok 2', 'itchnQt4ever', 'Active', 'Washing, DryClean', '2025-10-31'),
-('LMSS-00005', 'LMSA-00026', 'Tina', 'Kalo', 'Moran', 'tina.moran@sample.com', '09999999998', 'Brgy. Panabatan Sta. Margarita, Samar', 'Tina Moran Shop', 'Active', 'Washing, DryClean', '2025-10-31'),
-('LMSS-00006', 'LMSA-00027', 'Pining', 'Gar', 'Siya', 'pining.garsiya@sample.com', '09876544444', 'Brgy. Calanyugan Pagsanghan, Samar', 'Pining Gar Siya Laundry Shop', 'Active', 'Washing, DryClean', '2025-10-31');
+INSERT INTO `laundry_shops` (`shop_id`, `admin_id`, `owner_fName`, `owner_mName`, `owner_lName`, `owner_emailAdd`, `owner_contactNum`, `shop_address`, `shop_name`, `slug`, `shop_status`, `shop_type`, `date_registered`) VALUES
+('LMSS-00001', 'LMSA-00020', 'Christian', 'Huhu', 'Lamoste', 'christian109@example.com', '09631199862', 'Purok 2', 'itchan123', '', 'Active', 'Washing, DryClean', '2025-10-27'),
+('LMSS-00002', 'LMSA-00021', 'HAHA', 'HAHA', 'HAHA', 'itchan02@gmail.com', '09876543231', 'Biringan City', 'itchan1234', '', 'Active', 'Washing, DryClean', '2025-10-27'),
+('LMSS-00003', 'LMSA-00012', 'Christian', 'Macorol', 'Lamoste', 'emily.chen@nursing.edu', '09631199863', 'Purok 2', 'itchan69', '', 'Active', 'Washing', '2025-10-28'),
+('LMSS-00004', 'LMSA-00025', 'Christian', 'Macorol', 'Lamoste', 'example@john45.com', '09999999999', 'Purok 2', 'itchnQt4ever', '', 'Active', 'Washing, DryClean', '2025-10-31'),
+('LMSS-00005', 'LMSA-00026', 'Tina', 'Kalo', 'Moran', 'tina.moran@sample.com', '09999999998', 'Brgy. Panabatan Sta. Margarita, Samar', 'Tina Moran Shop', 'tina-moran-shop', 'Active', 'Washing, DryClean', '2025-10-31'),
+('LMSS-00006', 'LMSA-00027', 'Pining', 'Gar', 'Siya', 'pining.garsiya@sample.com', '09876544444', 'Brgy. Calanyugan Pagsanghan, Samar', 'Pining Gar Siya Laundry Shop', 'pining-gar-siya-laundry-shop', 'Active', 'Washing, DryClean', '2025-10-31');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shoplandingpage_about`
+--
+
+CREATE TABLE `shoplandingpage_about` (
+  `about_id` int(10) NOT NULL,
+  `shop_id` varchar(10) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shoplandingpage_about`
+--
+
+INSERT INTO `shoplandingpage_about` (`about_id`, `shop_id`, `title`, `description`) VALUES
+(1, 'LMSS-00005', 'Who We Are', 'We’re WashPro, your trusted laundry partner.'),
+(2, 'LMSS-00005', 'Mission', 'Deliver fast, clean laundry.'),
+(3, 'LMSS-00006', 'HAHA', 'HAHAHHAHHAHHAHHAHAHAHAH'),
+(4, 'LMSS-00006', 'HUHU', 'HUHUUHUHUHUUHUHUHUHUHUHUUH');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shoplandingpage_pricing`
+--
+
+CREATE TABLE `shoplandingpage_pricing` (
+  `pricing_id` int(10) NOT NULL,
+  `shop_id` varchar(10) NOT NULL,
+  `categories` varchar(255) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `pricing_label` varchar(100) NOT NULL,
+  `description` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shoplandingpage_pricing`
+--
+
+INSERT INTO `shoplandingpage_pricing` (`pricing_id`, `shop_id`, `categories`, `price`, `pricing_label`, `description`) VALUES
+(1, 'LMSS-00005', 'Clothes', 140.00, 'per load', 'Shirts, shorts, pants etc.'),
+(2, 'LMSS-00005', 'BEDDINGS', 140.00, 'per load', 'Bed sheets, pillow cases, towels, etc.');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shoplandingpage_services`
+--
+
+CREATE TABLE `shoplandingpage_services` (
+  `service_id` int(10) NOT NULL,
+  `shop_id` varchar(10) NOT NULL,
+  `service_name` varchar(255) NOT NULL,
+  `service_description` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shoplandingpage_services`
+--
+
+INSERT INTO `shoplandingpage_services` (`service_id`, `shop_id`, `service_name`, `service_description`) VALUES
+(1, 'LMSS-00005', 'Wash', '\"Basic washing with eco-friendly soap\"'),
+(2, 'LMSS-00005', 'Dry', '\"High-speed drying service\"'),
+(3, 'LMSS-00005', 'Fold', '\"Neat folding, ready for pickup\"');
 
 -- --------------------------------------------------------
 
@@ -292,6 +361,24 @@ ALTER TABLE `laundry_shops`
   ADD UNIQUE KEY `shop_name` (`shop_name`);
 
 --
+-- Indexes for table `shoplandingpage_about`
+--
+ALTER TABLE `shoplandingpage_about`
+  ADD PRIMARY KEY (`about_id`);
+
+--
+-- Indexes for table `shoplandingpage_pricing`
+--
+ALTER TABLE `shoplandingpage_pricing`
+  ADD PRIMARY KEY (`pricing_id`);
+
+--
+-- Indexes for table `shoplandingpage_services`
+--
+ALTER TABLE `shoplandingpage_services`
+  ADD PRIMARY KEY (`service_id`);
+
+--
 -- Indexes for table `shop_inventory`
 --
 ALTER TABLE `shop_inventory`
@@ -304,6 +391,28 @@ ALTER TABLE `shop_inventory`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `shoplandingpage_about`
+--
+ALTER TABLE `shoplandingpage_about`
+  MODIFY `about_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `shoplandingpage_pricing`
+--
+ALTER TABLE `shoplandingpage_pricing`
+  MODIFY `pricing_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `shoplandingpage_services`
+--
+ALTER TABLE `shoplandingpage_services`
+  MODIFY `service_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
