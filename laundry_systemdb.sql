@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 05, 2025 at 09:06 AM
+-- Generation Time: Nov 07, 2025 at 08:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -171,18 +171,51 @@ CREATE TABLE `shoplandingpage_about` (
   `about_id` int(10) NOT NULL,
   `shop_id` varchar(10) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `description` text NOT NULL
+  `description` text NOT NULL,
+  `is_displayed` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `shoplandingpage_about`
 --
 
-INSERT INTO `shoplandingpage_about` (`about_id`, `shop_id`, `title`, `description`) VALUES
-(1, 'LMSS-00005', 'Who We Are', 'We’re WashPro, your trusted laundry partner.'),
-(2, 'LMSS-00005', 'Mission', 'Deliver fast, clean laundry.'),
-(3, 'LMSS-00006', 'HAHA', 'HAHAHHAHHAHHAHHAHAHAHAH'),
-(4, 'LMSS-00006', 'HUHU', 'HUHUUHUHUHUUHUHUHUHUHUHUUH');
+INSERT INTO `shoplandingpage_about` (`about_id`, `shop_id`, `title`, `description`, `is_displayed`) VALUES
+(1, 'LMSS-00005', 'Who We Are', 'We’re WashPro, your trusted laundry partner.', 'false'),
+(2, 'LMSS-00005', 'Mission', 'Deliver fast, clean laundry.', 'false'),
+(3, 'LMSS-00006', 'HAHA', 'HAHAHHAHHAHHAHHAHAHAHAH', 'true'),
+(4, 'LMSS-00006', 'HUHU', 'HUHUUHUHUHUUHUHUHUHUHUHUUH', 'false'),
+(5, 'LMSS-00005', 'Personalized Experience.', 'You can always reach us for your laundry concerns. Call or message us — we are happy to help.', 'false'),
+(6, 'LMSS-00005', 'Mission', 'Hello World', 'true'),
+(7, 'LMSS-00005', 'Personalized Experience101', 'You can always reach us for your laundry concerns. Call or message us — we are happy to help.', 'false'),
+(8, 'LMSS-00006', 'Chuu.', 'Achu chuu lala lala chuu.', 'true'),
+(9, 'LMSS-00005', 'Quality', 'We take care of your clothes. We segregate the whites and coloreds, use gentle detergents, and avoid damage to your garments.', 'true'),
+(10, 'LMSS-00005', 'Convenience', 'None of your laundry will go missing. Every item is counted, and you\'ll receive automated message notifications for your convenience.', 'false'),
+(11, 'LMSS-00006', 'Chuu Chuu.', 'Achu chuu chuu.', 'false'),
+(12, 'LMSS-00006', 'Chuupa Chuupa.', 'Achu chuu chuu.', 'false'),
+(13, 'LMSS-00006', 'Chuupapi Chuupapi.', 'Achu chuu chuu.', 'false'),
+(14, 'LMSS-00006', 'Chuupapapi.', 'Achu chuu chuu.', 'false'),
+(15, 'LMSS-00006', 'Chuupa kabra.', 'Achu chuu chuu.', 'false'),
+(16, 'LMSS-00006', 'Kabra.', 'Achu chuu chuu.', 'false'),
+(17, 'LMSS-00006', 'Kaloko.', 'Achu chuu chuu.', 'false'),
+(18, 'LMSS-00006', 'Kaloko mo.', 'Achu chuu chuu.', 'false'),
+(19, 'LMSS-00006', 'Pesti.', 'Achu chuu chuu.', 'false'),
+(20, 'LMSS-00006', 'Pesti kaman.', 'Achu chuu chuu.', 'false'),
+(21, 'LMSS-00006', 'Pesti kaman permi.', 'Achu chuu chuu.', 'undefined'),
+(22, 'LMSS-00006', 'Pesti liwat.', 'Achu chuu chuu.', 'undefined'),
+(23, 'LMSS-00006', 'Pesti man liwat.', 'Achu chuu chuu.', 'undefined'),
+(24, 'LMSS-00006', 'Pesti man liwat ini.', 'Achu chuu chuu.', 'undefined'),
+(25, 'LMSS-00006', 'Ano na.', 'Achu chuu chuu.', 'undefined'),
+(26, 'LMSS-00006', 'Ano na Kita?.', 'Achu chuu chuu.', 'true'),
+(30, 'LMSS-00005', 'Quality', 'Ikaw pa', 'true'),
+(31, 'LMSS-00005', 'Ano na kita hini?', 'Achu chuu chuu.', 'false'),
+(32, 'LMSS-00007', 'Ano na Kita?.', 'Achu chuu chuu.', 'false'),
+(33, 'LMSS-00005', 'Chuu Lala.', 'Achu chuu lala lala chuu', 'false'),
+(34, 'LMSS-00005', 'Christian', 'Christian M. Lamoste', 'false'),
+(35, 'LMSS-00005', 'Baa', 'Kapapaso pa man', 'false'),
+(36, 'LMSS-00005', 'fds', 'sfs', 'false'),
+(37, 'LMSS-00005', 'Kuan gad, Bisan ano', 'Kuan gad, Bisan ano basta ikaw', 'false'),
+(38, 'LMSS-00005', 'Kahit ano basta ikaw', 'Kahit ano basta ikaw, walang problema', 'false'),
+(39, 'LMSS-00005', 'Hello World', 'World', 'false');
 
 -- --------------------------------------------------------
 
@@ -400,7 +433,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `shoplandingpage_about`
 --
 ALTER TABLE `shoplandingpage_about`
-  MODIFY `about_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `about_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `shoplandingpage_pricing`

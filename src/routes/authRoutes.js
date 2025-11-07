@@ -6,6 +6,8 @@ const authenticate = require("../middlewares/authMiddleware");
 const { getAllUsers, editUser, getUsersByIdOrNameWithCustomerRole, getUserByIdAndShopId } = require("../controllers/userController")
 const { getAllShops, registerLaundryShop, editShop, addShopInventory, getAllShopInventoryItems, editItemById } = require("../controllers/shopController");
 const validateApiKey = require('../middlewares/apiKeyMiddleware');
+const { insertShopAbout, updateShopAbout, getAllAboutByShopId, updateDisplaySettings} = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
+
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -32,6 +34,12 @@ router.get('/users/search/:shop_id/:user_id', getUserByIdAndShopId);
 router.post('/add-shop-inventory', addShopInventory);
 router.get('/shop-inventory-items', getAllShopInventoryItems);
 router.put('/edit-inventory-item/:item_id', editItemById);
+
+//-----SHOP ABOUT MANAGEMENT API's-------//
+router.post('/insert-shop-about', insertShopAbout);
+router.put('/edit-shop-about/:about_id', updateShopAbout);
+router.get('/get-shop-about/:shop_id', getAllAboutByShopId);
+router.put('/update-display-settings/:shop_id', updateDisplaySettings);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
