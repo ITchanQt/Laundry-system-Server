@@ -2,6 +2,7 @@ const ShopModel = require("../../models/shop-landing-page-features-model/ShopMod
 const ShopAboutModel = require("../../models/shop-landing-page-features-model/ShopAboutModel");
 const ShopServicesModel = require("../../models/shop-landing-page-features-model/ShopServicesModel");
 const ShopPricingModel = require("../../models/shop-landing-page-features-model/ShopPricingModel");
+const { supabase } = require("../../config/supabase");
 
 const getShopAbout = async (req, res) => {
   try {
@@ -193,17 +194,17 @@ const getAllAboutByShopId = async (req, res) => {
     if (!shop_id) {
       return res.status(400).json({
         success: false,
-        message: "Missing shop ID parameters!"
+        message: "Missing shop ID parameters!",
       });
     }
 
     const shopAbout = await ShopAboutModel.searchAllAboutByShopId(shop_id);
     res.status(200).json({
       success: true,
-      data: shopAbout
+      data: shopAbout,
     });
   } catch (error) {
-     console.error("get Shop About error:", error);
+    console.error("get Shop About error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -217,7 +218,10 @@ const updateDisplaySettings = async (req, res) => {
     const { shop_id } = req.params;
     const { displayedFeatureIds } = req.body; // array of 3 IDs that should be displayed
 
-    if (!Array.isArray(displayedFeatureIds) || displayedFeatureIds.length === 0) {
+    if (
+      !Array.isArray(displayedFeatureIds) ||
+      displayedFeatureIds.length === 0
+    ) {
       return res.status(400).json({
         success: false,
         message: "No features selected for display",
@@ -238,7 +242,75 @@ const updateDisplaySettings = async (req, res) => {
       message: "Internal server error while updating display settings",
     });
   }
-}
+};
+
+//__________________SHOP SERVICES______________________//
+const addShopService = async (req, res) => {
+  try {
+    const { shop_id, service_name, description, is_displayed } = req.body;
+    const file = req.file;
+
+    if (!file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Image is required" });
+    }
+
+    const existingTitle = await ShopServicesModel.findByTitle(
+      service_name,
+      shop_id
+    );
+    if (existingTitle && existingTitle.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Title already exists!",
+      });
+    }
+
+    // Upload to Supabase Storage
+    const fileName = `${shop_id}-${Date.now()}-${file.originalname}`;
+    const { data, error } = await supabase.storage
+      .from("shop-images")
+      .upload(`services/${fileName}`, file.buffer, {
+        contentType: file.mimetype,
+      });
+
+    if (error) throw error;
+
+    // Get public URL
+    const { data: publicData } = supabase.storage
+      .from("shop-images")
+      .getPublicUrl(`services/${fileName}`);
+
+    // Save record in MySQL
+    const newService = await ShopServicesModel.createService({
+      shop_id,
+      service_name,
+      description,
+      image_url: publicData.publicUrl,
+      is_displayed: is_displayed === "true" ? "true" : "false",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Service added successfully!",
+      data: {
+        shop_id,
+        service_name,
+        description,
+        image_url: publicData.publicUrl,
+        is_displayed
+      },
+    });
+  } catch (error) {
+    console.error("addShopService error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   getShopAbout,
@@ -247,5 +319,8 @@ module.exports = {
   insertShopAbout,
   updateShopAbout,
   getAllAboutByShopId,
-  updateDisplaySettings
+  updateDisplaySettings,
+
+  //__________________SHOP SERVICES______________________//
+  addShopService,
 };

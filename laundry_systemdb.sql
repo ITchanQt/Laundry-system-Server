@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2025 at 08:32 AM
+-- Generation Time: Nov 13, 2025 at 09:49 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -180,13 +180,13 @@ CREATE TABLE `shoplandingpage_about` (
 --
 
 INSERT INTO `shoplandingpage_about` (`about_id`, `shop_id`, `title`, `description`, `is_displayed`) VALUES
-(1, 'LMSS-00005', 'Who We Are', 'We’re WashPro, your trusted laundry partner.', 'false'),
-(2, 'LMSS-00005', 'Mission', 'Deliver fast, clean laundry.', 'false'),
+(1, 'LMSS-00005', 'Who W', 'We’re WashPro, your trusted laundry partner.', 'false'),
+(2, 'LMSS-00005', 'Mission1', 'Deliver fast, clean laundry', 'false'),
 (3, 'LMSS-00006', 'HAHA', 'HAHAHHAHHAHHAHHAHAHAHAH', 'true'),
 (4, 'LMSS-00006', 'HUHU', 'HUHUUHUHUHUUHUHUHUHUHUHUUH', 'false'),
 (5, 'LMSS-00005', 'Personalized Experience.', 'You can always reach us for your laundry concerns. Call or message us — we are happy to help.', 'false'),
 (6, 'LMSS-00005', 'Mission', 'Hello World', 'true'),
-(7, 'LMSS-00005', 'Personalized Experience101', 'You can always reach us for your laundry concerns. Call or message us — we are happy to help.', 'false'),
+(7, 'LMSS-00005', 'Personalized Experience101', 'You can always reach us for your laundry concerns. Call or message us — we are happy to help.', 'true'),
 (8, 'LMSS-00006', 'Chuu.', 'Achu chuu lala lala chuu.', 'true'),
 (9, 'LMSS-00005', 'Quality', 'We take care of your clothes. We segregate the whites and coloreds, use gentle detergents, and avoid damage to your garments.', 'true'),
 (10, 'LMSS-00005', 'Convenience', 'None of your laundry will go missing. Every item is counted, and you\'ll receive automated message notifications for your convenience.', 'false'),
@@ -206,7 +206,7 @@ INSERT INTO `shoplandingpage_about` (`about_id`, `shop_id`, `title`, `descriptio
 (24, 'LMSS-00006', 'Pesti man liwat ini.', 'Achu chuu chuu.', 'undefined'),
 (25, 'LMSS-00006', 'Ano na.', 'Achu chuu chuu.', 'undefined'),
 (26, 'LMSS-00006', 'Ano na Kita?.', 'Achu chuu chuu.', 'true'),
-(30, 'LMSS-00005', 'Quality', 'Ikaw pa', 'true'),
+(30, 'LMSS-00005', 'Quality', 'Ikaw pa', 'false'),
 (31, 'LMSS-00005', 'Ano na kita hini?', 'Achu chuu chuu.', 'false'),
 (32, 'LMSS-00007', 'Ano na Kita?.', 'Achu chuu chuu.', 'false'),
 (33, 'LMSS-00005', 'Chuu Lala.', 'Achu chuu lala lala chuu', 'false'),
@@ -250,17 +250,26 @@ CREATE TABLE `shoplandingpage_services` (
   `service_id` int(10) NOT NULL,
   `shop_id` varchar(10) NOT NULL,
   `service_name` varchar(255) NOT NULL,
-  `service_description` text NOT NULL
+  `service_description` text NOT NULL,
+  `image_url` text NOT NULL,
+  `is_displayed` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `shoplandingpage_services`
 --
 
-INSERT INTO `shoplandingpage_services` (`service_id`, `shop_id`, `service_name`, `service_description`) VALUES
-(1, 'LMSS-00005', 'Wash', '\"Basic washing with eco-friendly soap\"'),
-(2, 'LMSS-00005', 'Dry', '\"High-speed drying service\"'),
-(3, 'LMSS-00005', 'Fold', '\"Neat folding, ready for pickup\"');
+INSERT INTO `shoplandingpage_services` (`service_id`, `shop_id`, `service_name`, `service_description`, `image_url`, `is_displayed`) VALUES
+(1, 'LMSS-00005', 'Wash', '\"Basic washing with eco-friendly soap\"', '', ''),
+(2, 'LMSS-00005', 'Dry', '\"High-speed drying service\"', '', ''),
+(3, 'LMSS-00005', 'Fold', '\"Neat folding, ready for pickup\"', '', ''),
+(9, 'LMSS-00006', '“Folds”', '“Wash and dry service”', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763017013856-Screenshot%20(3).png', 'true'),
+(10, 'LMSS-00006', '“Wash wash”', '“Wash and dry service”', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763021235380-f9e97d79-2145-4b02-9c22-1e1be6d870ae.jpg', 'false'),
+(11, 'LMSS-00005', 'Machine wash', 'Kahit ano basta ikaw', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763022046216-Screenshot%20(4).png', 'true'),
+(12, 'LMSS-00005', 'Dry clean', 'Kahit na wala akong pera', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763022472966-Screenshot%20(3).png', 'false'),
+(13, 'LMSS-00006', '“Wash and learn”', '“Wash and dry service”', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763023144989-f9e97d79-2145-4b02-9c22-1e1be6d870ae.jpg', 'false'),
+(14, 'LMSS-00006', '“Wash and learn boy”', '“Wash and dry service”', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763023230506-f9e97d79-2145-4b02-9c22-1e1be6d870ae.jpg', 'false'),
+(15, 'LMSS-00005', 'Ironing', 'HAHHAAHAHAH', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763023300753-Screenshot%202025-09-19%20182448.png', 'true');
 
 -- --------------------------------------------------------
 
@@ -445,7 +454,7 @@ ALTER TABLE `shoplandingpage_pricing`
 -- AUTO_INCREMENT for table `shoplandingpage_services`
 --
 ALTER TABLE `shoplandingpage_services`
-  MODIFY `service_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `service_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
