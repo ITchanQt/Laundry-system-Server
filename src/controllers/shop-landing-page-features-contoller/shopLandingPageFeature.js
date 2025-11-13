@@ -160,8 +160,6 @@ const insertShopAbout = async (req, res) => {
 
 const updateShopAbout = async (req, res) => {
   try {
-    const { title, description, is_displayed } = req.body;
-
     const { about_id } = req.params;
     if (!about_id) {
       res.status(400).json({
@@ -169,14 +167,7 @@ const updateShopAbout = async (req, res) => {
         message: "About ID is required",
       });
     }
-    const existingTitle = await ShopAboutModel.findByTitleUsingAboutId(title, about_id);
 
-    if (existingTitle && existingTitle.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Title already exists!",
-      });
-    }
     const updatedAbout = await ShopAboutModel.editShopAbouById(
       about_id,
       req.body
