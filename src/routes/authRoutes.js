@@ -1,12 +1,43 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, logoutUser, loginUser, } = require("../controllers/authController");
-const { registerAdmin, getAllAdmins, findAdminByEmail, searchAdminsByEmail } = require("../controllers/adminController");
-const { getAllShops } = require("../controllers/shopController");
+const {
+  registerUser,
+  logoutUser,
+  loginUser,
+} = require("../controllers/authController");
+const {
+  registerAdmin,
+  getAllAdmins,
+  findAdminByEmail,
+  searchAdminsByEmail,
+} = require("../controllers/adminController");
 const authenticate = require("../middlewares/authMiddleware");
-const { getAllUsers, editUser } = require("../controllers/userController")
-const { registerLaundryShop, editShop } = require("../controllers/shopController");
-const validateApiKey = require('../middlewares/apiKeyMiddleware');
+const {
+  getAllUsers,
+  editUser,
+  getUsersByIdOrNameWithCustomerRole,
+  getUserByIdAndShopId,
+} = require("../controllers/userController");
+const {
+  getAllShops,
+  registerLaundryShop,
+  editShop,
+  addShopInventory,
+  getAllShopInventoryItems,
+  editItemById,
+} = require("../controllers/shopController");
+const {
+  insertShopAbout,
+  updateShopAbout,
+  getAllAboutByShopId,
+  updateDisplaySettings,
+  addShopService,
+  getAllServicesByShopId,
+  updateShopService,
+} = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
+const { upload } = require("../middlewares/upload");
+const validateApiKey = require("../middlewares/apiKeyMiddleware");
+const multer = require("multer");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -22,13 +53,61 @@ router.get("/laundry-shops", getAllShops);
 router.get("/users", getAllUsers);
 router.post("/register-laundry-shop", registerLaundryShop);
 router.put("/edit-shop/:shop_id", editShop);
-router.get('/admins', getAllAdmins);
+router.get("/admins", getAllAdmins);
 router.put("/edit-user/:userId", editUser);
 // router.get('/admin/:email', findAdminByEmail);
-router.get('/admin/search', searchAdminsByEmail);
+router.get("/admin/search", searchAdminsByEmail);
+router.get("/users/search/:shop_id", getUsersByIdOrNameWithCustomerRole);
+router.get("/users/search/:shop_id/:user_id", getUserByIdAndShopId);
+
+//-----SHOP INVENTORY API's-------//
+router.post("/add-shop-inventory", addShopInventory);
+router.get("/shop-inventory-items", getAllShopInventoryItems);
+router.put("/edit-inventory-item/:item_id", editItemById);
+
+//-----SHOP ABOUT MANAGEMENT API's-------//
+router.post("/insert-shop-about", insertShopAbout);
+router.put("/edit-shop-about/:about_id", updateShopAbout);
+router.get("/get-shop-about/:shop_id", getAllAboutByShopId);
+router.put("/update-display-settings/:shop_id", updateDisplaySettings);
+
+//-----SHOP SERVICES MANAGEMENT API's-------//
+router.post(
+  "/add-service",
+  (req, res, next) => {
+    upload.single("image")(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        // Handle Multer-specific errors
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(400).json({
+            success: false,
+            message: "File too large. Maximum allowed size is 2MB.",
+          });
+        }
+        return res.status(400).json({
+          success: false,
+          message: `Upload error: ${err.message}`,
+        });
+      } else if (err) {
+        // Handle invalid file type, etc.
+        return res.status(400).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      next(); // Continue to controller if no upload errors
+    });
+  },
+  addShopService
+);
+router.get("/get-all-services/:shop_id", getAllServicesByShopId);
+router.put(
+  "/update-service/:service_id",
+  upload.single("image"),
+  updateShopService
+);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
-
 
 module.exports = router;

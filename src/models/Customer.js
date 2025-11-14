@@ -26,19 +26,19 @@ class Customer extends BaseModel {
 
       // Get the last customer ID for today
       const sql =
-        "SELECT cus_id FROM customers WHERE cus_id LIKE ? ORDER BY cus_id DESC LIMIT 1";
+        "SELECT laundryId FROM customer_receipt WHERE laundryId LIKE ? ORDER BY laundryId DESC LIMIT 1";
       const results = await this.query(sql, [`${datePrefix}%`]);
 
       let sequence = "00001";
 
       if (results && results.length > 0) {
         // Extract the sequence number from the last ID
-        const lastId = results[0].cus_id;
+        const lastId = results[0].laundryId;
         const lastSequence = parseInt(lastId.split("-")[1]);
         // Increment and pad with zeros
         sequence = String(lastSequence + 1).padStart(5, "0");
       }
-
+      console.log(sequence);
       return `${datePrefix}${sequence}`;
     } catch (error) {
       throw new Error(`Failed to generate customer ID: ${error.message}`);
@@ -105,23 +105,30 @@ class Customer extends BaseModel {
     }
   }
 
+  static async findUserCustomerById(userId) {
+    const sql = "SELECT * FROM users WHERE user_id = ?";
+    const results = await this.query(sql, [userId]);
+    return results[0];
+  }
+
   static async insertCustomerReceipt(customerReceiptData) {
     try {
       // Validate required customer ID
-      if (!customerReceiptData.cus_id) {
+      if (!customerReceiptData.userId) {
         throw new Error("Customer ID is required");
       }
 
       // Fetch customer details first
-      const customer = await this.findByCustomerId(customerReceiptData.cus_id);
+      const customer = await this.findUserCustomerById(customerReceiptData.userId);
       if (!customer) {
         throw new Error("Customer not found");
       }
 
-      const newLaundryId = await this.generateLaundryId();
+      const newLaundryId = await this.generateCustomerId();
 
       // Set default values for optional fields
       const {
+        shop_id,
         batch = 0,
         shirts = 0,
         pants = 0,
@@ -138,10 +145,11 @@ class Customer extends BaseModel {
 
       const sql = `
             INSERT INTO customer_receipt (
-                laundryId, 
+                laundryId,
+                shop_id, 
                 cus_id, 
                 cus_name, 
-                cus_eMail, 
+                cus_address, 
                 cus_phoneNum, 
                 batch, 
                 shirts, 
@@ -155,14 +163,15 @@ class Customer extends BaseModel {
                 kg, 
                 num_items, 
                 total_amount
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       await this.query(sql, [
         newLaundryId,
-        customer.cus_id,
-        `${customer.cus_fName} ${customer.cus_lName}`,
-        customer.cus_eMail,
-        customer.cus_phoneNum,
+        shop_id,
+        customer.user_id,
+        `${customer.user_fName} ${customer.user_lName}`,
+        customer.user_address,
+        customer.contactNum,
         batch,
         shirts,
         pants,
