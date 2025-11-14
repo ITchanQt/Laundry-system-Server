@@ -46,6 +46,18 @@ class ServicesModel extends BaseModel {
       is_displayed,
     ]);
   }
+
+  static async findAllServices(shop_id) {
+    try {
+      const sql = "SELECT * FROM shopLandingPage_services WHERE shop_id = ?";
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("Error getting shop services:", error);
+      throw new Error(`Failed to get shop services: ${error.message}`);
+    }
+  }
+
 }
 
 module.exports = ServicesModel;
