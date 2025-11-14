@@ -338,7 +338,98 @@ const getAllServicesByShopId = async (req, res) => {
   }
 };
 
+const updateShopService = async (req, res) => {
+  try {
+    const service_id = req.params.service_id; // Fixed: was req.params.id
+    const { service_name, service_description, is_displayed } = req.body;
 
+    // Validate required fields
+    if (!service_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Service ID is required",
+      });
+    }
+
+    if (!service_name || !service_description) {
+      return res.status(400).json({
+        success: false,
+        message: "Service name and description are required",
+      });
+    }
+
+    // Fetch existing service
+    const existingService = await ShopServicesModel.findServiceById(service_id);
+    if (!existingService) {
+      return res.status(404).json({
+        success: false,
+        message: "Service not found",
+      });
+    }
+
+    // Prevent duplicate service name (ignore current)
+    const duplicate = await ShopServicesModel.findByTitle(
+      service_name,
+      existingService.shop_id
+    );
+    if (
+      duplicate &&
+      duplicate.length > 0 &&
+      duplicate[0].service_id !== Number(service_id)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Service name already exists",
+      });
+    }
+
+    // Default image = old image
+    let image_url = existingService.image_url;
+
+    // If new image uploaded -> upload to Supabase
+    if (req.file) {
+      const fileName = `${existingService.shop_id}-${Date.now()}-${
+        req.file.originalname
+      }`;
+
+      const { data, error } = await supabase.storage
+        .from("shop-images")
+        .upload(`services/${fileName}`, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: publicData } = supabase.storage
+        .from("shop-images")
+        .getPublicUrl(`services/${fileName}`);
+
+      image_url = publicData.publicUrl;
+    }
+
+    // Update DB with correct field names
+    const updated = await ShopServicesModel.updateService(service_id, {
+      service_name,
+      service_description, // Fixed: was description
+      image_url: image_url ?? null,
+      is_displayed: is_displayed === "true" ? "true" : "false",
+    });
+
+    res.json({
+      success: true,
+      message: "Service updated successfully!",
+      data: updated,
+    });
+  } catch (error) {
+    console.error("updateShopService error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   getShopAbout,
@@ -352,4 +443,5 @@ module.exports = {
   //__________________SHOP SERVICES______________________//
   addShopService,
   getAllServicesByShopId,
+  updateShopService,
 };
