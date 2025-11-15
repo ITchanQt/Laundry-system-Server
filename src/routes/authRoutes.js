@@ -34,6 +34,7 @@ const {
   addShopService,
   getAllServicesByShopId,
   updateShopService,
+  updateServicesDisplaySettings,
 } = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
 const { upload } = require("../middlewares/upload");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -106,6 +107,7 @@ router.put(
   upload.single("image"),
   updateShopService
 );
+router.put("/update-services-display-settings/:shop_id", updateServicesDisplaySettings);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

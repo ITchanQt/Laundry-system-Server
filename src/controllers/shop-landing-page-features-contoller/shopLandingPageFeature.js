@@ -431,10 +431,46 @@ const updateShopService = async (req, res) => {
   }
 };
 
+const updateServicesDisplaySettings = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { displayedServicesIds } = req.body;
+
+    if (
+      !Array.isArray(displayedServicesIds) ||
+      displayedServicesIds.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "No features selected for display",
+      });
+    }
+
+    // Update in DB
+    await ShopServicesModel.updateDisplaySettings(
+      shop_id,
+      displayedServicesIds
+    );
+
+    res.json({
+      success: true,
+      message: "Display settings updated successfully",
+    });
+  } catch (error) {
+    console.error("updateServicesDisplaySettings error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while updating display settings",
+    });
+  }
+};
+
 module.exports = {
   getShopAbout,
   getShopServices,
   getShopPricing,
+
+  //__________________SHOP ABOUT______________________//
   insertShopAbout,
   updateShopAbout,
   getAllAboutByShopId,
@@ -444,4 +480,5 @@ module.exports = {
   addShopService,
   getAllServicesByShopId,
   updateShopService,
+  updateServicesDisplaySettings,
 };

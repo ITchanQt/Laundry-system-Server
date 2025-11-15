@@ -87,6 +87,35 @@ class ServicesModel extends BaseModel {
       throw error;
     }
   }
+
+  static async updateDisplaySettings(shop_id, displayedServicesIds) {
+    try {
+      const hideAllSql =
+        "UPDATE shopLandingPage_services SET is_displayed = 'false' WHERE shop_id = ?";
+      await this.query(hideAllSql, [shop_id]);
+
+      if (
+        Array.isArray(displayedServicesIds) &&
+        displayedServicesIds.length > 0
+      ) {
+        const placeholders = displayedServicesIds.map(() => "?").join(", ");
+        const showSql = `
+        UPDATE shopLandingPage_services
+        SET is_displayed = 'true'
+        WHERE shop_id = ?
+        AND service_id IN (${placeholders})
+      `;
+
+        const params = [shop_id, ...displayedServicesIds];
+        await this.query(showSql, params);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("ShopServicesModel.updateDisplaySettings error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ServicesModel;
