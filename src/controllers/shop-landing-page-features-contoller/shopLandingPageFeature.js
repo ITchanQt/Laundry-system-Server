@@ -465,6 +465,85 @@ const updateServicesDisplaySettings = async (req, res) => {
   }
 };
 
+//__________________SHOP PRICES______________________//
+const addShopPrices = async (req, res) => {
+  try {
+    const {
+      shop_id,
+      categories,
+      price,
+      pricing_label,
+      description,
+      is_displayed,
+    } = req.body;
+    const file = req.file;
+
+    if (!file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Image is required" });
+    }
+
+    const existingTitle = await ShopPricingModel.findByTitle(
+      categories,
+      shop_id
+    );
+    if (existingTitle && existingTitle.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Categories already exists!",
+      });
+    }
+
+    // Upload to Supabase Storage
+    const fileName = `${shop_id}-${Date.now()}-${file.originalname}`;
+    const { data, error } = await supabase.storage
+      .from("shop-images")
+      .upload(`prices/${fileName}`, file.buffer, {
+        contentType: file.mimetype,
+      });
+
+    if (error) throw error;
+
+    // Get public URL
+    const { data: publicData } = supabase.storage
+      .from("shop-images")
+      .getPublicUrl(`prices/${fileName}`);
+
+    // Save record in MySQL
+    const newService = await ShopPricingModel.createPrices({
+      shop_id,
+      categories,
+      description,
+      price,
+      pricing_label,
+      image_url: publicData.publicUrl,
+      is_displayed: is_displayed === "true" ? "true" : "false",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Prices added successfully!",
+      data: {
+        shop_id,
+        categories,
+        description,
+        price,
+        pricing_label,
+        image_url: publicData.publicUrl,
+        is_displayed,
+      },
+    });
+  } catch (error) {
+    console.error("addShopService error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getShopAbout,
   getShopServices,
@@ -481,4 +560,7 @@ module.exports = {
   getAllServicesByShopId,
   updateShopService,
   updateServicesDisplaySettings,
+
+  //__________________SHOP PRICES______________________//
+  addShopPrices,
 };

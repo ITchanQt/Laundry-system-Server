@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 14, 2025 at 10:49 AM
+-- Generation Time: Nov 17, 2025 at 06:25 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -229,16 +229,19 @@ CREATE TABLE `shoplandingpage_pricing` (
   `categories` varchar(255) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `pricing_label` varchar(100) NOT NULL,
-  `description` text NOT NULL
+  `description` text NOT NULL,
+  `image_url` text NOT NULL,
+  `is_displayed` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `shoplandingpage_pricing`
 --
 
-INSERT INTO `shoplandingpage_pricing` (`pricing_id`, `shop_id`, `categories`, `price`, `pricing_label`, `description`) VALUES
-(1, 'LMSS-00005', 'Clothes', 140.00, 'per load', 'Shirts, shorts, pants etc.'),
-(2, 'LMSS-00005', 'BEDDINGS', 140.00, 'per load', 'Bed sheets, pillow cases, towels, etc.');
+INSERT INTO `shoplandingpage_pricing` (`pricing_id`, `shop_id`, `categories`, `price`, `pricing_label`, `description`, `image_url`, `is_displayed`) VALUES
+(4, 'LMSS-00005', 'CLOTHES', 140.00, 'per-load', 'Shirts, shorts, pants etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763352267580-Messenger_creation_190D331A-E1E7-4CF1-99D7-E1514D2F195F.jpeg', 'true'),
+(11, 'LMSS-00005', 'Curtains', 140.00, 'per load', 'Window curtains and drapes', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763355478858-download.jpg', 'false'),
+(13, 'LMSS-00005', 'Beddings', 140.00, 'per load', 'Bed sheets, pillow cases, towels, etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763356928011-Screenshot%20(1).jpg', 'true');
 
 -- --------------------------------------------------------
 
@@ -260,11 +263,12 @@ CREATE TABLE `shoplandingpage_services` (
 --
 
 INSERT INTO `shoplandingpage_services` (`service_id`, `shop_id`, `service_name`, `service_description`, `image_url`, `is_displayed`) VALUES
-(16, 'LMSS-00005', '\"Machine Wash\"', 'Our state of the art machine washing service guarantees your clothes are thoroughly cleaned and gently cared for. Enjoy fresh, spotless laundry with every visit.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763113577012-download.jpg', 'true'),
-(17, 'LMSS-00005', '\"Dry Cleaning\"', 'Professional dry cleaning service for delicate fabrics and special garments. We use eco-friendly solvents to ensure your clothes look their best.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763098901055-Screenshot%202025-09-19%20182448.png', 'true'),
-(18, 'LMSS-00005', '\"Ironing Service\"', 'Expert ironing and pressing service to make your clothes crisp and wrinkle-free. Perfect for business attire and special occasions.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763098948689-Screenshot%20(4).png', 'true'),
-(19, 'LMSS-00005', 'Laundry Wash and More...', 'Washing service details…', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763109073989-Wallpaper.jpg', 'false'),
-(20, 'LMSS-00005', '\"Kahit ano\"', 'HAHAHAHAHA mao ka', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763107504402-Messenger_creation_190D331A-E1E7-4CF1-99D7-E1514D2F195F.jpeg', 'false');
+(16, 'LMSS-00005', '\"Machine Wash\"', 'Our state of the art machine washing service guarantees your clothes are thoroughly cleaned and gently cared for. Enjoy fresh, spotless laundry with every visit.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763113577012-download.jpg', 'false'),
+(17, 'LMSS-00005', '\"Dry Cleaning\"', 'Professional dry cleaning service for delicate fabrics and special garments. We use eco-friendly solvents to ensure your clothes look their best.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763176622581-download.jpg', 'false'),
+(18, 'LMSS-00005', '\"Ironing Service\"', 'Expert ironing and pressing service to make your clothes crisp and wrinkle-free. Perfect for business attire and special occasions.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763355685567-download.jpg', 'false'),
+(19, 'LMSS-00005', 'Laundry Wash and More...', 'Washing service details…', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763109073989-Wallpaper.jpg', 'true'),
+(20, 'LMSS-00005', '\"Kahit ano\"', 'HAHAHAHAHA mao ka', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763107504402-Messenger_creation_190D331A-E1E7-4CF1-99D7-E1514D2F195F.jpeg', 'true'),
+(21, 'LMSS-00005', 'Kaloko mo man', 'HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAHAHAHAH', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763355618810-download.jpg', 'true');
 
 -- --------------------------------------------------------
 
@@ -357,7 +361,8 @@ INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lNa
 ('LMSU-00081', 'LMSS-00005', 'John', 'John', 'John', 'Brgy. San Agustin Gandara, Samar', 'jjj', '0987465348', 'john@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$o3KrX6qpaKN.HjjVTa6GYe/FNrsMeEgr4zva8fIz216rEcJ0ouc7S', '2025-11-03', 'CUSTOMER'),
 ('LMSU-00082', 'LMSS-00005', 'Ambot', 'ambot', 'ambot', 'Biringan City', 'ambot', '09876098754', 'ambot.@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$OwrxKt.2exRoG5nGBlWWDuWlkoJOI3LKu2l.ddC.PD98b.tn3vJWW', '2025-11-03', 'CUSTOMER'),
 ('LMSU-00083', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Brgy. San Jaun San Jorge, Samar', 'ChristianLamoste', '09875098467', 'lamoste.christian@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$6tcHHmMzpRQHZMiO24USS.aeQYOchPeWur6k/6urqs308FWGU8Tfa', '2025-11-04', 'CUSTOMER'),
-('LMSU-00084', 'LMSS-00005', 'Agapito', 'Sagirit', 'Hampaslupa', 'Brgy. Panabatan Sta. Margarita, Samar', 'agapitoHampaslupa', '09870947381', 'agapitoHampaslupa@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$DW/BVFhLJBZsQ1JHW7trYukkTRrkdP3X/f6jbXOnhLpzvJxJbZ8f.', '2025-11-04', 'CUSTOMER');
+('LMSU-00084', 'LMSS-00005', 'Agapito', 'Sagirit', 'Hampaslupa', 'Brgy. Panabatan Sta. Margarita, Samar', 'agapitoHampaslupa', '09870947381', 'agapitoHampaslupa@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$DW/BVFhLJBZsQ1JHW7trYukkTRrkdP3X/f6jbXOnhLpzvJxJbZ8f.', '2025-11-04', 'CUSTOMER'),
+('LMSU-00085', 'LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'testuser1', '09898746352', 'testuser1@example.com', 'staff', 'Active', '$2b$10$MgNXjdqaN0FCnMPW1hvtgetcMfNKbsaCSAXHX68RZGUCCZv0InQk.', '2025-11-15', 'ADMIN');
 
 --
 -- Indexes for dumped tables
@@ -443,13 +448,13 @@ ALTER TABLE `shoplandingpage_about`
 -- AUTO_INCREMENT for table `shoplandingpage_pricing`
 --
 ALTER TABLE `shoplandingpage_pricing`
-  MODIFY `pricing_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `pricing_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `shoplandingpage_services`
 --
 ALTER TABLE `shoplandingpage_services`
-  MODIFY `service_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `service_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables
