@@ -34,6 +34,8 @@ const {
   addShopService,
   getAllServicesByShopId,
   updateShopService,
+  updateServicesDisplaySettings,
+  addShopPrices,
 } = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
 const { upload } = require("../middlewares/upload");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -106,7 +108,37 @@ router.put(
   upload.single("image"),
   updateShopService
 );
+router.put("/update-services-display-settings/:shop_id", updateServicesDisplaySettings);
 
+//-----SHOP PRICES MANAGEMENT API's-------//
+router.post(
+  "/add-price",
+  (req, res, next) => {
+    upload.single("image")(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        // Handle Multer-specific errors
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(400).json({
+            success: false,
+            message: "File too large. Maximum allowed size is 2MB.",
+          });
+        }
+        return res.status(400).json({
+          success: false,
+          message: `Upload error: ${err.message}`,
+        });
+      } else if (err) {
+        // Handle invalid file type, etc.
+        return res.status(400).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      next(); // Continue to controller if no upload errors
+    });
+  },
+  addShopPrices
+);
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
 

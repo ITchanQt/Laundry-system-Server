@@ -431,10 +431,125 @@ const updateShopService = async (req, res) => {
   }
 };
 
+const updateServicesDisplaySettings = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { displayedServicesIds } = req.body;
+
+    if (
+      !Array.isArray(displayedServicesIds) ||
+      displayedServicesIds.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "No features selected for display",
+      });
+    }
+
+    // Update in DB
+    await ShopServicesModel.updateDisplaySettings(
+      shop_id,
+      displayedServicesIds
+    );
+
+    res.json({
+      success: true,
+      message: "Display settings updated successfully",
+    });
+  } catch (error) {
+    console.error("updateServicesDisplaySettings error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while updating display settings",
+    });
+  }
+};
+
+//__________________SHOP PRICES______________________//
+const addShopPrices = async (req, res) => {
+  try {
+    const {
+      shop_id,
+      categories,
+      price,
+      pricing_label,
+      description,
+      is_displayed,
+    } = req.body;
+    const file = req.file;
+
+    if (!file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Image is required" });
+    }
+
+    const existingTitle = await ShopPricingModel.findByTitle(
+      categories,
+      shop_id
+    );
+    if (existingTitle && existingTitle.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Categories already exists!",
+      });
+    }
+
+    // Upload to Supabase Storage
+    const fileName = `${shop_id}-${Date.now()}-${file.originalname}`;
+    const { data, error } = await supabase.storage
+      .from("shop-images")
+      .upload(`prices/${fileName}`, file.buffer, {
+        contentType: file.mimetype,
+      });
+
+    if (error) throw error;
+
+    // Get public URL
+    const { data: publicData } = supabase.storage
+      .from("shop-images")
+      .getPublicUrl(`prices/${fileName}`);
+
+    // Save record in MySQL
+    const newService = await ShopPricingModel.createPrices({
+      shop_id,
+      categories,
+      description,
+      price,
+      pricing_label,
+      image_url: publicData.publicUrl,
+      is_displayed: is_displayed === "true" ? "true" : "false",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Prices added successfully!",
+      data: {
+        shop_id,
+        categories,
+        description,
+        price,
+        pricing_label,
+        image_url: publicData.publicUrl,
+        is_displayed,
+      },
+    });
+  } catch (error) {
+    console.error("addShopService error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getShopAbout,
   getShopServices,
   getShopPricing,
+
+  //__________________SHOP ABOUT______________________//
   insertShopAbout,
   updateShopAbout,
   getAllAboutByShopId,
@@ -444,4 +559,8 @@ module.exports = {
   addShopService,
   getAllServicesByShopId,
   updateShopService,
+  updateServicesDisplaySettings,
+
+  //__________________SHOP PRICES______________________//
+  addShopPrices,
 };
