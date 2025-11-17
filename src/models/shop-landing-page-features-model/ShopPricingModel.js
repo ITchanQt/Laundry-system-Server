@@ -1,6 +1,12 @@
 const BaseModel = require("../BaseModel");
 
 class PricingModel extends BaseModel {
+  static async findServiceById(id) {
+    const sql = `SELECT * FROM shoplandingpage_pricing WHERE pricing_id = ?`;
+    const result = await this.query(sql, [id]);
+    return result[0];
+  }
+
   static async findPricingById(shop_id) {
     try {
       const sql = "SELECT * FROM shoplandingpage_pricing WHERE shop_id = ?";
@@ -64,6 +70,32 @@ class PricingModel extends BaseModel {
     } catch (error) {
       console.error("Error getting shop prices:", error);
       throw new Error(`Failed to get shop prices: ${error.message}`);
+    }
+  }
+  static async updatePrices(pricing_id, data) {
+    try {
+      const sql = `
+      UPDATE shoplandingpage_pricing
+      SET categories = ?, description = ?, price = ?, pricing_label = ?,  image_url = ?, is_displayed = ?
+      WHERE pricing_id = ?
+    `;
+
+      const params = [
+        data.categories,
+        data.description,
+        data.price,
+        data.pricing_label,
+        data.image_url,
+        data.is_displayed,
+        pricing_id,
+      ];
+
+      await this.query(sql, params);
+
+      return { pricing_id, ...data };
+    } catch (error) {
+      console.error("Error updating prices:", error);
+      throw error;
     }
   }
 }

@@ -37,6 +37,7 @@ const {
   updateServicesDisplaySettings,
   addShopPrices,
   getAllPricesByShopId,
+  updateShopPrice,
 } = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
 const { upload } = require("../middlewares/upload");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -141,6 +142,11 @@ router.post(
   addShopPrices
 );
 router.get("/get-all-prices/:shop_id", getAllPricesByShopId);
+router.put(
+  "/update-price/:pricing_id",
+  upload.single("image"),
+  updateShopPrice
+);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

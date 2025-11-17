@@ -570,6 +570,101 @@ const getAllPricesByShopId = async (req, res) => {
   }
 };
 
+const updateShopPrice = async (req, res) => {
+  try {
+    const pricing_id = req.params.pricing_id;
+    const { categories, description, price, pricing_label, is_displayed } = req.body;
+
+    // Validate required fields
+    if (!pricing_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Service ID is required",
+      });
+    }
+
+    if (!categories || !description) {
+      return res.status(400).json({
+        success: false,
+        message: "Categories and description are required",
+      });
+    }
+
+    // Fetch existing service
+    const existingPrice = await ShopPricingModel.findServiceById(pricing_id);
+    if (!existingPrice) {
+      return res.status(404).json({
+        success: false,
+        message: "Service not found",
+      });
+    }
+
+    // Prevent duplicate service name (ignore current)
+    const duplicate = await ShopPricingModel.findByTitle(
+      categories,
+      existingPrice.shop_id
+    );
+    if (
+      duplicate &&
+      duplicate.length > 0 &&
+      duplicate[0].pricing_id !== Number(pricing_id)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Service name already exists",
+      });
+    }
+
+    // Default image = old image
+    let image_url = existingPrice.image_url;
+
+    // If new image uploaded -> upload to Supabase
+    if (req.file) {
+      const fileName = `${existingPrice.shop_id}-${Date.now()}-${
+        req.file.originalname
+      }`;
+
+      const { data, error } = await supabase.storage
+        .from("shop-images")
+        .upload(`prices/${fileName}`, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: publicData } = supabase.storage
+        .from("shop-images")
+        .getPublicUrl(`prices/${fileName}`);
+
+      image_url = publicData.publicUrl;
+    }
+
+    // Update DB with correct field names
+    const updated = await ShopPricingModel.updatePrices(pricing_id, {
+      categories,
+      description,
+      price,
+      pricing_label,
+      image_url: image_url ?? null,
+      is_displayed: is_displayed === "true" ? "true" : "false",
+    });
+
+    res.json({
+      success: true,
+      message: "Service updated successfully!",
+      data: updated,
+    });
+  } catch (error) {
+    console.error("updateShopPrice error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getShopAbout,
   getShopServices,
@@ -590,4 +685,5 @@ module.exports = {
   //__________________SHOP PRICES______________________//
   addShopPrices,
   getAllPricesByShopId,
+  updateShopPrice,
 };
