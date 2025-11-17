@@ -544,6 +544,32 @@ const addShopPrices = async (req, res) => {
   }
 };
 
+const getAllPricesByShopId = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message,
+      });
+    }
+
+    const shopServices = await ShopPricingModel.findAllPrices(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "Prices fetch successfully!",
+      data: shopServices,
+    });
+  } catch (error) {
+    console.error("Get Shop Prices error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getShopAbout,
   getShopServices,
@@ -563,4 +589,5 @@ module.exports = {
 
   //__________________SHOP PRICES______________________//
   addShopPrices,
+  getAllPricesByShopId,
 };
