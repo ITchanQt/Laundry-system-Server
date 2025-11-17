@@ -55,6 +55,17 @@ class PricingModel extends BaseModel {
       throw new Error(`Failed to insert shop prices: ${error.message}`);
     }
   }
+
+  static async findAllPrices(shop_id) {
+    try {
+      const sql = "SELECT * FROM shoplandingpage_pricing WHERE shop_id = ?";
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("Error getting shop prices:", error);
+      throw new Error(`Failed to get shop prices: ${error.message}`);
+    }
+  }
 }
 
 module.exports = PricingModel;
