@@ -573,7 +573,8 @@ const getAllPricesByShopId = async (req, res) => {
 const updateShopPrice = async (req, res) => {
   try {
     const pricing_id = req.params.pricing_id;
-    const { categories, description, price, pricing_label, is_displayed } = req.body;
+    const { categories, description, price, pricing_label, is_displayed } =
+      req.body;
 
     // Validate required fields
     if (!pricing_id) {
@@ -665,6 +666,37 @@ const updateShopPrice = async (req, res) => {
   }
 };
 
+const updatePricesDisplaySettings = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { displayedPricesIds } = req.body;
+
+    if (
+      !Array.isArray(displayedPricesIds) ||
+      displayedPricesIds.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "No features selected for display",
+      });
+    }
+
+    // Update in DB
+    await ShopPricingModel.updateDisplaySettings(shop_id, displayedPricesIds);
+
+    res.json({
+      success: true,
+      message: "Display settings updated successfully",
+    });
+  } catch (error) {
+    console.error("updatePricesDisplaySettings error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while updating display settings",
+    });
+  }
+};
+
 module.exports = {
   getShopAbout,
   getShopServices,
@@ -686,4 +718,5 @@ module.exports = {
   addShopPrices,
   getAllPricesByShopId,
   updateShopPrice,
+  updatePricesDisplaySettings,
 };

@@ -98,6 +98,35 @@ class PricingModel extends BaseModel {
       throw error;
     }
   }
+
+  static async updateDisplaySettings(shop_id, displayedPricesIds) {
+    try {
+      const hideAllSql =
+        "UPDATE shoplandingpage_pricing SET is_displayed = 'false' WHERE shop_id = ?";
+      await this.query(hideAllSql, [shop_id]);
+
+      if (
+        Array.isArray(displayedPricesIds) &&
+        displayedPricesIds.length > 0
+      ) {
+        const placeholders = displayedPricesIds.map(() => "?").join(", ");
+        const showSql = `
+        UPDATE shoplandingpage_pricing
+        SET is_displayed = 'true'
+        WHERE shop_id = ?
+        AND pricing_id IN (${placeholders})
+      `;
+
+        const params = [shop_id, ...displayedPricesIds];
+        await this.query(showSql, params);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("ShopPricesModel.updateDisplaySettings error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = PricingModel;
