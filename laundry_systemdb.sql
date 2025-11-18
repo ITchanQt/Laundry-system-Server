@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 17, 2025 at 10:55 AM
+-- Generation Time: Nov 18, 2025 at 11:20 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -164,6 +164,32 @@ INSERT INTO `laundry_shops` (`shop_id`, `admin_id`, `owner_fName`, `owner_mName`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `payment_method`
+--
+
+CREATE TABLE `payment_method` (
+  `pm_id` int(10) NOT NULL,
+  `shop_id` varchar(10) NOT NULL,
+  `pm_name` varchar(50) NOT NULL,
+  `account_name` varchar(100) NOT NULL,
+  `account_number` varchar(50) NOT NULL,
+  `description` text NOT NULL,
+  `is_displayed` varchar(10) NOT NULL,
+  `is_static` varchar(10) NOT NULL,
+  `qrCode_image_url` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment_method`
+--
+
+INSERT INTO `payment_method` (`pm_id`, `shop_id`, `pm_name`, `account_name`, `account_number`, `description`, `is_displayed`, `is_static`, `qrCode_image_url`) VALUES
+(1, 'LMSS-00005', 'GCash', 'Laundry Shop', '09123456789', 'Scan QR code or send to mobile number', 'true', 'false', ''),
+(2, 'LMSS-00005', 'PayMaya', 'Laundry Shop', '09987654321', 'Scan QR code or send to mobile number', 'true', 'false', '');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `shoplandingpage_about`
 --
 
@@ -241,7 +267,9 @@ CREATE TABLE `shoplandingpage_pricing` (
 INSERT INTO `shoplandingpage_pricing` (`pricing_id`, `shop_id`, `categories`, `price`, `pricing_label`, `description`, `image_url`, `is_displayed`) VALUES
 (15, 'LMSS-00005', 'Clothes', 140.00, 'per load', 'Shirts, shorts, pants etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763373103131-Screenshot%202025-09-19%20182402.png', 'true'),
 (16, 'LMSS-00005', 'Beddings', 150.00, 'per load', 'Bed sheets, pillow cases, towels, etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763373234817-Screenshot%202025-09-19%20182402.png', 'true'),
-(17, 'LMSS-00005', 'Curtains', 200.00, 'per load', 'Window curtains and drapes', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763373213292-Screenshot%20(2).png', 'true');
+(17, 'LMSS-00005', 'Curtains', 200.00, 'per load', 'Window curtains and drapes', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763373213292-Screenshot%20(2).png', 'true'),
+(18, 'LMSS-00005', 'Kahit ano', 140.00, 'per load', 'Ambot kun nano', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763450346361-Screenshot%20(4).png', 'false'),
+(19, 'LMSS-00005', 'Folding', 160.00, 'per load', 'Kuan HAHAHA', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763450384554-Screenshot%20(4).png', 'false');
 
 -- --------------------------------------------------------
 
@@ -403,6 +431,12 @@ ALTER TABLE `laundry_shops`
   ADD UNIQUE KEY `shop_name` (`shop_name`);
 
 --
+-- Indexes for table `payment_method`
+--
+ALTER TABLE `payment_method`
+  ADD PRIMARY KEY (`pm_id`);
+
+--
 -- Indexes for table `shoplandingpage_about`
 --
 ALTER TABLE `shoplandingpage_about`
@@ -439,6 +473,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `payment_method`
+--
+ALTER TABLE `payment_method`
+  MODIFY `pm_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `shoplandingpage_about`
 --
 ALTER TABLE `shoplandingpage_about`
@@ -448,7 +488,7 @@ ALTER TABLE `shoplandingpage_about`
 -- AUTO_INCREMENT for table `shoplandingpage_pricing`
 --
 ALTER TABLE `shoplandingpage_pricing`
-  MODIFY `pricing_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `pricing_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `shoplandingpage_services`

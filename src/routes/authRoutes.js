@@ -43,6 +43,7 @@ const {
 const { upload } = require("../middlewares/upload");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
 const multer = require("multer");
+const { getAllPaymentMethodsByShopId } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -149,6 +150,10 @@ router.put(
   updateShopPrice
 );
 router.put("/update-prices-display-settings/:shop_id", updatePricesDisplaySettings);
+
+
+//-----SHOP PAYMENT METHODS MANAGEMENT API's-------//
+router.get("/get-all-paymeth-methods/:shop_id", getAllPaymentMethodsByShopId);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
