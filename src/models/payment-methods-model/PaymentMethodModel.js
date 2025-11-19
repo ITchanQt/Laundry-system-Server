@@ -1,6 +1,12 @@
 const BaseModel = require("../BaseModel");
 
 class PaymentMethods extends BaseModel {
+  static async findPaymentMethodById(id) {
+    const sql = `SELECT * FROM payment_method WHERE pm_id = ?`;
+    const result = await this.query(sql, [id]);
+    return result[0];
+  }
+
   static async findAllPaymentMethods(shop_id) {
     try {
       const sql = "SELECT * FROM payment_method WHERE shop_id = ?";
@@ -12,11 +18,11 @@ class PaymentMethods extends BaseModel {
     }
   }
 
-  static async findByPMName(service_name, shop_id) {
+  static async findByPMName(pm_name, shop_id) {
     try {
       const sql =
         "SELECT * FROM payment_method WHERE pm_name = ? AND shop_id = ?";
-      const results = await this.query(sql, [service_name, shop_id]);
+      const results = await this.query(sql, [pm_name, shop_id]);
       return results;
     } catch (error) {
       console.error(error);
@@ -36,7 +42,7 @@ class PaymentMethods extends BaseModel {
         is_static = "false",
         qrCode_image_url,
       } = paymentMethodData;
-      console.log(paymentMethodData)
+      console.log(paymentMethodData);
       const sql = `INSERT INTO payment_method (
                     shop_id,
                     pm_name, 
@@ -61,6 +67,37 @@ class PaymentMethods extends BaseModel {
     } catch (error) {
       console.error("Error creating shop payment method:", error);
       throw new Error(`Failed to create shop payment method: ${error.message}`);
+    }
+  }
+
+  static async updatePaymentMethod(pm_id, data) {
+    try {
+      const sql = `UPDATE payment_method SET 
+                    pm_name = ?,
+                    account_name = ?,
+                    account_number = ?,
+                    description = ?,
+                    is_displayed = ?,
+                    qrCode_image_url = ?
+                  WHERE pm_id = ?
+                  `;
+
+      const params = [
+        data.pm_name,
+        data.account_name,
+        data.account_number,
+        data.description,
+        data.is_displayed,
+        data.qrCode_image_url,
+        pm_id,
+      ];
+
+      await this.query(sql, params);
+
+      return { pm_id, ...data };
+    } catch (error) {
+      console.log("Error updating payment method:", error);
+      throw error;
     }
   }
 }
