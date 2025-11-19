@@ -43,7 +43,10 @@ const {
 const { upload } = require("../middlewares/upload");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
 const multer = require("multer");
-const { getAllPaymentMethodsByShopId } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
+const {
+  getAllPaymentMethodsByShopId,
+  addPaymentMethod,
+} = require("../controllers/payment-methods-controller/paymentMethodsContoller");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -112,7 +115,10 @@ router.put(
   upload.single("image"),
   updateShopService
 );
-router.put("/update-services-display-settings/:shop_id", updateServicesDisplaySettings);
+router.put(
+  "/update-services-display-settings/:shop_id",
+  updateServicesDisplaySettings
+);
 
 //-----SHOP PRICES MANAGEMENT API's-------//
 router.post(
@@ -149,11 +155,41 @@ router.put(
   upload.single("image"),
   updateShopPrice
 );
-router.put("/update-prices-display-settings/:shop_id", updatePricesDisplaySettings);
-
+router.put(
+  "/update-prices-display-settings/:shop_id",
+  updatePricesDisplaySettings
+);
 
 //-----SHOP PAYMENT METHODS MANAGEMENT API's-------//
 router.get("/get-all-paymeth-methods/:shop_id", getAllPaymentMethodsByShopId);
+router.post(
+  "/add-payment-method",
+  (req, res, next) => {
+    upload.single("image")(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        // Handle Multer-specific errors
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(400).json({
+            success: false,
+            message: "File too large. Maximum allowed size is 2MB.",
+          });
+        }
+        return res.status(400).json({
+          success: false,
+          message: `Upload error: ${err.message}`,
+        });
+      } else if (err) {
+        // Handle invalid file type, etc.
+        return res.status(400).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      next(); // Continue to controller if no upload errors
+    });
+  },
+  addPaymentMethod
+);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
