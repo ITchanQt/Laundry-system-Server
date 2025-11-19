@@ -46,6 +46,7 @@ const multer = require("multer");
 const {
   getAllPaymentMethodsByShopId,
   addPaymentMethod,
+  updateShopPaymentMethod,
 } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
 
 // Apply API key validation to all routes
@@ -161,7 +162,7 @@ router.put(
 );
 
 //-----SHOP PAYMENT METHODS MANAGEMENT API's-------//
-router.get("/get-all-paymeth-methods/:shop_id", getAllPaymentMethodsByShopId);
+router.get("/get-all-payment-methods/:shop_id", getAllPaymentMethodsByShopId);
 router.post(
   "/add-payment-method",
   (req, res, next) => {
@@ -189,6 +190,11 @@ router.post(
     });
   },
   addPaymentMethod
+);
+router.put(
+  "/update-payment-method/:pm_id",
+  upload.single("image"),
+  updateShopPaymentMethod
 );
 
 // Protected admin routes

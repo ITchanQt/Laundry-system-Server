@@ -111,4 +111,94 @@ const addPaymentMethod = async (req, res) => {
   }
 };
 
-module.exports = { getAllPaymentMethodsByShopId, addPaymentMethod };
+const updateShopPaymentMethod = async (req, res) => {
+  try {
+    const pm_id = req.params.pm_id;
+    const { pm_name, account_name, account_number, description, is_displayed } =
+      req.body;
+
+    if (!pm_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment ID is required!",
+      });
+    }
+
+    if (!pm_name || !account_name || !account_number) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment name, Account name and Account Number are required!",
+      });
+    }
+
+    const existingPaymentMethod =
+      await PaymentMethodsModel.findPaymentMethodById(pm_id);
+    if (!existingPaymentMethod) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment Method not found",
+      });
+    }
+
+    const duplicate = await PaymentMethodsModel.findByPMName(
+      pm_name,
+      existingPaymentMethod.shop_id
+    );
+    if (
+      duplicate &&
+      duplicate.length > 0 &&
+      duplicate[0].pm_id !== Number(pm_id)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment Method already exists",
+      });
+    }
+
+    let qrCode_image_url = `existingPaymentMethod`.qrCode_image_url;
+
+    if (req.file) {
+      const fileName = `${existingPaymentMethod.shop_id}-${Date.now()}-${
+        req.file.originalname
+      }`;
+
+      const { data, error } = await supabase.storage
+        .from("shop-images")
+        .upload(`payment-methods/${fileName}`, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) throw error;
+
+      const { data: publicData } = supabase.storage
+        .from("shop-images")
+        .getPublicUrl(`payment-methods/${fileName}`);
+
+      qrCode_image_url = publicData.publicUrl;
+    }
+
+    const updated = await PaymentMethodsModel.updatePaymentMethod(pm_id, {
+      pm_name,
+      account_name,
+      account_number,
+      description,
+      is_displayed: is_displayed === "true" ? "true" : "false",
+      qrCode_image_url: qrCode_image_url ?? null,
+    });
+
+    res.json({
+      success: true,
+      message: "Payment Method updated successfully!",
+      data: updated,
+    });
+  } catch (error) {
+    console.error("updateShopPaymentMethod error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { getAllPaymentMethodsByShopId, addPaymentMethod, updateShopPaymentMethod };
