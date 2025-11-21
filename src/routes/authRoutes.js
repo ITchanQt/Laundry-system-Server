@@ -73,7 +73,7 @@ router.get("/users/search/:shop_id/:user_id", getUserByIdAndShopId);
 
 //-----SHOP INVENTORY API's-------//
 router.post("/add-shop-inventory", addShopInventory);
-router.get("/shop-inventory-items", getAllShopInventoryItems);
+router.get("/shop-inventory-items/:shop_id", getAllShopInventoryItems);
 router.put("/edit-inventory-item/:item_id", editItemById);
 
 //-----SHOP ABOUT MANAGEMENT API's-------//
