@@ -155,7 +155,7 @@ const updateShopPaymentMethod = async (req, res) => {
       });
     }
 
-    let qrCode_image_url = `existingPaymentMethod`.qrCode_image_url;
+    let qrCode_image_url = existingPaymentMethod.qrCode_image_url;
 
     if (req.file) {
       const fileName = `${existingPaymentMethod.shop_id}-${Date.now()}-${
@@ -201,4 +201,42 @@ const updateShopPaymentMethod = async (req, res) => {
   }
 };
 
-module.exports = { getAllPaymentMethodsByShopId, addPaymentMethod, updateShopPaymentMethod };
+const updatePaymentMethodDisplaySettings = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { displayPaymentMethodIds } = req.body;
+
+    if (
+      !Array.isArray(displayPaymentMethodIds) ||
+      displayPaymentMethodIds.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "No Payment method selected for display",
+      });
+    }
+
+    await PaymentMethodsModel.updateDisplaySettings(
+      shop_id,
+      displayPaymentMethodIds
+    );
+
+    res.json({
+      success: true,
+      message: "Display settings updated successfully",
+    });
+  } catch (error) {
+    console.error("updatePaymentMethodDisplaySettings error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while updating display settings",
+    });
+  }
+};
+
+module.exports = {
+  getAllPaymentMethodsByShopId,
+  addPaymentMethod,
+  updateShopPaymentMethod,
+  updatePaymentMethodDisplaySettings,
+};
