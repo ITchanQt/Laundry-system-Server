@@ -47,6 +47,7 @@ const {
   getAllPaymentMethodsByShopId,
   addPaymentMethod,
   updateShopPaymentMethod,
+  updatePaymentMethodDisplaySettings,
 } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
 
 // Apply API key validation to all routes
@@ -195,6 +196,10 @@ router.put(
   "/update-payment-method/:pm_id",
   upload.single("image"),
   updateShopPaymentMethod
+);
+router.put(
+  "/update-mp-display-settings/:shop_id",
+  updatePaymentMethodDisplaySettings
 );
 
 // Protected admin routes

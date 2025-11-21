@@ -100,6 +100,35 @@ class PaymentMethods extends BaseModel {
       throw error;
     }
   }
+
+  static async updateDisplaySettings(shop_id, displayPaymentMethodIds) {
+    try {
+      const hideAllSql =
+        "UPDATE payment_method SET is_displayed = 'false' WHERE shop_id = ?";
+      await this.query(hideAllSql, [shop_id]);
+
+      if (
+        Array.isArray(displayPaymentMethodIds) &&
+        displayPaymentMethodIds.length > 0
+      ) {
+        const placeholders = displayPaymentMethodIds.map(() => "?").join(",");
+        const showSql = `
+        UPDATE payment_method
+        SET is_displayed = 'true'
+        WHERE shop_id = ?
+        AND pm_id IN (${placeholders})
+        `;
+
+        const params = [shop_id, ...displayPaymentMethodIds];
+        await this.query(showSql, params);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("PaymentMethods.updateDisplaySettings error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = PaymentMethods;
