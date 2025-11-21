@@ -148,14 +148,16 @@ const editItemById = async (req, res) => {
       });
     }
 
-    const existingItem = await LaundryShops.findByItemNameAndShopId(
+    const duplicates = await LaundryShops.findDuplicateByNameAndShopId(
       item_name,
-      shop_id
+      shop_id,
+      item_id
     );
-    if (existingItem && existingItem.length > 0) {
+
+    if (duplicates && duplicates.length > 0) {
       return res.status(400).json({
         success: false,
-        message: "Item already exists!",
+        message: "Item name already exists for another item in this shop!",
       });
     }
     const updatedItem = await LaundryShops.editShopInventoryById(

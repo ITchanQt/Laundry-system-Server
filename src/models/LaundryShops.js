@@ -241,6 +241,21 @@ class LaundryShops extends BaseModel {
     }
   }
 
+  static async findDuplicateByNameAndShopId(
+    item_name,
+    shop_id,
+    item_id_to_exclude
+  ) {
+    const sql = `SELECT item_id FROM shop_inventory 
+                 WHERE item_name = ? 
+                   AND shop_id = ? 
+                   AND item_id != ?`;
+
+    const params = [item_name, shop_id, item_id_to_exclude];
+
+    return await this.query(sql, params);
+  }
+
   static async editShopInventoryById(item_id, inventoryData) {
     try {
       if (!item_id) {
