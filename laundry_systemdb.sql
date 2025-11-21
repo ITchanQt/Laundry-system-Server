@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 21, 2025 at 07:48 AM
+-- Generation Time: Nov 21, 2025 at 12:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,17 +40,19 @@ CREATE TABLE `admins` (
   `password` varchar(100) NOT NULL,
   `date_registered` date DEFAULT curdate(),
   `role` varchar(50) DEFAULT 'Admin',
-  `status` varchar(50) DEFAULT 'Pending'
+  `status` varchar(50) DEFAULT 'Pending',
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expires` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admins`
 --
 
-INSERT INTO `admins` (`admin_id`, `shop_id`, `admin_fName`, `admin_mName`, `admin_lName`, `admin_address`, `admin_username`, `admin_contactNum`, `email`, `password`, `date_registered`, `role`, `status`) VALUES
-('LMSA-00025', 'LMSS-00004', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09999999999', 'example@john45.com', '$2b$10$CaeHkukwNixLAlVnQmxsAOggfVGULNJtu/dL38L.guAi8XGVFyqzi', '2025-10-28', 'Admin', 'Active'),
-('LMSA-00026', 'LMSS-00005', 'Tina', 'Kalo', 'Moran', 'Brgy. Panabatan Sta. Margarita, Samar', 'tina.moran', '09999999998', 'tina.moran@sample.com', '$2b$10$lPz5gzRkndDACrp0XmE95.094Z6JhjANGMJmtu79o3KUMoT8Jzjoi', '2025-10-28', 'Admin', 'Active'),
-('LMSA-00027', 'LMSS-00006', 'Pining', 'Gar', 'Siya', 'Brgy. Calanyugan Pagsanghan, Samar', 'PiningGarSiya', '09876544444', 'pining.garsiya@sample.com', '$2b$10$LJ306YVjtuXLSd8TDbHRveHO7L7wjaIr38OfMVTkAeWADDjiC1zxm', '2025-10-31', 'Admin', 'Active');
+INSERT INTO `admins` (`admin_id`, `shop_id`, `admin_fName`, `admin_mName`, `admin_lName`, `admin_address`, `admin_username`, `admin_contactNum`, `email`, `password`, `date_registered`, `role`, `status`, `reset_token`, `reset_token_expires`) VALUES
+('LMSA-00025', 'LMSS-00004', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09999999999', 'christianlamostem@gmail.com', '$2b$10$kCq7lUYreTesDeyBythhn.AwTh/fKoyC2p5vl3RVxxgWzKbIxqFZa', '2025-10-28', 'Admin', 'Active', NULL, NULL),
+('LMSA-00026', 'LMSS-00005', 'Tina', 'Kalo', 'Moran', 'Brgy. Panabatan Sta. Margarita, Samar', 'tina.moran', '09999999998', 'tina.moran@sample.com', '$2b$10$lPz5gzRkndDACrp0XmE95.094Z6JhjANGMJmtu79o3KUMoT8Jzjoi', '2025-10-28', 'Admin', 'Active', '', '0000-00-00 00:00:00'),
+('LMSA-00027', 'LMSS-00006', 'Pining', 'Gar', 'Siya', 'Brgy. Calanyugan Pagsanghan, Samar', 'PiningGarSiya', '09876544444', 'pining.garsiya@sample.com', '$2b$10$LJ306YVjtuXLSd8TDbHRveHO7L7wjaIr38OfMVTkAeWADDjiC1zxm', '2025-10-31', 'Admin', 'Active', '', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -345,13 +347,13 @@ INSERT INTO `shop_inventory` (`item_id`, `shop_id`, `item_name`, `item_descripti
 ('LMSI-00016', '00001', 'Bleach15', 'bisan ano', 32, 10.00, 12, '2025-10-30', NULL),
 ('LMSI-00017', 'LMSS-00006', 'Surf ', 'Panbabad', 23, 16.00, 8, '2025-11-03', NULL),
 ('LMSI-00018', 'LMSS-00006', 'Sabon', 'Panlaba', 27, 7.00, 18, '2025-11-03', NULL),
-('LMSI-00019', 'LMSS-00005', 'Carbon Dioxide', 'Pan kuan', 34, 9.00, 30, '2025-11-03', '2025-11-21'),
+('LMSI-00019', 'LMSS-00005', 'Carbon Dioxide', 'Kahit ano basta ikaw', 50, 9.00, 30, '2025-11-03', '2025-11-21'),
 ('LMSI-00020', 'LMSS-00005', 'Lala', 'Ambot kun nano', 29, 45.00, 25, '2025-11-03', NULL),
 ('LMSI-00021', 'LMSS-00006', 'Bisan ano', 'bisan nano', 26, 8.00, 21, '2025-11-04', NULL),
 ('LMSI-00022', 'LMS-00005', 'Soap', '', 45, 15.00, 20, '2025-11-21', NULL),
 ('LMSI-00023', 'LMSS-00005', 'Laundry Detergent', 'Kuan HAHAHA', 12, 12.00, 10, '2025-11-21', NULL),
 ('LMSI-00024', 'LMSS-00005', 'Surf ', 'Bisan ano', 18, 8.00, 10, '2025-11-21', '2025-11-21'),
-('LMSI-00025', 'LMSS-00005', 'Sabon', 'Kuan HAHAHA', 30, 13.00, 10, '2025-11-21', NULL);
+('LMSI-00025', 'LMSS-00005', 'Sabon', 'Kuan HAHAHA', 30, 13.00, 20, '2025-11-21', '2025-11-21');
 
 -- --------------------------------------------------------
 
@@ -401,7 +403,8 @@ INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lNa
 ('LMSU-00082', 'LMSS-00005', 'Ambot', 'ambot', 'ambot', 'Biringan City', 'ambot', '09876098754', 'ambot.@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$OwrxKt.2exRoG5nGBlWWDuWlkoJOI3LKu2l.ddC.PD98b.tn3vJWW', '2025-11-03', 'CUSTOMER'),
 ('LMSU-00083', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Brgy. San Jaun San Jorge, Samar', 'ChristianLamoste', '09875098467', 'lamoste.christian@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$6tcHHmMzpRQHZMiO24USS.aeQYOchPeWur6k/6urqs308FWGU8Tfa', '2025-11-04', 'CUSTOMER'),
 ('LMSU-00084', 'LMSS-00005', 'Agapito', 'Sagirit', 'Hampaslupa', 'Brgy. Panabatan Sta. Margarita, Samar', 'agapitoHampaslupa', '09870947381', 'agapitoHampaslupa@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$DW/BVFhLJBZsQ1JHW7trYukkTRrkdP3X/f6jbXOnhLpzvJxJbZ8f.', '2025-11-04', 'CUSTOMER'),
-('LMSU-00085', 'LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'testuser1', '09898746352', 'testuser1@example.com', 'staff', 'Active', '$2b$10$MgNXjdqaN0FCnMPW1hvtgetcMfNKbsaCSAXHX68RZGUCCZv0InQk.', '2025-11-15', 'ADMIN');
+('LMSU-00085', 'LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'testuser1', '09898746352', 'testuser1@example.com', 'staff', 'Active', '$2b$10$MgNXjdqaN0FCnMPW1hvtgetcMfNKbsaCSAXHX68RZGUCCZv0InQk.', '2025-11-15', 'ADMIN'),
+('LMSU-00086', 'LMSS-00004', 'LeBron', 'Cupal', 'James', 'Brgy. Calanyugan Pagsanghan, Samar', 'LeBronJames123', '9876543210', 'LeBron.James@sample.com', 'customer', 'Active', '$2b$10$CIbdLECsuaTHi7BqIPadeeHxtRgD/tibL7Vmj/rcoLaqjEzj0MyX6', '2025-11-21', 'ADMIN');
 
 --
 -- Indexes for dumped tables
