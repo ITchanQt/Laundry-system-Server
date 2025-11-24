@@ -49,7 +49,7 @@ const {
   updateShopPaymentMethod,
   updatePaymentMethodDisplaySettings,
 } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
-const { forgotPassword, resetPassword } = require("../controllers/auth/authController");
+const { getAllItemsReport } = require("../controllers/report-controllers/reportController");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -203,8 +203,8 @@ router.put(
   updatePaymentMethodDisplaySettings
 );
 
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+//-----SHOP REPORTS API's-------//
+router.get('/get-items-report/:shop_id', getAllItemsReport); //Get all items
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
