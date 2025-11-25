@@ -39,6 +39,8 @@ const {
   getAllPricesByShopId,
   updateShopPrice,
   updatePricesDisplaySettings,
+  getDisplayedPriceByShopId,
+  getDisplayedServicesByShopId,
 } = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
 const { upload } = require("../middlewares/upload");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -205,6 +207,10 @@ router.put(
 
 //-----SHOP REPORTS API's-------//
 router.get('/get-items-report/:shop_id', getAllItemsReport); //Get all items
+
+//-----CUSTOMER RECIEPT DYNAMIC PRICES AND SERVICES FOR SHOP API's-------//
+router.get('/displayed-prices/:shop_id', getDisplayedPriceByShopId);
+router.get('/displayed-services/:shop_id', getDisplayedServicesByShopId);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

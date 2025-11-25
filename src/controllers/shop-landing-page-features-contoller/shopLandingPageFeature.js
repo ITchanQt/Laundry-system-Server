@@ -671,10 +671,7 @@ const updatePricesDisplaySettings = async (req, res) => {
     const { shop_id } = req.params;
     const { displayedPricesIds } = req.body;
 
-    if (
-      !Array.isArray(displayedPricesIds) ||
-      displayedPricesIds.length === 0
-    ) {
+    if (!Array.isArray(displayedPricesIds) || displayedPricesIds.length === 0) {
       return res.status(400).json({
         success: false,
         message: "No features selected for display",
@@ -693,6 +690,59 @@ const updatePricesDisplaySettings = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Internal server error while updating display settings",
+    });
+  }
+};
+
+const getDisplayedPriceByShopId = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const displayedPrice = await ShopPricingModel.searchDisplyedPriceByShopId(
+      shop_id
+    );
+    res.status(200).json({
+      success: true,
+      message: "Displayed prices successfully get",
+      data: displayedPrice,
+    });
+  } catch (error) {
+    console.error("getDisplayedPriceByShopId error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error!",
+    });
+  }
+};
+
+const getDisplayedServicesByShopId = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const displayedServices =
+      await ShopServicesModel.searchDisplayedServicesById(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "Displayed services successfully get!",
+      data: displayedServices,
+    });
+  } catch (error) {
+    console.error("getDisplayedServicesByShopId error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error!",
     });
   }
 };
@@ -719,4 +769,6 @@ module.exports = {
   getAllPricesByShopId,
   updateShopPrice,
   updatePricesDisplaySettings,
+  getDisplayedPriceByShopId,
+  getDisplayedServicesByShopId
 };

@@ -116,6 +116,18 @@ class ServicesModel extends BaseModel {
       throw error;
     }
   }
+
+  static async searchDisplayedServicesById(shop_id) {
+    try {
+      const sql =
+        "SELECT * FROM shopLandingPage_services WHERE is_displayed = 'true' AND shop_id = ?";
+      const result = await this.query(sql, [shop_id]);
+      return result;
+    } catch (error) {
+      console.error("ShopServicesModel.searchDisplayedServicesById error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ServicesModel;
