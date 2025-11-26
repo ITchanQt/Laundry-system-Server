@@ -127,6 +127,17 @@ class PricingModel extends BaseModel {
       throw error;
     }
   }
+
+  static async searchDisplyedPriceByShopId(shop_id) {
+    try {
+      const sql = "SELECT * FROM shoplandingpage_pricing WHERE is_displayed = 'true' AND shop_id = ?";
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+       console.error("ShopPricesModel.searcDisplyedPriceByShopId error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = PricingModel;

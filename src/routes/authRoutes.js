@@ -39,6 +39,7 @@ const {
   getAllPricesByShopId,
   updateShopPrice,
   updatePricesDisplaySettings,
+  getDisplayedPriceByShopId,
 } = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
 const { upload } = require("../middlewares/upload");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -49,7 +50,7 @@ const {
   updateShopPaymentMethod,
   updatePaymentMethodDisplaySettings,
 } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
-const { getAllItemsReport } = require("../controllers/report-controllers/reportController");
+const { getAllItemsReport, getDisplayedServicesByShopId, getAllCustomerRecordsByShopId } = require("../controllers/report-controllers/reportController");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -205,6 +206,11 @@ router.put(
 
 //-----SHOP REPORTS API's-------//
 router.get('/get-items-report/:shop_id', getAllItemsReport); //Get all items
+router.get('/get-customer-records/:shop_id', getAllCustomerRecordsByShopId); //Get all customer receipt(API FOR REPORTS AND CUSTOMER RECORD)
+
+//-----CUSTOMER RECIEPT DYNAMIC PRICES AND SERVICES FOR SHOP API's-------//
+router.get('/displayed-prices/:shop_id', getDisplayedPriceByShopId);
+router.get('/displayed-services/:shop_id', getDisplayedServicesByShopId);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

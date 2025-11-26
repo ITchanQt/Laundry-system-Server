@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 21, 2025 at 12:34 PM
+-- Generation Time: Nov 25, 2025 at 09:22 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,7 +50,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`admin_id`, `shop_id`, `admin_fName`, `admin_mName`, `admin_lName`, `admin_address`, `admin_username`, `admin_contactNum`, `email`, `password`, `date_registered`, `role`, `status`, `reset_token`, `reset_token_expires`) VALUES
-('LMSA-00025', 'LMSS-00004', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09999999999', 'christianlamostem@gmail.com', '$2b$10$kCq7lUYreTesDeyBythhn.AwTh/fKoyC2p5vl3RVxxgWzKbIxqFZa', '2025-10-28', 'Admin', 'Active', NULL, NULL),
+('LMSA-00025', 'LMSS-00004', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09999999999', 'christianlamostem@gmail.com', '$2b$10$S2CVGjNZTvnMKD5shkCzEOidAxVY6ueLD6mzGTzxvc5V6PuZ8D1he', '2025-10-28', 'Admin', 'Active', NULL, NULL),
 ('LMSA-00026', 'LMSS-00005', 'Tina', 'Kalo', 'Moran', 'Brgy. Panabatan Sta. Margarita, Samar', 'tina.moran', '09999999998', 'tina.moran@sample.com', '$2b$10$lPz5gzRkndDACrp0XmE95.094Z6JhjANGMJmtu79o3KUMoT8Jzjoi', '2025-10-28', 'Admin', 'Active', '', '0000-00-00 00:00:00'),
 ('LMSA-00027', 'LMSS-00006', 'Pining', 'Gar', 'Siya', 'Brgy. Calanyugan Pagsanghan, Samar', 'PiningGarSiya', '09876544444', 'pining.garsiya@sample.com', '$2b$10$LJ306YVjtuXLSd8TDbHRveHO7L7wjaIr38OfMVTkAeWADDjiC1zxm', '2025-10-31', 'Admin', 'Active', '', '0000-00-00 00:00:00');
 
@@ -114,9 +114,10 @@ CREATE TABLE `customer_receipt` (
   `pillow_case` int(100) NOT NULL,
   `bed_sheets` int(100) NOT NULL,
   `kg` int(100) NOT NULL,
-  `washing` varchar(10) NOT NULL,
+  `service` varchar(50) NOT NULL,
   `num_items` int(100) NOT NULL,
   `total_amount` varchar(100) NOT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'on service',
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -124,10 +125,33 @@ CREATE TABLE `customer_receipt` (
 -- Dumping data for table `customer_receipt`
 --
 
-INSERT INTO `customer_receipt` (`laundryId`, `shop_id`, `cus_id`, `cus_name`, `cus_address`, `cus_phoneNum`, `batch`, `shirts`, `pants`, `jeans`, `shorts`, `towels`, `pillow_case`, `bed_sheets`, `kg`, `washing`, `num_items`, `total_amount`, `created_at`) VALUES
-('11042025-00001', 'LMSS-00005', 'LMSU-00079', 'Christian Lamoste', 'Biringan City', '09860986098', 10, 7, 7, 7, 7, 7, 7, 7, 7, '1', 49, '910', '2025-11-04 15:59:52'),
-('11042025-00002', 'LMSS-00005', 'LMSU-00079', 'Christian Lamoste', 'Biringan City', '09860986098', 3, 5, 5, 5, 5, 5, 5, 5, 5, '1', 35, '650', '2025-11-04 15:59:52'),
-('11042025-00003', 'LMSS-00005', 'LMSU-00073', 'Christian Lamoste', 'Brgy. Dapdap Tarangnan, Samar', '09876546372', 2, 5, 5, 5, 5, 5, 5, 5, 5, '1', 35, '650', '2025-11-04 16:01:47');
+INSERT INTO `customer_receipt` (`laundryId`, `shop_id`, `cus_id`, `cus_name`, `cus_address`, `cus_phoneNum`, `batch`, `shirts`, `pants`, `jeans`, `shorts`, `towels`, `pillow_case`, `bed_sheets`, `kg`, `service`, `num_items`, `total_amount`, `status`, `created_at`) VALUES
+('11042025-00001', 'LMSS-00005', 'LMSU-00079', 'Christian Lamoste', 'Biringan City', '09860986098', 10, 7, 7, 7, 7, 7, 7, 7, 7, '1', 49, '910', '', '2025-11-04 15:59:52'),
+('11042025-00002', 'LMSS-00005', 'LMSU-00079', 'Christian Lamoste', 'Biringan City', '09860986098', 3, 5, 5, 5, 5, 5, 5, 5, 5, '1', 35, '650', '', '2025-11-04 15:59:52'),
+('11042025-00003', 'LMSS-00005', 'LMSU-00073', 'Christian Lamoste', 'Brgy. Dapdap Tarangnan, Samar', '09876546372', 2, 5, 5, 5, 5, 5, 5, 5, 5, '1', 35, '650', '', '2025-11-04 16:01:47'),
+('11242025-00001', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 2, 2, 2, 2, 2, 2, 2, 2, 23, '1', 14, '260', '', '2025-11-24 18:01:20'),
+('11242025-00002', 'LMSS-00006', 'LMSU-00070', 'Kantotero Manatad', 'Brgy. Erenas San Jorge, Samar', '09876234523', 4, 2, 2, 23, 1, 5, 4, 4, 24, '1', 41, '883', '', '2025-11-24 18:19:03'),
+('11242025-00003', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 10, 2, 3, 4, 4, 4, 4, 4, 15, '1', 25, '470', '', '2025-11-24 18:22:31'),
+('11242025-00004', 'LMSS-00006', 'LMSU-00067', 'Boang Man', 'brgy. Curry Sta. Margarita, Samar', '0937268465', 9, 7, 2, 2, 3, 3, 3, 3, 3, '1', 23, '405', '', '2025-11-24 18:24:09'),
+('11242025-00005', 'LMSS-00006', 'LMSU-00068', 'Hello World', 'Brgy. Panabatan Sta. Margarita, Samar', '09874563214', 2, 2, 2, 2, 2, 2, 2, 2, 2, '1', 14, '260', '', '2025-11-24 18:25:05'),
+('11242025-00006', 'LMSS-00006', 'LMSU-00071', 'Christian Lamoste', 'Biringan City', '09857643521', 2, 4, 1, 1, 2, 2, 2, 2, 2, '1', 14, '245', '', '2025-11-24 18:28:52'),
+('11242025-00007', 'LMSS-00006', 'LMSU-00088', 'Tina  Moko', 'Biringan City', '09809876543', 2, 2, 2, 2, 2, 2, 2, 2, 2, 'true', 14, '260', '', '2025-11-24 18:32:53'),
+('11242025-00008', 'LMSS-00006', 'LMSU-00088', 'Tina  Moko', 'Biringan City', '09809876543', 2, 4, 3, 3, 2, 1, 3, 4, 5, 'true', 20, '393', '', '2025-11-24 18:36:37'),
+('11242025-00009', 'LMSS-00006', 'LMSU-00068', 'Hello World', 'Brgy. Panabatan Sta. Margarita, Samar', '09874563214', 1, 1, 1, 2, 10, 0, 0, 0, 3, 'true', 14, '265', '', '2025-11-24 21:36:48'),
+('11252025-00001', 'LMSS-00006', 'LMSU-00088', 'Tina  Moko', 'Biringan City', '09809876543', 1, 2, 2, 2, 2, 0, 0, 0, 0, 'washing', 8, '156', '', '2025-11-25 08:09:44'),
+('11252025-00002', 'LMSS-00006', 'LMSU-00088', 'Tina  Moko', 'Biringan City', '09809876543', 5, 1, 2, 4, 2, 0, 0, 0, 35, '1', 9, '800', '', '2025-11-25 11:13:37'),
+('11252025-00003', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 2, 0, 0, 0, 0, 4, 2, 3, 14, '1', 9, '320', '', '2025-11-25 11:15:55'),
+('11252025-00004', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 2, 0, 0, 0, 0, 4, 2, 3, 14, '1', 9, '320', '', '2025-11-25 11:19:57'),
+('11252025-00005', 'LMSS-00006', 'LMSU-00088', 'Tina  Moko', 'Biringan City', '09809876543', 2, 0, 0, 0, 0, 4, 2, 3, 14, '1', 9, '280', '', '2025-11-25 11:22:17'),
+('11252025-00006', 'LMSS-00006', 'LMSU-00070', 'Kantotero Manatad', 'Brgy. Erenas San Jorge, Samar', '09876234523', 1, 1, 3, 4, 6, 0, 0, 0, 7, '1', 14, '140', '', '2025-11-25 11:23:42'),
+('11252025-00007', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 3, 0, 0, 0, 0, 5, 4, 2, 21, '1', 11, '750', '', '2025-11-25 11:27:54'),
+('11252025-00008', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 1, 0, 0, 0, 0, 2, 2, 1, 7, '1', 5, '250', '', '2025-11-25 11:29:37'),
+('11252025-00009', 'LMSS-00006', 'LMSU-00067', 'Boang Man', 'brgy. Curry Sta. Margarita, Samar', '0937268465', 2, 4, 5, 2, 4, 0, 0, 0, 14, '1', 15, '280', '', '2025-11-25 11:37:15'),
+('11252025-00010', 'LMSS-00006', 'LMSU-00060', 'Harith Harley', 'Jungle Area, Land of Dawn', '09833476254', 2, 0, 0, 0, 0, 3, 4, 1, 14, '1', 8, '500', '', '2025-11-25 11:44:03'),
+('11252025-00011', 'LMSS-00006', 'LMSU-00059', 'Christian Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', '09874637287', 2, 3, 5, 3, 1, 0, 0, 0, 14, 'Ironing,Fo', 12, '280', '', '2025-11-25 15:37:56'),
+('11252025-00012', 'LMSS-00006', 'LMSU-00060', 'Harith Harley', 'Jungle Area, Land of Dawn', '09833476254', 2, 3, 3, 3, 3, 0, 0, 0, 14, 'Machine Wash,Folding,Ironing', 12, '280', '', '2025-11-25 15:42:50'),
+('11252025-00013', 'LMSS-00006', 'LMSU-00088', 'Tina  Moko', 'Biringan City', '09809876543', 2, 0, 0, 0, 0, 2, 3, 3, 14, 'Machine Wash,Folding', 8, '500', '', '2025-11-25 15:58:05'),
+('11252025-00014', 'LMSS-00006', 'LMSU-00088', 'Tina  Moko', 'Biringan City', '09809876543', 3, 12, 42, 23, 12, 0, 0, 0, 21, '', 89, '420', 'on service', '2025-11-25 16:21:04');
 
 -- --------------------------------------------------------
 
@@ -189,7 +213,8 @@ INSERT INTO `payment_method` (`pm_id`, `shop_id`, `pm_name`, `account_name`, `ac
 (4, 'LMSS-00005', 'GCash', 'Laundry Shop', '09123456111', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00005-1763701054707-download.jpg'),
 (5, 'LMSS-00006', 'GShock', 'Juan Dela Merced', '09123456111', 'Scan QR code or send to mobile number', 'false', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00006-1763543797187-Wallpaper.jpg'),
 (7, 'LMSS-00006', 'PayMaya', 'Juan Dela Cruz', '09123456789', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00006-1763535624461-Screenshot%20(1).jpg'),
-(9, 'LMSS-00005', 'PayMaya', 'Laundry Shop', '09123456789', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00005-1763701708449-Wallpaper.jpg');
+(9, 'LMSS-00005', 'PayMaya', 'Laundry Shop', '09123456789', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00005-1763701708449-Wallpaper.jpg'),
+(10, 'LMSS-00004', 'GCash', 'Kahit ano', '0987648390', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00004-1763954135247-Wallpaper.jpg');
 
 -- --------------------------------------------------------
 
@@ -210,13 +235,13 @@ CREATE TABLE `shoplandingpage_about` (
 --
 
 INSERT INTO `shoplandingpage_about` (`about_id`, `shop_id`, `title`, `description`, `is_displayed`) VALUES
-(1, 'LMSS-00005', 'Who W', 'We’re WashPro, your trusted laundry partner.', 'true'),
+(1, 'LMSS-00005', 'Who W', 'Weâ€™re WashPro, your trusted laundry partner.', 'true'),
 (2, 'LMSS-00005', 'Mission1', 'Deliver fast, clean laundry', 'true'),
 (3, 'LMSS-00006', 'HAHA', 'HAHAHHAHHAHHAHHAHAHAHAH', 'true'),
 (4, 'LMSS-00006', 'HUHU', 'HUHUUHUHUHUUHUHUHUHUHUHUUH', 'false'),
-(5, 'LMSS-00005', 'Personalized Experience.', 'You can always reach us for your laundry concerns. Call or message us — we are happy to help.', 'true'),
+(5, 'LMSS-00005', 'Personalized Experience.', 'You can always reach us for your laundry concerns. Call or message us â€” we are happy to help.', 'true'),
 (6, 'LMSS-00005', 'Mission', 'Hello World', 'false'),
-(7, 'LMSS-00005', 'Personalized Experience101', 'You can always reach us for your laundry concerns. Call or message us — we are happy to help.', 'false'),
+(7, 'LMSS-00005', 'Personalized Experience101', 'You can always reach us for your laundry concerns. Call or message us â€” we are happy to help.', 'false'),
 (8, 'LMSS-00006', 'Chuu.', 'Achu chuu lala lala chuu.', 'true'),
 (9, 'LMSS-00005', 'Quality', 'We take care of your clothes. We segregate the whites and coloreds, use gentle detergents, and avoid damage to your garments.', 'false'),
 (10, 'LMSS-00005', 'Convenience', 'None of your laundry will go missing. Every item is counted, and you\'ll receive automated message notifications for your convenience.', 'false'),
@@ -274,7 +299,9 @@ INSERT INTO `shoplandingpage_pricing` (`pricing_id`, `shop_id`, `categories`, `p
 (17, 'LMSS-00005', 'Curtains', 200.00, 'per load', 'Window curtains and drapes', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763373213292-Screenshot%20(2).png', 'true'),
 (18, 'LMSS-00005', 'Kahit ano', 140.00, 'per load', 'Ambot kun nano', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763450346361-Screenshot%20(4).png', 'false'),
 (19, 'LMSS-00005', 'Folding bed', 150.00, 'per load', 'Kahit ano basta ikaw', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763450384554-Screenshot%20(4).png', 'false'),
-(20, 'LMSS-00006', 'Clothes', 140.00, 'per load', 'Shirts, shorts, pants etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00006-1763535044777-Screenshot%20(1).jpg', 'true');
+(20, 'LMSS-00006', 'Clothes(assorted)', 140.00, 'per load(7kg)', 'Shirts, shorts, pants etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00006-1763535044777-Screenshot%20(1).jpg', 'true'),
+(21, 'LMSS-00006', 'Beddings', 250.00, 'per load(7kg)', 'Bed sheets, pillow cases, towels, curtains etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00006-1764030737961-Wallpaper.jpg', 'false'),
+(22, 'LMSS-00006', 'Clothes(separate white color)', 160.00, 'per load(7kg)', 'Shirts, shorts, pants etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00006-1764036193876-download.jpg', 'true');
 
 -- --------------------------------------------------------
 
@@ -299,12 +326,12 @@ INSERT INTO `shoplandingpage_services` (`service_id`, `shop_id`, `service_name`,
 (16, 'LMSS-00005', '\"Machine Washing washing\"', 'Our state of the art machine washing service guarantees your clothes are thoroughly cleaned and gently cared for. Enjoy fresh, spotless laundry with every visit.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763113577012-download.jpg', 'true'),
 (17, 'LMSS-00005', '\"Dry Cleaning\"', 'Professional dry cleaning service for delicate fabrics and special garments. We use eco-friendly solvents to ensure your clothes look their best.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763176622581-download.jpg', 'true'),
 (18, 'LMSS-00005', '\"Ironing Service\"', 'Expert ironing and pressing service to make your clothes crisp and wrinkle-free. Perfect for business attire and special occasions.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763355685567-download.jpg', 'true'),
-(19, 'LMSS-00005', 'Laundry Wash and More...', 'Washing service details…', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763109073989-Wallpaper.jpg', 'false'),
+(19, 'LMSS-00005', 'Laundry Wash and More...', 'Washing service detailsâ€¦', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763109073989-Wallpaper.jpg', 'false'),
 (20, 'LMSS-00005', '\"Kahit ano\"', 'HAHAHAHAHA mao ka', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763372899704-Screenshot%202025-09-19%20182448.png', 'false'),
 (21, 'LMSS-00005', 'Kaloko mo man', 'HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAHAHAHAH', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00005-1763355618810-download.jpg', 'false'),
 (22, 'LMSS-00006', 'Machine Wash', 'Kahit ano basta ikaw!', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763534800030-download.jpg', 'true'),
-(23, 'LMSS-00006', 'Dry Cleaning', 'HAHAHAHA', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763534844284-download.jpg', 'true'),
-(24, 'LMSS-00006', 'Ironing', 'HUHUHUHU', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763535123975-Screenshot%20(1).jpg', 'true');
+(23, 'LMSS-00006', 'Folding', 'HAHAHAHA', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763534844284-download.jpg', 'true'),
+(24, 'LMSS-00006', 'Ironing', 'HUHUHUHU', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763535123975-Screenshot%20(1).jpg', 'false');
 
 -- --------------------------------------------------------
 
@@ -316,6 +343,7 @@ CREATE TABLE `shop_inventory` (
   `item_id` varchar(100) NOT NULL,
   `shop_id` varchar(100) DEFAULT NULL,
   `item_name` varchar(100) NOT NULL,
+  `categories` varchar(50) DEFAULT NULL,
   `item_description` varchar(255) DEFAULT NULL,
   `item_quantity` int(10) NOT NULL,
   `item_uPrice` decimal(10,2) NOT NULL DEFAULT 0.00,
@@ -328,32 +356,36 @@ CREATE TABLE `shop_inventory` (
 -- Dumping data for table `shop_inventory`
 --
 
-INSERT INTO `shop_inventory` (`item_id`, `shop_id`, `item_name`, `item_description`, `item_quantity`, `item_uPrice`, `item_reoderLevel`, `date_added`, `date_updated`) VALUES
-('LMSI-00001', '00001', 'Laundry Detergent', 'Fabric conditioner', 1500, 30.00, 500, '2025-10-30', NULL),
-('LMSI-00002', '00001', 'Fabric Softener', 'Kuan HAHAHA', 80, 18.75, 30, '2025-10-30', NULL),
-('LMSI-00003', '00001', 'Soap1234', 'HUHUHU', 100, 10.00, 10, '2025-10-30', NULL),
-('LMSI-00004', '00001', 'Soap', '', 45, 15.00, 20, '2025-10-30', NULL),
-('LMSI-00005', '00001', 'Chlorine', 'Kuan HAHAHA', 12, 4.99, 5, '2025-10-30', NULL),
-('LMSI-00006', '00001', 'Downey', 'Fabric conditioner', 10, 8.00, 4, '2025-10-30', NULL),
-('LMSI-00007', '00001', 'haha', 'HAHAHA', 12, 13.00, 12, '2025-10-30', NULL),
-('LMSI-00008', '00001', 'Bleach123', 'HAHAH', 12, 12.00, 12, '2025-10-30', NULL),
-('LMSI-00009', '00001', 'Hajdn', 'Kuan HAHAHA', 12, 11.98, 12, '2025-10-30', NULL),
-('LMSI-00010', '00001', 'Bleach1234', 'HAHAHA', 12, 11.99, 1, '2025-10-30', NULL),
-('LMSI-00011', '00001', 'Chlorine1', 'Hahaha', 10, 18.98, 1, '2025-10-30', NULL),
-('LMSI-00012', '00001', 'Hajd', 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
-('LMSI-00013', '00001', 'Ambot', 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
-('LMSI-00014', '00001', 'Ambot1', 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
-('LMSI-00015', '00001', 'Ambot4', 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
-('LMSI-00016', '00001', 'Bleach15', 'bisan ano', 32, 10.00, 12, '2025-10-30', NULL),
-('LMSI-00017', 'LMSS-00006', 'Surf ', 'Panbabad', 23, 16.00, 8, '2025-11-03', NULL),
-('LMSI-00018', 'LMSS-00006', 'Sabon', 'Panlaba', 27, 7.00, 18, '2025-11-03', NULL),
-('LMSI-00019', 'LMSS-00005', 'Carbon Dioxide', 'Kahit ano basta ikaw', 50, 9.00, 30, '2025-11-03', '2025-11-21'),
-('LMSI-00020', 'LMSS-00005', 'Lala', 'Ambot kun nano', 29, 45.00, 25, '2025-11-03', NULL),
-('LMSI-00021', 'LMSS-00006', 'Bisan ano', 'bisan nano', 26, 8.00, 21, '2025-11-04', NULL),
-('LMSI-00022', 'LMS-00005', 'Soap', '', 45, 15.00, 20, '2025-11-21', NULL),
-('LMSI-00023', 'LMSS-00005', 'Laundry Detergent', 'Kuan HAHAHA', 12, 12.00, 10, '2025-11-21', NULL),
-('LMSI-00024', 'LMSS-00005', 'Surf ', 'Bisan ano', 18, 8.00, 10, '2025-11-21', '2025-11-21'),
-('LMSI-00025', 'LMSS-00005', 'Sabon', 'Kuan HAHAHA', 30, 13.00, 20, '2025-11-21', '2025-11-21');
+INSERT INTO `shop_inventory` (`item_id`, `shop_id`, `item_name`, `categories`, `item_description`, `item_quantity`, `item_uPrice`, `item_reoderLevel`, `date_added`, `date_updated`) VALUES
+('LMSI-00001', '00001', 'Laundry Detergent', NULL, 'Fabric conditioner', 1500, 30.00, 500, '2025-10-30', NULL),
+('LMSI-00002', '00001', 'Fabric Softener', NULL, 'Kuan HAHAHA', 80, 18.75, 30, '2025-10-30', NULL),
+('LMSI-00003', '00001', 'Soap1234', NULL, 'HUHUHU', 100, 10.00, 10, '2025-10-30', NULL),
+('LMSI-00004', '00001', 'Soap', NULL, '', 45, 15.00, 20, '2025-10-30', NULL),
+('LMSI-00005', '00001', 'Chlorine', NULL, 'Kuan HAHAHA', 12, 4.99, 5, '2025-10-30', NULL),
+('LMSI-00006', '00001', 'Downey', NULL, 'Fabric conditioner', 10, 8.00, 4, '2025-10-30', NULL),
+('LMSI-00007', '00001', 'haha', NULL, 'HAHAHA', 12, 13.00, 12, '2025-10-30', NULL),
+('LMSI-00008', '00001', 'Bleach123', NULL, 'HAHAH', 12, 12.00, 12, '2025-10-30', NULL),
+('LMSI-00009', '00001', 'Hajdn', NULL, 'Kuan HAHAHA', 12, 11.98, 12, '2025-10-30', NULL),
+('LMSI-00010', '00001', 'Bleach1234', NULL, 'HAHAHA', 12, 11.99, 1, '2025-10-30', NULL),
+('LMSI-00011', '00001', 'Chlorine1', NULL, 'Hahaha', 10, 18.98, 1, '2025-10-30', NULL),
+('LMSI-00012', '00001', 'Hajd', NULL, 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
+('LMSI-00013', '00001', 'Ambot', NULL, 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
+('LMSI-00014', '00001', 'Ambot1', NULL, 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
+('LMSI-00015', '00001', 'Ambot4', NULL, 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
+('LMSI-00016', '00001', 'Bleach15', NULL, 'bisan ano', 32, 10.00, 12, '2025-10-30', NULL),
+('LMSI-00017', 'LMSS-00006', 'Surf ', NULL, 'Panbabad', 23, 16.00, 10, '2025-11-03', '2025-11-24'),
+('LMSI-00018', 'LMSS-00006', 'Sabon', NULL, 'Panlaba', 27, 7.00, 20, '2025-11-03', '2025-11-24'),
+('LMSI-00019', 'LMSS-00005', 'Carbon Dioxide', NULL, 'Kahit ano basta ikaw', 50, 9.00, 30, '2025-11-03', '2025-11-21'),
+('LMSI-00020', 'LMSS-00005', 'Lala', NULL, 'Ambot kun nano', 29, 45.00, 25, '2025-11-03', NULL),
+('LMSI-00021', 'LMSS-00006', 'Bisan ano', NULL, 'bisan nano', 30, 8.00, 25, '2025-11-04', '2025-11-24'),
+('LMSI-00022', 'LMS-00005', 'Soap', NULL, '', 45, 15.00, 20, '2025-11-21', NULL),
+('LMSI-00023', 'LMSS-00005', 'Laundry Detergent', NULL, 'Kuan HAHAHA', 12, 12.00, 10, '2025-11-21', NULL),
+('LMSI-00024', 'LMSS-00005', 'Surf ', NULL, 'Bisan ano', 18, 8.00, 10, '2025-11-21', '2025-11-21'),
+('LMSI-00025', 'LMSS-00005', 'Sabon', NULL, 'Kuan HAHAHA', 30, 13.00, 20, '2025-11-21', '2025-11-21'),
+('LMSI-00026', 'LMSS-00004', 'Bleach', NULL, 'Panbabad', 40, 8.00, 1, '2025-11-24', NULL),
+('LMSI-00027', 'LMSS-00004', 'Sabon', NULL, 'Scan QR code or send to mobile number', 2, 12.00, 1, '2025-11-24', NULL),
+('LMSI-00028', 'LMSS-00006', 'Laundry Detergent', NULL, 'Kuan HAHAHA', 100, 12.00, 30, '2025-11-24', NULL),
+('LMSI-00029', 'LMSS-00006', 'Ariel', NULL, 'Panbabad', 50, 15.00, 3, '2025-11-24', '2025-11-24');
 
 -- --------------------------------------------------------
 
@@ -384,10 +416,10 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lName`, `user_address`, `username`, `contactNum`, `email`, `role`, `status`, `password`, `date_registered`, `registered_by`) VALUES
 ('LMSU-00059', 'LMSS-00006', 'Christian', 'Dela', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'Itchan695', '09874637287', 'Itchan695@test.com', 'customer', 'Active', '$2b$10$vifiagi4fB6B6zuUjqsjI.wr2z2iQRHPWbR8HIZ7k5KhczD9eKUlm', '2025-10-31', 'ADMIN'),
-('LMSU-00060', 'LMSS-00006', 'Harith', 'Joy', 'Harley', 'Jungle Area, Land of Dawn', 'HarithHarley', '09833476254', 'HarithHarley@ex.com', 'staff', 'Active', '$2b$10$VyVk9k82VTH1xXGqyAsFK.Peg8hWVqePimaS9IYMSztcbXfDlTmcO', '2025-10-31', 'ADMIN'),
+('LMSU-00060', 'LMSS-00006', 'Harith', 'Joy', 'Harley', 'Jungle Area, Land of Dawn', 'HarithHarley', '09833476254', 'HarithHarley@ex.com', 'CUSTOMER', 'Active', '$2b$10$VyVk9k82VTH1xXGqyAsFK.Peg8hWVqePimaS9IYMSztcbXfDlTmcO', '2025-10-31', 'ADMIN'),
 ('LMSU-00067', 'LMSS-00006', 'Boang', 'Ka', 'Man', 'brgy. Curry Sta. Margarita, Samar', 'BuangKaMan', '0937268465', 'buang.ka.man@sample.com', 'CUSTOMER', 'Active', '$2b$10$aXYbaIJ09XmNOEsh7xKnfO6q5FaL3c7JaG9xf4ywu3vYpCDurG7HW', '2025-11-03', 'Customer'),
 ('LMSU-00068', 'LMSS-00006', 'Hello', 'Haha', 'World', 'Brgy. Panabatan Sta. Margarita, Samar', 'helloWorld', '09874563214', 'hello.world@test.com', 'CUSTOMER', 'Active', '$2b$10$QZdpouLfHENU33gZeB9cde2FmK195ymNyxqO/EO.6FBsREzSae306', '2025-11-03', 'Customer'),
-('LMSU-00069', 'LMSS-00006', 'Harry', 'Bulawan', 'Potter', 'Brgy. Calanyugan Pagsanghan, Samar', 'HarryPotter', '09874532718', 'harry.potter@sample.com', 'customer', 'Active', '$2b$10$TPCOxs894oIAM8nx9k78bexx.ueMhDZQd26YHsiqpyFAu6lGRRLMS', '2025-11-03', 'ADMIN'),
+('LMSU-00069', 'LMSS-00006', 'Harry', 'Bulawan', 'Potter', 'Brgy. Calanyugan Pagsanghan, Samar', 'HarryPotter', '09874532718', 'harry.potter@sample.com', 'STAFF', 'Active', '$2b$10$TPCOxs894oIAM8nx9k78bexx.ueMhDZQd26YHsiqpyFAu6lGRRLMS', '2025-11-03', 'ADMIN'),
 ('LMSU-00070', 'LMSS-00006', 'Kantotero', 'Kaluko', 'Manatad', 'Brgy. Erenas San Jorge, Samar', 'KantoteroManatad', '09876234523', 'Kantotero.Manatad@sample.com', 'customer', 'Active', '$2b$10$GD429Sg6oYZmfYDV1bGcHubTjaljv9sGKhQ2wVqxJ80hiKriZDqry', '2025-11-03', 'ADMIN'),
 ('LMSU-00071', 'LMSS-00006', 'Christian', 'So', 'Lamoste', 'Biringan City', 'ChistianLamoste', '09857643521', 'christian2002@example.com', 'CUSTOMER', 'Active', '$2b$10$hCMg8IwrF0NawtEx7SZjvu5Hbpbbc9KqLtvodcL.fChsQJ5xr.FBq', '2025-11-03', 'Customer'),
 ('LMSU-00072', 'LMSS-00006', 'Kai', 'Dacuba', 'Sotto', 'Brgy. Dapdap Tarangnan, Samar', 'KaiSotto', '09874634256', 'KaiSotto@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$LrTzBf8YmKhFsMo.pLWbIOqCcPKKjWcUSCXXvI6JLx.6EdCHbrMBa', '2025-11-03', 'CUSTOMER'),
@@ -404,7 +436,9 @@ INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lNa
 ('LMSU-00083', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Brgy. San Jaun San Jorge, Samar', 'ChristianLamoste', '09875098467', 'lamoste.christian@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$6tcHHmMzpRQHZMiO24USS.aeQYOchPeWur6k/6urqs308FWGU8Tfa', '2025-11-04', 'CUSTOMER'),
 ('LMSU-00084', 'LMSS-00005', 'Agapito', 'Sagirit', 'Hampaslupa', 'Brgy. Panabatan Sta. Margarita, Samar', 'agapitoHampaslupa', '09870947381', 'agapitoHampaslupa@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$DW/BVFhLJBZsQ1JHW7trYukkTRrkdP3X/f6jbXOnhLpzvJxJbZ8f.', '2025-11-04', 'CUSTOMER'),
 ('LMSU-00085', 'LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'testuser1', '09898746352', 'testuser1@example.com', 'staff', 'Active', '$2b$10$MgNXjdqaN0FCnMPW1hvtgetcMfNKbsaCSAXHX68RZGUCCZv0InQk.', '2025-11-15', 'ADMIN'),
-('LMSU-00086', 'LMSS-00004', 'LeBron', 'Cupal', 'James', 'Brgy. Calanyugan Pagsanghan, Samar', 'LeBronJames123', '9876543210', 'LeBron.James@sample.com', 'customer', 'Active', '$2b$10$CIbdLECsuaTHi7BqIPadeeHxtRgD/tibL7Vmj/rcoLaqjEzj0MyX6', '2025-11-21', 'ADMIN');
+('LMSU-00086', 'LMSS-00004', 'LeBron', 'Cupal', 'James', 'Brgy. Calanyugan Pagsanghan, Samar', 'LeBronJames123', '9876543210', 'LeBron.James@sample.com', 'STAFF', 'Active', '$2b$10$CIbdLECsuaTHi7BqIPadeeHxtRgD/tibL7Vmj/rcoLaqjEzj0MyX6', '2025-11-21', 'ADMIN'),
+('LMSU-00087', 'LMSS-00006', 'Christian', 'Te', 'Lamoste', 'Brgy. Panabatan Sta. Margarita, Samar', 'Itchan.qt', '09631199862', 'christian1@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$indpHZj3ZtX9qA/Es8sTo.CXAtC3JnaE/23/S0Ln7FXuuzZK2iB6a', '2025-11-24', 'CUSTOMER'),
+('LMSU-00088', 'LMSS-00006', 'Tina ', 'Moran', 'Moko', 'Biringan City', 'tina.moran.moko', '09809876543', 'tina.moran.moko@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$8zdB9BKoKV7LE54S5VtqBOnxOSq5gmzo379JrV4GsIHXYQk0MG9BS', '2025-11-24', 'CUSTOMER');
 
 --
 -- Indexes for dumped tables
@@ -489,7 +523,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `payment_method`
 --
 ALTER TABLE `payment_method`
-  MODIFY `pm_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `pm_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `shoplandingpage_about`
@@ -501,7 +535,7 @@ ALTER TABLE `shoplandingpage_about`
 -- AUTO_INCREMENT for table `shoplandingpage_pricing`
 --
 ALTER TABLE `shoplandingpage_pricing`
-  MODIFY `pricing_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `pricing_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `shoplandingpage_services`
