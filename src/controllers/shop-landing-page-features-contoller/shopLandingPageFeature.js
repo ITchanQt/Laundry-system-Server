@@ -721,32 +721,6 @@ const getDisplayedPriceByShopId = async (req, res) => {
   }
 };
 
-const getDisplayedServicesByShopId = async (req, res) => {
-  try {
-    const { shop_id } = req.params;
-    if (!shop_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Shop ID parameters is required!",
-      });
-    }
-
-    const displayedServices =
-      await ShopServicesModel.searchDisplayedServicesById(shop_id);
-    res.status(200).json({
-      success: true,
-      message: "Displayed services successfully get!",
-      data: displayedServices,
-    });
-  } catch (error) {
-    console.error("getDisplayedServicesByShopId error: ", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error!",
-    });
-  }
-};
-
 module.exports = {
   getShopAbout,
   getShopServices,
@@ -770,5 +744,4 @@ module.exports = {
   updateShopPrice,
   updatePricesDisplaySettings,
   getDisplayedPriceByShopId,
-  getDisplayedServicesByShopId
 };
