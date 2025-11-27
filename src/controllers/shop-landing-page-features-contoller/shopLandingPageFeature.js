@@ -3,6 +3,7 @@ const ShopAboutModel = require("../../models/shop-landing-page-features-model/Sh
 const ShopServicesModel = require("../../models/shop-landing-page-features-model/ShopServicesModel");
 const ShopPricingModel = require("../../models/shop-landing-page-features-model/ShopPricingModel");
 const { supabase } = require("../../config/supabase");
+const ShopNameAndSlugModel = require("../../models/shop-landing-page-features-model/ShopNameAndSlugModel");
 
 const getShopAbout = async (req, res) => {
   try {
@@ -240,6 +241,24 @@ const updateDisplaySettings = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Internal server error while updating display settings",
+    });
+  }
+};
+
+const getShopNameAndSlug = async (req, res) => {
+  try {
+    const shopNameAndSlug =
+      await ShopNameAndSlugModel.searchAllShopNameAndSlug();
+    res.status(200).json({
+      success: true,
+      message: "Shop name and slug fetch successfully",
+      data: shopNameAndSlug,
+    });
+  } catch (error) {
+    console.error("ShopNameAndSlugModel error ", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
     });
   }
 };
@@ -744,4 +763,6 @@ module.exports = {
   updateShopPrice,
   updatePricesDisplaySettings,
   getDisplayedPriceByShopId,
+
+  getShopNameAndSlug
 };
