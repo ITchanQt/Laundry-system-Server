@@ -21,7 +21,7 @@ class ServicesModel extends BaseModel {
 
   static async findServicesByShopId(shop_id) {
     try {
-      const sql = "SELECT * FROM shopLandingPage_services WHERE shop_id = ?";
+      const sql = "SELECT * FROM shopLandingPage_services WHERE is_displayed = 'true' AND shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {

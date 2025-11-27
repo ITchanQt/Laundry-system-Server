@@ -9,7 +9,7 @@ class PricingModel extends BaseModel {
 
   static async findPricingById(shop_id) {
     try {
-      const sql = "SELECT * FROM shoplandingpage_pricing WHERE shop_id = ?";
+      const sql = "SELECT * FROM shoplandingpage_pricing WHERE is_displayed = 'true' AND shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
