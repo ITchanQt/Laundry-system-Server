@@ -15,6 +15,7 @@ const {
   getShopServices,
   getShopPricing,
   getShopNameAndSlug,
+  getShopBySlug,
 } = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
 const {
   forgotPassword,
@@ -29,7 +30,8 @@ router.post("/register-admin", registerAdmin);
 router.post("/register-laundry-shop", registerLaundryShop);
 router.put("/edit-shop/:shop_id", editShop);
 
-router.get('/shop-name-slug', getShopNameAndSlug);
+router.get("/shop-name-slug", getShopNameAndSlug);
+router.get("/shop-slug/:slug", getShopBySlug);
 
 //________ROUTES FOR LANDING PAGE DATA______________
 router.get("/shop-about/:slug", getShopAbout);
