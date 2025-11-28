@@ -740,6 +740,40 @@ const getDisplayedPriceByShopId = async (req, res) => {
   }
 };
 
+
+const getShopBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    if (!slug) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop slug is require",
+      });
+    }
+
+    const shop = await ShopModel.findBySlug(slug);
+    if (!shop) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Shop existed",
+      data: shop,
+    });
+  } catch (error) {
+    console.error("getShopBySlug error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 module.exports = {
   getShopAbout,
   getShopServices,
@@ -764,5 +798,6 @@ module.exports = {
   updatePricesDisplaySettings,
   getDisplayedPriceByShopId,
 
-  getShopNameAndSlug
+  getShopNameAndSlug,
+  getShopBySlug
 };
