@@ -19,63 +19,62 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-    try {
-        const { emailOrUsername, password } = req.body;
-        console.log("Login attempt:", { emailOrUsername });
+  try {
+    const { emailOrUsername, password } = req.body;
+    console.log("Login attempt:", { emailOrUsername });
 
-        const result = await User.login(emailOrUsername, password);
+    const result = await User.login(emailOrUsername, password);
 
-        if (result.error) {
-            return res.status(400).json({ message: result.error });
-        }
-
-        res.cookie("token", result.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 3600000,
-        });
-
-        res.json({
-            message: "Login successful",
-            user: result.user,
-            token: `Bearer ${result.token}`
-        });
-    } catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ error: error.message });
+    if (result.error) {
+      return res.status(400).json({ message: result.error });
     }
+
+    res.cookie("token", result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 3600000,
+    });
+
+    res.json({
+      message: "Login successful",
+      user: result.user,
+      token: `Bearer ${result.token}`,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const loginAdmin = async (req, res) => {
-    try {
-        const { emailOrUsername, password } = req.body;
-        const apiKey = req.headers['x-api-key'];
+  try {
+    const { shop_id, emailOrUsername, password } = req.body;
+    const apiKey = req.headers["x-api-key"];
 
-        // Validate API key
-        if (!apiKey || apiKey !== process.env.API_KEY) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid or missing API key'
-            });
-        }
-
-        const result = await Admin.login(emailOrUsername, password);
-
-        if (result.error) {
-            return res.status(400).json({ message: result.error });
-        }
-
-        res.json({
-            message: "Admin login successful",
-            admin: result.admin,
-            token: `Bearer ${result.token}`,
-            apiKey: process.env.API_KEY // Include API key in response
-        });
-    } catch (error) {
-        console.error("Admin login error:", error);
-        res.status(500).json({ error: error.message });
+    if (!apiKey || apiKey !== process.env.API_KEY) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or missing API key",
+      });
     }
+
+    const result = await Admin.login(shop_id, emailOrUsername, password);
+
+    if (result.error) {
+      return res.status(400).json({ message: result.error });
+    }
+
+    return res.json({
+      message: "Admin login successful",
+      admin: result.admin,
+      token: `Bearer ${result.token}`,
+      apiKey: process.env.API_KEY,
+    });
+  } catch (error) {
+    console.error("Admin login error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 const logoutUser = (req, res) => {
