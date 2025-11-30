@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 28, 2025 at 06:45 AM
+-- Generation Time: Nov 30, 2025 at 09:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -215,7 +215,7 @@ CREATE TABLE `payment_method` (
 
 INSERT INTO `payment_method` (`pm_id`, `shop_id`, `pm_name`, `account_name`, `account_number`, `description`, `is_displayed`, `is_static`, `qrCode_image_url`) VALUES
 (4, 'LMSS-00005', 'GCash', 'Laundry Shop', '09123456111', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00005-1763701054707-download.jpg'),
-(5, 'LMSS-00006', 'GShock', 'Juan Dela Merced', '09123456111', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00006-1763543797187-Wallpaper.jpg'),
+(5, 'LMSS-00006', 'GCash', 'Juan Dela Merced', '09123456111', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00006-1763543797187-Wallpaper.jpg'),
 (7, 'LMSS-00006', 'PayMaya', 'Juan Dela Cruz', '09123456789', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00006-1763535624461-Screenshot%20(1).jpg'),
 (9, 'LMSS-00005', 'PayMaya', 'Laundry Shop', '09123456789', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00005-1763701708449-Wallpaper.jpg'),
 (10, 'LMSS-00004', 'GCash', 'Kahit ano', '0987648390', 'Scan QR code or send to mobile number', 'true', 'false', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/payment-methods/LMSS-00004-1763954135247-Wallpaper.jpg');
@@ -304,7 +304,7 @@ INSERT INTO `shoplandingpage_pricing` (`pricing_id`, `shop_id`, `categories`, `p
 (18, 'LMSS-00005', 'Kahit ano', 140.00, 'per load', 'Ambot kun nano', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763450346361-Screenshot%20(4).png', 'false'),
 (19, 'LMSS-00005', 'Folding bed', 150.00, 'per load', 'Kahit ano basta ikaw', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00005-1763450384554-Screenshot%20(4).png', 'false'),
 (20, 'LMSS-00006', 'Clothes(assorted)', 140.00, 'per load(7kg)', 'Shirts, shorts, pants etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00006-1763535044777-Screenshot%20(1).jpg', 'true'),
-(21, 'LMSS-00006', 'Beddings', 250.00, 'per load(7kg)', 'Bed sheets, pillow cases, towels, curtains etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00006-1764030737961-Wallpaper.jpg', 'false'),
+(21, 'LMSS-00006', 'Beddings', 250.00, 'per load(7kg)', 'Bed sheets, pillow cases, towels, curtains etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00006-1764030737961-Wallpaper.jpg', 'true'),
 (22, 'LMSS-00006', 'Clothes(separate white color)', 160.00, 'per load(7kg)', 'Shirts, shorts, pants etc.', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/prices/LMSS-00006-1764036193876-download.jpg', 'true');
 
 -- --------------------------------------------------------
@@ -444,7 +444,15 @@ INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lNa
 ('LMSU-00087', 'LMSS-00006', 'Christian', 'Te', 'Lamoste', 'Brgy. Panabatan Sta. Margarita, Samar', 'Itchan.qt', '09631199862', 'christian1@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$indpHZj3ZtX9qA/Es8sTo.CXAtC3JnaE/23/S0Ln7FXuuzZK2iB6a', '2025-11-24', 'CUSTOMER'),
 ('LMSU-00088', 'LMSS-00006', 'Tina ', 'Moran', 'Moko', 'Biringan City', 'tina.moran.moko', '09809876543', 'tina.moran.moko@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$8zdB9BKoKV7LE54S5VtqBOnxOSq5gmzo379JrV4GsIHXYQk0MG9BS', '2025-11-24', 'CUSTOMER'),
 ('LMSU-00089', 'LMSS-00006', 'LeBron', 'Cabubas', 'James', 'Brgy. Panabatan Sta. Margarita, Samar', 'LeBronJames123', '09631199862', 'lebron.james123@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$25C3r41TXt.hOlbmxRmb0eQtnmbUfzoGzYyauFRDk6PITD4PqgWQa', '2025-11-26', 'CUSTOMER'),
-('LMSU-00090', 'LMSS-00006', 'Victor', 'Manlolo', 'Wembanyama', 'Brgy. Diaz Gandara, Samar', 'VictorWem', '09631199862', 'wembanyama@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$rHkaRi.7IwGYhd1YdAB2RuWp2UvZA/gt4l7MtGd/oEPfs5zgmm7N6', '2025-11-26', 'CUSTOMER');
+('LMSU-00090', 'LMSS-00006', 'Victor', 'Manlolo', 'Wembanyama', 'Brgy. Diaz Gandara, Samar', 'VictorWem', '09631199862', 'wembanyama@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$rHkaRi.7IwGYhd1YdAB2RuWp2UvZA/gt4l7MtGd/oEPfs5zgmm7N6', '2025-11-26', 'CUSTOMER'),
+('LMSU-00091', 'LMSS-00006', 'Kobe', 'Kantotero', 'Brayant', 'Brgy. San Agustin Gandara, Samar', 'kobe.brayant', '09897865412', 'kobe.brayant@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$sQsN1YS.FagMYazSdYEo3uGtbzdLb90UCFMhm7cn4fwtlu3DHJGYy', '2025-11-30', 'CUSTOMER'),
+('LMSU-00092', 'LMSS-00006', 'Justine', 'Dumanacal', 'Brownlee', 'Brgy. Malayog Gandara, Samar', 'jus.Brownlee', '09809876485', 'justine.brownlee@test.com', 'CUSTOMER', 'Inactive', '$2b$10$HeeYFmHGIbuKBiv78p/qDuNFKCOliGLHleJIf/zjhV4bj9nRe1bA.', '2025-11-30', 'CUSTOMER'),
+('LMSU-00093', 'LMSS-00006', 'Justine', 'Kantotero', 'Doe', 'Brgy. Malayog Gandara, Samar', 'jusDoe', '09809876905', 'jus.doe@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$BwT0nFAZwHmCPgAvQj1kq.Tr2Eh9crhiLRdHYyq58LRxNtixLly12', '2025-11-30', 'CUSTOMER'),
+('LMSU-00094', 'LMSS-00006', 'Majin', 'Tu', 'Boo', 'Brgy. Dapdap Tarangnan, Samar', 'magin.boo', '09809785986', 'majin.boo@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$kFoYNhhCa9AwU717FuhICOhec7tCWzQTmCUMpqxmlbQDIQ3B5tYK.', '2025-11-30', 'CUSTOMER'),
+('LMSU-00095', 'LMSS-00006', 'Taguro', 'Kantotero', 'Dela cruz', 'Mundo ng mga Halimaw', 'taguro69', '09809870968', 'taguro@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$gKiHqoVcNp2ozY2n.btqFezETSaDzH4AyGyvE10.jejXiMAcLd7XK', '2025-11-30', 'CUSTOMER'),
+('LMSU-00096', 'LMSS-00006', 'Ichigo', 'Manyakol', 'Urusoka', 'Soul Society', 'ichigoUrusoka', '09127645231', 'ichigo.urusoka@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$187AukMEVOgV5Kykv3OWVul.vJu0ziPyB9fvANHyw/EMtBh0sTkIu', '2025-11-30', 'CUSTOMER'),
+('LMSU-00097', 'LMSS-00006', 'Rob', 'Sagirit', 'Manugalpok', 'Brgy. Panabatan Sta. Margarita, Samar', 'rob123', '09890481767', 'rob@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$F5RajgxqEE.qVT5c0H/A6.SlLddMIo.bwE2MF621dGe7gOAQ4Mdja', '2025-11-30', 'CUSTOMER'),
+('LMSU-00098', 'LMSS-00006', 'Register ', 'New', 'Account', 'Kahit saan', 'RegisterAccount', '09870987635', 'register@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$D2ObH0uhdJl1VwhX2bU4iuXK4RpcvAB1LdiBWc6Cs5C.J77GvkKg6', '2025-11-30', 'CUSTOMER');
 
 --
 -- Indexes for dumped tables
