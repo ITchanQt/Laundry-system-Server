@@ -6,9 +6,13 @@ const Admin = require("../models/Admin");
 require("dotenv").config();
 const registerUser = async (req, res) => {
   try {
-    const existingUser = await User.findByEmail(req.body.email);
+    const { shop_id, email } = req.body;
+
+    const existingUser = await User.findByEmail(shop_id, email);
     if (existingUser) {
-      return res.status(400).json({ message: "Email already exists" });
+      return res
+        .status(400)
+        .json({ message: "Email already exists on this shop" });
     }
 
     await User.create(req.body);
@@ -20,29 +24,30 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { emailOrUsername, password } = req.body;
-    console.log("Login attempt:", { emailOrUsername });
+    const { shop_id, emailOrUsername, password } = req.body;
+    const apiKey = req.headers["x-api-key"];
 
-    const result = await User.login(emailOrUsername, password);
+    if (!apiKey || apiKey !== process.env.API_KEY) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or missing API key",
+      });
+    }
+
+    const result = await User.login(shop_id, emailOrUsername, password);
 
     if (result.error) {
       return res.status(400).json({ message: result.error });
     }
 
-    res.cookie("token", result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 3600000,
-    });
-
-    res.json({
-      message: "Login successful",
+    return res.json({
+      message: "User login successful",
       user: result.user,
       token: `Bearer ${result.token}`,
+      apiKey: process.env.API_KEY,
     });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("User Login error:", error);
     res.status(500).json({ error: error.message });
   }
 };

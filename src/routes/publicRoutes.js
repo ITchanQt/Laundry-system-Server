@@ -24,7 +24,7 @@ const {
 
 // Public routes that don't need authentication
 router.post("/register", registerUser);
-router.post("/login", loginUser);
+router.post("/user/login", loginUser);
 router.post("/admin/login", loginAdmin);
 router.post("/register-admin", registerAdmin);
 router.post("/register-laundry-shop", registerLaundryShop);
