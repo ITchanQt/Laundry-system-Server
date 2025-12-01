@@ -54,12 +54,12 @@ class Customer extends BaseModel {
         cus_fName,
         cus_lName,
         cus_eMail,
-        cus_role = "CUSTOMER", 
+        cus_role = "CUSTOMER",
         cus_status = "PENDING",
         cus_phoneNum,
         cus_address,
         cus_username,
-        registeredBy
+        registeredBy,
       } = customerData;
 
       const sql = `INSERT INTO customers 
@@ -76,7 +76,7 @@ class Customer extends BaseModel {
         cus_phoneNum,
         cus_address,
         cus_username,
-        registeredBy
+        registeredBy,
       ]);
     } catch (error) {
       throw new Error(`Failed to register customer: ${error.message}`);
@@ -119,7 +119,9 @@ class Customer extends BaseModel {
       }
 
       // Fetch customer details first
-      const customer = await this.findUserCustomerById(customerReceiptData.userId);
+      const customer = await this.findUserCustomerById(
+        customerReceiptData.userId
+      );
       if (!customer) {
         throw new Error("Customer not found");
       }
@@ -195,29 +197,29 @@ class Customer extends BaseModel {
 
   static async editCustomerbyId(customerId, updateData) {
     try {
-        if (!customerId) {
-            throw new Error("Customer ID is required");
-        }
+      if (!customerId) {
+        throw new Error("Customer ID is required");
+      }
 
-        // First check if customer exists
-        const customer = await this.findByCustomerId(customerId);
-        if (!customer) {
-            throw new Error("Customer not found");
-        }
+      // First check if customer exists
+      const customer = await this.findByCustomerId(customerId);
+      if (!customer) {
+        throw new Error("Customer not found");
+      }
 
-        // Prepare update data with existing values as fallback
-        const updatedData = {
-            cus_fName: updateData.cus_fName || customer.cus_fName,
-            cus_lName: updateData.cus_lName || customer.cus_lName,
-            cus_eMail: updateData.cus_eMail || customer.cus_eMail,
-            cus_role: updateData.cus_role || customer.cus_role,
-            cus_status: updateData.cus_status || customer.cus_status,
-            cus_phoneNum: updateData.cus_phoneNum || customer.cus_phoneNum,
-            cus_address: updateData.cus_address || customer.cus_address,
-            cus_username: updateData.cus_username || customer.cus_username
-        };
+      // Prepare update data with existing values as fallback
+      const updatedData = {
+        cus_fName: updateData.cus_fName || customer.cus_fName,
+        cus_lName: updateData.cus_lName || customer.cus_lName,
+        cus_eMail: updateData.cus_eMail || customer.cus_eMail,
+        cus_role: updateData.cus_role || customer.cus_role,
+        cus_status: updateData.cus_status || customer.cus_status,
+        cus_phoneNum: updateData.cus_phoneNum || customer.cus_phoneNum,
+        cus_address: updateData.cus_address || customer.cus_address,
+        cus_username: updateData.cus_username || customer.cus_username,
+      };
 
-        const query = `UPDATE customers
+      const query = `UPDATE customers
             SET cus_fName = ?,
                 cus_lName = ?,
                 cus_eMail = ?,
@@ -227,29 +229,113 @@ class Customer extends BaseModel {
                 cus_address = ?,
                 cus_username = ?
             WHERE cus_id = ?`;
-          
-        const result = await this.query(query, [
-            updatedData.cus_fName,
-            updatedData.cus_lName,
-            updatedData.cus_eMail,
-            updatedData.cus_role,
-            updatedData.cus_status,
-            updatedData.cus_phoneNum,
-            updatedData.cus_address,
-            updatedData.cus_username,
-            customerId
-        ]);
 
-        if (result.affectedRows === 0) {
-            throw new Error("Failed to update customer");
-        }
+      const result = await this.query(query, [
+        updatedData.cus_fName,
+        updatedData.cus_lName,
+        updatedData.cus_eMail,
+        updatedData.cus_role,
+        updatedData.cus_status,
+        updatedData.cus_phoneNum,
+        updatedData.cus_address,
+        updatedData.cus_username,
+        customerId,
+      ]);
 
-        // Return updated customer data
-        return this.findByCustomerId(customerId);
+      if (result.affectedRows === 0) {
+        throw new Error("Failed to update customer");
+      }
+
+      // Return updated customer data
+      return this.findByCustomerId(customerId);
     } catch (error) {
-        throw new Error(`Failed to update customer: ${error.message}`);
+      throw new Error(`Failed to update customer: ${error.message}`);
     }
-}
+  }
+
+  // Customer fetching on customer module
+  static async selectUserByIdShopIdRole(user_id, shop_id, role) {
+    try {
+      const sql =
+        "SELECT * FROM users WHERE user_id = ? AND shop_id = ? AND role = ?";
+      const results = await this.query(sql, [user_id, shop_id, role]);
+      return results[0];
+    } catch (error) {
+      console.error("Error selecting customer:", error);
+      throw new Error(`Failed to fetch customer: ${error.message}`);
+    }
+  }
+
+  static async editCustomerByUserIdShopIdRole(
+    user_id,
+    shop_id,
+    role,
+    updateData
+  ) {
+    try {
+      if (!user_id || !shop_id || !role) {
+        throw new Error("Customer ID, shop ID and role is required");
+      }
+
+      // First check if customer exists
+      const customer = await this.selectUserByIdShopIdRole(
+        user_id,
+        shop_id,
+        role
+      );
+      if (!customer) {
+        throw new Error("Customer not found");
+      }
+      const updatedCustomerData = {
+        user_fName: updateData.user_fName || customer.user_fName,
+        user_mName: updateData.user_mName || customer.user_mName,
+        user_lName: updateData.user_lName || customer.user_lName,
+        email: updateData.email || customer.email,
+        contactNum: updateData.contactNum || customer.contactNum,
+        user_address: updateData.user_address || customer.user_address,
+        username: updateData.username || customer.username,
+      };
+
+      const query = `UPDATE users
+            SET user_fName = ?,
+                user_mName = ?,
+                user_lName = ?,
+                email = ?,
+                contactNum = ?,
+                user_address = ?,
+                username = ?
+            WHERE user_id = ?
+            AND shop_id = ?
+            AND role = ?`;
+
+      const result = await this.query(query, [
+        updatedCustomerData.user_fName,
+        updatedCustomerData.user_mName,
+        updatedCustomerData.user_lName,
+        updatedCustomerData.email,
+        updatedCustomerData.contactNum,
+        updatedCustomerData.user_address,
+        updatedCustomerData.username,
+        user_id,
+        shop_id,
+        role,
+      ]);
+
+      if (result.affectedRows === 0) {
+        throw new Error("Failed to update customer");
+      }
+
+      // Return updated customer data
+      return this.selectUserByIdShopIdRole(
+        user_id,
+        shop_id,
+        role
+      );
+    } catch (error) {
+      console.error("Error editing customer:", error);
+      throw new Error(`Failed to editing customer: ${error.message}`);
+    }
+  }
 }
 
 module.exports = Customer;
