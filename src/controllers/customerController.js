@@ -168,6 +168,57 @@ const getUserByUserIdShopIdRole = async (req, res) => {
   }
 };
 
+const updateCustomerByUserIdShopIdRole = async (req, res) => {
+  try {
+    const { user_id, shop_id, role } = req.params;
+
+    if (!user_id || !shop_id || !role) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID, Shop ID, and Role are required.",
+      });
+    }
+
+    if (role.toUpperCase() !== "CUSTOMER") {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Access forbidden: This endpoint is only for CUSTOMER role queries.",
+      });
+    }
+
+    const updatedCustomerData = await Customer.editCustomerByUserIdShopIdRole(
+      user_id,
+      shop_id,
+      role,
+      req.body
+    );
+
+    if (!updatedCustomerData) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found or invalid shop/user combination.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Customer updated successfully!",
+      data: updatedCustomerData,
+    });
+  } catch (error) {
+    console.error(
+      "customerController.updateCustomerByUserIdShopIdRole error: ",
+      error
+    );
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -177,4 +228,5 @@ module.exports = {
 
   // Customer fetching on customer module
   getUserByUserIdShopIdRole,
+  updateCustomerByUserIdShopIdRole
 };

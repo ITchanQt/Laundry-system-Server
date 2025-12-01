@@ -7,6 +7,7 @@ const {
   createLaundryRecord,
   editCustomer,
   getUserByUserIdShopIdRole,
+  updateCustomerByUserIdShopIdRole,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -28,5 +29,9 @@ router.post("/laundry-record", createLaundryRecord);
 
 // Customer fetching on customer module
 router.get("/get-customer/:user_id/:shop_id/:role", getUserByUserIdShopIdRole);
+router.put(
+  "/update-customer/:user_id/:shop_id/:role",
+  updateCustomerByUserIdShopIdRole
+);
 
 module.exports = router;

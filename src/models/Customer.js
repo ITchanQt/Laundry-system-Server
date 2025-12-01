@@ -265,6 +265,77 @@ class Customer extends BaseModel {
       throw new Error(`Failed to fetch customer: ${error.message}`);
     }
   }
+
+  static async editCustomerByUserIdShopIdRole(
+    user_id,
+    shop_id,
+    role,
+    updateData
+  ) {
+    try {
+      if (!user_id || !shop_id || !role) {
+        throw new Error("Customer ID, shop ID and role is required");
+      }
+
+      // First check if customer exists
+      const customer = await this.selectUserByIdShopIdRole(
+        user_id,
+        shop_id,
+        role
+      );
+      if (!customer) {
+        throw new Error("Customer not found");
+      }
+      const updatedCustomerData = {
+        user_fName: updateData.user_fName || customer.user_fName,
+        user_mName: updateData.user_mName || customer.user_mName,
+        user_lName: updateData.user_lName || customer.user_lName,
+        email: updateData.email || customer.email,
+        contactNum: updateData.contactNum || customer.contactNum,
+        user_address: updateData.user_address || customer.user_address,
+        username: updateData.username || customer.username,
+      };
+
+      const query = `UPDATE users
+            SET user_fName = ?,
+                user_mName = ?,
+                user_lName = ?,
+                email = ?,
+                contactNum = ?,
+                user_address = ?,
+                username = ?
+            WHERE user_id = ?
+            AND shop_id = ?
+            AND role = ?`;
+
+      const result = await this.query(query, [
+        updatedCustomerData.user_fName,
+        updatedCustomerData.user_mName,
+        updatedCustomerData.user_lName,
+        updatedCustomerData.email,
+        updatedCustomerData.contactNum,
+        updatedCustomerData.user_address,
+        updatedCustomerData.username,
+        user_id,
+        shop_id,
+        role,
+      ]);
+
+      if (result.affectedRows === 0) {
+        throw new Error("Failed to update customer");
+      }
+
+      // Return updated customer data
+      return this.selectUserByIdShopIdRole(
+        user_id,
+        shop_id,
+        role
+      );
+    } catch (error) {
+      console.error("Error editing customer:", error);
+      throw new Error(`Failed to editing customer: ${error.message}`);
+    }
+  }
 }
 
 module.exports = Customer;
