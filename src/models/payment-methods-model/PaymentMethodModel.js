@@ -129,6 +129,23 @@ class PaymentMethods extends BaseModel {
       throw error;
     }
   }
+  static async findPaymentMethodByShopId(shop_id) {
+    try {
+      const sql = `SELECT pm_name,
+                  account_name,
+                  account_number,
+                  description,
+                  qrCode_image_url
+                  FROM payment_method
+                  WHERE is_displayed = 'true'
+                  AND shop_id = ?`;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("findPaymentMethodByShopId error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = PaymentMethods;

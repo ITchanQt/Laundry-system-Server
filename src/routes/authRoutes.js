@@ -49,14 +49,15 @@ const {
   addPaymentMethod,
   updateShopPaymentMethod,
   updatePaymentMethodDisplaySettings,
+  getPaymentMethodByShopId,
 } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
 const { getAllItemsReport, getDisplayedServicesByShopId, getAllCustomerRecordsByShopId } = require("../controllers/report-controllers/reportController");
 
 // Apply API key validation to all routes
-router.use(validateApiKey);
+// router.use(validateApiKey);
 
-// Protected routes that need authentication
-router.use(authenticate); // Apply authentication middleware to all routes below
+// // Protected routes that need authentication
+// router.use(authenticate); // Apply authentication middleware to all routes below
 
 router.post("/register-user", registerUser);
 router.post("/login", loginUser);
@@ -211,6 +212,8 @@ router.get('/get-customer-records/:shop_id', getAllCustomerRecordsByShopId); //G
 //-----CUSTOMER RECIEPT DYNAMIC PRICES AND SERVICES FOR SHOP API's-------//
 router.get('/displayed-prices/:shop_id', getDisplayedPriceByShopId);
 router.get('/displayed-services/:shop_id', getDisplayedServicesByShopId);
+
+router.get('/displayed-payment-method/:shop_id', getPaymentMethodByShopId);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

@@ -234,9 +234,38 @@ const updatePaymentMethodDisplaySettings = async (req, res) => {
   }
 };
 
+const getPaymentMethodByShopId = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop Id is required!",
+      });
+    }
+
+    const paymentMethods = await PaymentMethodsModel.findPaymentMethodByShopId(
+      shop_id
+    );
+    res.status(200).json({
+      success: true,
+      message: "Payment Methods successfully get!",
+      data: paymentMethods,
+    });
+  } catch (error) {
+    console.error("getPaymentMethodByShopId error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while getting payment methods",
+    });
+  }
+};
+
 module.exports = {
   getAllPaymentMethodsByShopId,
   addPaymentMethod,
   updateShopPaymentMethod,
   updatePaymentMethodDisplaySettings,
+
+  getPaymentMethodByShopId
 };
