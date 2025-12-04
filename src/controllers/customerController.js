@@ -249,6 +249,31 @@ const getCompletedOrdersOfTheMonthByShopId = async (req, res) => {
   }
 };
 
+const getMonthTotal = async (req, res) => {
+  try {
+    const { cus_id, shop_id } = req.params;
+    if (!cus_id || !shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID and Shop ID is required!",
+      });
+    }
+
+    const totalAmount = await Customer.totalAmountForMonth(cus_id, shop_id);
+    res.status(200).json({
+      success: true,
+      data: totalAmount.total,
+    });
+  } catch (error) {
+    console.error("customerController.getMonthTotal error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -259,5 +284,6 @@ module.exports = {
   // Customer fetching on customer module
   getUserByUserIdShopIdRole,
   updateCustomerByUserIdShopIdRole,
-  getCompletedOrdersOfTheMonthByShopId
+  getCompletedOrdersOfTheMonthByShopId,
+  getMonthTotal,
 };

@@ -355,6 +355,23 @@ class Customer extends BaseModel {
       throw new Error(`Failed to find customer record: ${error.message}`);
     }
   }
+
+  static async totalAmountForMonth(cus_id, shop_id) {
+    try {
+      const sql = `SELECT COALESCE(SUM(total_amount), 0) AS total
+                 FROM customer_receipt
+                 WHERE cus_id = ?
+                 AND shop_id = ?
+                 AND status = 'Laundry Done'
+                 AND MONTH(created_at) = MONTH(CURRENT_DATE())
+                 AND YEAR(created_at) = YEAR(CURRENT_DATE());`;
+      const result = await this.query(sql, [cus_id, shop_id]);
+      return result[0];
+    } catch (error) {
+      console.error("Error computing month total amount:", error);
+      throw new Error(`Failed to compute month total amount: ${error.message}`);
+    }
+  }
 }
 
 module.exports = Customer;
