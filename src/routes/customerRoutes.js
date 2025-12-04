@@ -8,6 +8,9 @@ const {
   editCustomer,
   getUserByUserIdShopIdRole,
   updateCustomerByUserIdShopIdRole,
+  getCompletedOrdersOfTheMonthByShopId,
+  getMonthTotal,
+  getTotalCountReadyToPickUpOrders,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -33,5 +36,11 @@ router.put(
   "/update-customer/:user_id/:shop_id/:role",
   updateCustomerByUserIdShopIdRole
 );
+router.get(
+  "/get-customer-record/:shop_id/:cus_id",
+  getCompletedOrdersOfTheMonthByShopId
+);
+router.get("/total-amount/:cus_id/:shop_id", getMonthTotal);
+router.get('/total-RTPU-count/:cus_id/:shop_id', getTotalCountReadyToPickUpOrders);
 
 module.exports = router;

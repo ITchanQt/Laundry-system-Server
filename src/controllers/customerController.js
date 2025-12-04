@@ -219,6 +219,89 @@ const updateCustomerByUserIdShopIdRole = async (req, res) => {
   }
 };
 
+const getCompletedOrdersOfTheMonthByShopId = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID and User ID is required!",
+      });
+    }
+
+    const customerRecords =
+      await Customer.findCompletedOrdersOfTheMonthByShopId(shop_id, cus_id);
+    res.status(200).json({
+      success: true,
+      message: "Customer records successfully get!",
+      data: customerRecords,
+    });
+  } catch (error) {
+    console.error(
+      "customerController.getCompletedOrdersOfTheMonthByShopId error: ",
+      error
+    );
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+const getMonthTotal = async (req, res) => {
+  try {
+    const { cus_id, shop_id } = req.params;
+    if (!cus_id || !shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID and Shop ID is required!",
+      });
+    }
+
+    const totalAmount = await Customer.totalAmountForMonth(cus_id, shop_id);
+    res.status(200).json({
+      success: true,
+      data: totalAmount.total,
+    });
+  } catch (error) {
+    console.error("customerController.getMonthTotal error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+const getTotalCountReadyToPickUpOrders = async (req, res) => {
+  try {
+    const { cus_id, shop_id } = req.params;
+    if (!cus_id || !shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID and Shop ID is required!",
+      });
+    }
+
+    const totalCount = await Customer.countReadyToPickUpOrders(cus_id, shop_id);
+    res.status(200).json({
+      success: true,
+      data: totalCount.total_ready_orders,
+    });
+  } catch (error) {
+    console.error(
+      "customerController.getTotalCountReadyToPickUpOrders error: ",
+      error
+    );
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -228,5 +311,8 @@ module.exports = {
 
   // Customer fetching on customer module
   getUserByUserIdShopIdRole,
-  updateCustomerByUserIdShopIdRole
+  updateCustomerByUserIdShopIdRole,
+  getCompletedOrdersOfTheMonthByShopId,
+  getMonthTotal,
+  getTotalCountReadyToPickUpOrders,
 };

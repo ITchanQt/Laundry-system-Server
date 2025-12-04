@@ -326,15 +326,64 @@ class Customer extends BaseModel {
       }
 
       // Return updated customer data
-      return this.selectUserByIdShopIdRole(
-        user_id,
-        shop_id,
-        role
-      );
+      return this.selectUserByIdShopIdRole(user_id, shop_id, role);
     } catch (error) {
       console.error("Error editing customer:", error);
       throw new Error(`Failed to editing customer: ${error.message}`);
     }
+  }
+
+  static async findCompletedOrdersOfTheMonthByShopId(shop_id, cus_id) {
+    try {
+      const sql = `SELECT 
+                   laundryId,
+                   total_amount,
+                   service,
+                   status,
+                   created_at FROM
+                   customer_receipt WHERE
+                   YEAR(created_at) = YEAR(NOW())
+                   AND MONTH(created_at) = MONTH(NOW()) 
+                   AND shop_id = ?
+                   AND cus_id = ?
+                   AND status = 'Laundry Done'`;
+
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Error finding customer record:", error);
+      throw new Error(`Failed to find customer record: ${error.message}`);
+    }
+  }
+
+  static async totalAmountForMonth(cus_id, shop_id) {
+    try {
+      const sql = `SELECT COALESCE(SUM(total_amount), 0) AS total
+                 FROM customer_receipt
+                 WHERE cus_id = ?
+                 AND shop_id = ?
+                 AND status = 'Laundry Done'
+                 AND MONTH(created_at) = MONTH(CURRENT_DATE())
+                 AND YEAR(created_at) = YEAR(CURRENT_DATE());`;
+      const result = await this.query(sql, [cus_id, shop_id]);
+      return result[0];
+    } catch (error) {
+      console.error("Error computing month total amount:", error);
+      throw new Error(`Failed to compute month total amount: ${error.message}`);
+    }
+  }
+
+  static async countReadyToPickUpOrders(cus_id, shop_id) {
+    try {
+      const sql = `SELECT
+                  COUNT(*) AS total_ready_orders
+                  FROM customer_receipt
+                  WHERE status = 'Ready to pick-up'
+                  AND cus_id = ?
+                  AND shop_id = ?`;
+      const result = await this.query(sql, [cus_id, shop_id]);
+      return result[0];
+    } catch (error) {}
   }
 }
 
