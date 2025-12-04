@@ -326,14 +326,33 @@ class Customer extends BaseModel {
       }
 
       // Return updated customer data
-      return this.selectUserByIdShopIdRole(
-        user_id,
-        shop_id,
-        role
-      );
+      return this.selectUserByIdShopIdRole(user_id, shop_id, role);
     } catch (error) {
       console.error("Error editing customer:", error);
       throw new Error(`Failed to editing customer: ${error.message}`);
+    }
+  }
+
+  static async findCompletedOrdersOfTheMonthByShopId(shop_id, cus_id) {
+    try {
+      const sql = `SELECT 
+                   laundryId,
+                   total_amount,
+                   service,
+                   status,
+                   created_at FROM
+                   customer_receipt WHERE
+                   YEAR(created_at) = YEAR(NOW())
+                   AND MONTH(created_at) = MONTH(NOW()) 
+                   AND shop_id = ?
+                   AND cus_id = ?
+                   AND status = 'Laundry Done'`;
+
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Error finding customer record:", error);
+      throw new Error(`Failed to find customer record: ${error.message}`);
     }
   }
 }
