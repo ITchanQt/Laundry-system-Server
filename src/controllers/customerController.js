@@ -274,6 +274,34 @@ const getMonthTotal = async (req, res) => {
   }
 };
 
+const getTotalCountReadyToPickUpOrders = async (req, res) => {
+  try {
+    const { cus_id, shop_id } = req.params;
+    if (!cus_id || !shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID and Shop ID is required!",
+      });
+    }
+
+    const totalCount = await Customer.countReadyToPickUpOrders(cus_id, shop_id);
+    res.status(200).json({
+      success: true,
+      data: totalCount.total_ready_orders,
+    });
+  } catch (error) {
+    console.error(
+      "customerController.getTotalCountReadyToPickUpOrders error: ",
+      error
+    );
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -286,4 +314,5 @@ module.exports = {
   updateCustomerByUserIdShopIdRole,
   getCompletedOrdersOfTheMonthByShopId,
   getMonthTotal,
+  getTotalCountReadyToPickUpOrders,
 };

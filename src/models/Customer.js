@@ -372,6 +372,19 @@ class Customer extends BaseModel {
       throw new Error(`Failed to compute month total amount: ${error.message}`);
     }
   }
+
+  static async countReadyToPickUpOrders(cus_id, shop_id) {
+    try {
+      const sql = `SELECT
+                  COUNT(*) AS total_ready_orders
+                  FROM customer_receipt
+                  WHERE status = 'Ready to pick-up'
+                  AND cus_id = ?
+                  AND shop_id = ?`;
+      const result = await this.query(sql, [cus_id, shop_id]);
+      return result[0];
+    } catch (error) {}
+  }
 }
 
 module.exports = Customer;
