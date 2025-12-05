@@ -12,11 +12,13 @@ const registerUser = async (req, res) => {
     if (existingUser) {
       return res
         .status(400)
-        .json({ message: "Email already exists on this shop" });
+        .json({ success: false, message: "Email already exists on this shop" });
     }
 
     await User.create(req.body);
-    res.status(201).json({ message: "User registered successfully" });
+    res
+      .status(201)
+      .json({ success: true, message: "User registered successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

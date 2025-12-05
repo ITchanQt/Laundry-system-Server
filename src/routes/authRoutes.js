@@ -53,6 +53,7 @@ const {
 } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
 const { getAllItemsReport, getDisplayedServicesByShopId, getAllCustomerRecordsByShopId } = require("../controllers/report-controllers/reportController");
 const send = require("../controllers/smsController");
+const { sendOtp, verifyOtp } = require("../controllers/otpController");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -74,6 +75,9 @@ router.put("/edit-user/:userId", editUser);
 router.get("/admin/search", searchAdminsByEmail);
 router.get("/users/search/:shop_id", getUsersByIdOrNameWithCustomerRole);
 router.get("/users/search/:shop_id/:user_id", getUserByIdAndShopId);
+router.post("/send-otp", sendOtp);
+router.post("/verify-otp", verifyOtp);
+
 
 //-----SHOP INVENTORY API's-------//
 router.post("/add-shop-inventory", addShopInventory);
