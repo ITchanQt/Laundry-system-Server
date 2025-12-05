@@ -52,6 +52,7 @@ const {
   getPaymentMethodByShopId,
 } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
 const { getAllItemsReport, getDisplayedServicesByShopId, getAllCustomerRecordsByShopId } = require("../controllers/report-controllers/reportController");
+const send = require("../controllers/smsController");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -204,6 +205,9 @@ router.put(
   "/update-mp-display-settings/:shop_id",
   updatePaymentMethodDisplaySettings
 );
+
+//-----SMS NOTIFICATION-------//
+router.post("/send-sms", send);
 
 //-----SHOP REPORTS API's-------//
 router.get('/get-items-report/:shop_id', getAllItemsReport); //Get all items
