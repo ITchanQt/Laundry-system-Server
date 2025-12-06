@@ -126,7 +126,7 @@ class Admin extends BaseModel {
 
   static async findByEmailOrUsername(shop_id, emailOrUsername) {
     const sql =
-      "SELECT * FROM admins WHERE shop_id = ? AND (email = ? OR admin_username = ?)";
+      "SELECT * FROM users WHERE role = 'ADMIN' AND shop_id = ? AND (email = ? OR username = ?)";
     const results = await this.query(sql, [
       shop_id,
       emailOrUsername,
@@ -161,8 +161,8 @@ class Admin extends BaseModel {
 
       const token = jwt.sign(
         {
-          id: admin.admin_id,
-          username: admin.admin_username,
+          id: admin.user_id,
+          username: admin.username,
           role: "admin",
           shop_id: admin.shop_id,
         },
@@ -173,7 +173,7 @@ class Admin extends BaseModel {
       return {
         token,
         admin: {
-          id: admin.admin_id,
+          id: admin.user_id,
           username: admin.admin_username,
           email: admin.email,
           shop_id: admin.shop_id,
@@ -199,7 +199,7 @@ class Admin extends BaseModel {
   static async searchByEmail(partialEmail) {
     try {
       const sql =
-        "SELECT admin_id, email, admin_fName, admin_mName, admin_lName, admin_address, admin_contactNum FROM admins WHERE email LIKE ?";
+        "SELECT user_id, email, user_fName, user_mName, user_lName, user_address, contactNum FROM users WHERE role = 'ADMIN' AND email LIKE ?";
       const results = await this.query(sql, [`%${partialEmail}%`]);
       return results;
     } catch (error) {

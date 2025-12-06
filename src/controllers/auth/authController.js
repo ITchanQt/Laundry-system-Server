@@ -38,9 +38,9 @@ const forgotPassword = async (req, res) => {
     await ForgotAndResetPasswordModel.saveResetToken(
       hashedToken,
       expiresAt,
-       adminUser.admin_id
+       adminUser.user_id
     );
-    console.log(adminUser.admin_id, hashedToken, expiresAt);
+    console.log(adminUser.user_id, hashedToken, expiresAt);
     const resetUrl = `${
       process.env.FRONTEND_URL
     }/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
@@ -87,7 +87,7 @@ const resetPassword = async (req, res) => {
     const password = await bcrypt.hash(newPassword, salt);
 
  await ForgotAndResetPasswordModel.updatePassword(
-  adminUser.admin_id,
+  adminUser.user_id,
   password
 );
 
