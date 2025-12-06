@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 05, 2025 at 09:23 AM
+-- Generation Time: Dec 06, 2025 at 06:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,9 +50,9 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`admin_id`, `shop_id`, `admin_fName`, `admin_mName`, `admin_lName`, `admin_address`, `admin_username`, `admin_contactNum`, `email`, `password`, `date_registered`, `role`, `status`, `reset_token`, `reset_token_expires`) VALUES
-('LMSA-00025', 'LMSS-00004', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Helloworld123', '09999999999', 'christianlamostem@gmail.com', '$2b$10$S2CVGjNZTvnMKD5shkCzEOidAxVY6ueLD6mzGTzxvc5V6PuZ8D1he', '2025-10-28', 'Admin', 'Active', NULL, NULL),
 ('LMSA-00026', 'LMSS-00005', 'Tina', 'Kalo', 'Moran', 'Brgy. Panabatan Sta. Margarita, Samar', 'tina.moran', '09999999998', 'tina.moran@sample.com', '$2b$10$lPz5gzRkndDACrp0XmE95.094Z6JhjANGMJmtu79o3KUMoT8Jzjoi', '2025-10-28', 'Admin', 'Active', '', '0000-00-00 00:00:00'),
-('LMSA-00027', 'LMSS-00006', 'Pining', 'Gar', 'Siya', 'Brgy. Calanyugan Pagsanghan, Samar', 'PiningGarSiya', '09876544444', 'pining.garsiya@sample.com', '$2b$10$LJ306YVjtuXLSd8TDbHRveHO7L7wjaIr38OfMVTkAeWADDjiC1zxm', '2025-10-31', 'Admin', 'Active', '', '0000-00-00 00:00:00');
+('LMSA-00027', 'LMSS-00006', 'Pining', 'Gar', 'Siya', 'Brgy. Calanyugan Pagsanghan, Samar', 'PiningGarSiya', '09876544444', 'pining.garsiya@sample.com', '$2b$10$LJ306YVjtuXLSd8TDbHRveHO7L7wjaIr38OfMVTkAeWADDjiC1zxm', '2025-10-31', 'Admin', 'Active', '', '0000-00-00 00:00:00'),
+('LMSA-00028', NULL, 'Christian', 'Macorol', 'Lamoste', 'Purok 2, Caparangsan Gandara, Samar', 'itchaQT', '+639631199862', 'christianlamostem@gmail.com', '$2b$10$lhMbc608W9a8JnwGslTVo.zETTZ.auKN.3OGYZ0j6X4lyACW7kbF6', '2025-12-06', 'Admin', 'Active', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -165,7 +165,8 @@ INSERT INTO `customer_receipt` (`laundryId`, `shop_id`, `cus_id`, `cus_name`, `c
 ('12052025-00001', 'LMSS-00006', 'LMSU-00097', 'Rob Manugalpok', 'Brgy. Panabatan Sta. Margarita, Samar', '09890481767', 2, 0, 0, 0, 0, 4, 3, 2, 14, 'Machine Wash, Folding', 9, 500.00, 'Ready to pick-up', '2025-12-05 10:27:37', '2025-12-05 10:36:29'),
 ('12052025-00002', 'LMSS-00006', 'LMSU-00096', 'Ichigo Urusoka', 'Soul Society', '+639553472448', 2, 0, 0, 0, 0, 5, 3, 2, 14, 'Machine Wash, Folding', 10, 500.00, 'Laundry Done', '2025-12-05 10:30:43', '2025-12-05 12:31:35'),
 ('12052025-00003', 'LMSS-00006', 'LMSU-00070', 'Kantotero Manatad', 'Brgy. Erenas San Jorge, Samar', '09876234523', 4, 0, 0, 0, 0, 3, 5, 4, 28, 'Machine Wash, Folding', 12, 1000.00, 'Ready to pick up', '2025-12-05 10:48:11', '2025-12-05 10:50:03'),
-('12052025-00004', 'LMSS-00006', 'LMSU-00060', 'Harith Harley', 'Jungle Area, Land of Dawn', '09833476254', 4, 0, 0, 0, 0, 4, 5, 8, 28, 'Machine Wash, Folding, Ironing', 17, 1000.00, 'On Service', '2025-12-05 10:53:59', '2025-12-05 10:53:59');
+('12052025-00004', 'LMSS-00006', 'LMSU-00060', 'Harith Harley', 'Jungle Area, Land of Dawn', '09833476254', 4, 0, 0, 0, 0, 4, 5, 8, 28, 'Machine Wash, Folding, Ironing', 17, 1000.00, 'On Service', '2025-12-05 10:53:59', '2025-12-05 10:53:59'),
+('12052025-00005', 'LMSS-00006', 'LMSU-00107', 'Christian Lamoste', 'Brgy. Caparangasan Gandara, Samar', '+639631199862', 2, 6, 4, 6, 6, 0, 0, 0, 14, 'Machine Wash, Folding', 22, 280.00, 'On Service', '2025-12-05 16:41:36', '2025-12-05 16:41:36');
 
 -- --------------------------------------------------------
 
@@ -176,8 +177,9 @@ INSERT INTO `customer_receipt` (`laundryId`, `shop_id`, `cus_id`, `cus_name`, `c
 CREATE TABLE `email_otps` (
   `id` int(11) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `otp_code` varchar(6) NOT NULL,
+  `otp_code` varchar(10) NOT NULL,
   `expires_at` datetime NOT NULL,
+  `is_verified` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -185,21 +187,14 @@ CREATE TABLE `email_otps` (
 -- Dumping data for table `email_otps`
 --
 
-INSERT INTO `email_otps` (`id`, `email`, `otp_code`, `expires_at`, `created_at`) VALUES
-(1, 'christianlamostem@gmail.com', '317890', '2025-12-05 14:49:08', '2025-12-05 06:44:08'),
-(2, 'christianlamostem@gmail.com', '379695', '2025-12-05 14:54:59', '2025-12-05 06:49:59'),
-(3, 'christianlamostem@gmail.com', '286634', '2025-12-05 14:59:01', '2025-12-05 06:54:01'),
-(4, 'christianlamostem@gmail.com', '984240', '2025-12-05 15:26:59', '2025-12-05 07:21:59'),
-(5, 'christianlamostem@gmail.com', '150314', '2025-12-05 15:31:28', '2025-12-05 07:26:28'),
-(6, 'christianlamostem@gmail.com', '671844', '2025-12-05 15:39:00', '2025-12-05 07:34:00'),
-(7, 'christianlamostem@gmail.com', '581116', '2025-12-05 15:39:50', '2025-12-05 07:34:50'),
-(8, 'christianlamostem@gmail.com', '927924', '2025-12-05 15:40:32', '2025-12-05 07:35:32'),
-(9, 'christianlamostem@gmail.com', '636002', '2025-12-05 15:44:28', '2025-12-05 07:39:28'),
-(10, 'christianlamostem@gmail.com', '744727', '2025-12-05 15:54:53', '2025-12-05 07:49:53'),
-(11, 'christianlamostem@gmail.com', '186551', '2025-12-05 15:59:31', '2025-12-05 07:54:31'),
-(12, 'christianlamostem@gmail.com', '638686', '2025-12-05 16:06:14', '2025-12-05 08:01:14'),
-(13, 'christianlamostem@gmail.com', '502692', '2025-12-05 16:13:06', '2025-12-05 08:08:06'),
-(14, 'christianlamostem@gmail.com', '315531', '2025-12-05 16:24:39', '2025-12-05 08:19:39');
+INSERT INTO `email_otps` (`id`, `email`, `otp_code`, `expires_at`, `is_verified`, `created_at`) VALUES
+(1, 'sample011@test.com', '763881', '2025-12-06 11:14:06', 0, '2025-12-06 03:09:06'),
+(3, 'sample0111@test.com', '780262', '2025-12-06 11:15:10', 0, '2025-12-06 03:10:10'),
+(6, 'christian123@example.com', '901138', '2025-12-06 11:16:54', 0, '2025-12-06 03:11:54'),
+(7, 'christian1234@example.com', '228315', '2025-12-06 11:17:36', 0, '2025-12-06 03:12:36'),
+(14, 'sample01111@test.com', '681119', '2025-12-06 11:28:58', 0, '2025-12-06 03:23:58'),
+(21, 'christianlamostem@gmail.com', '415646', '2025-12-06 11:43:32', 1, '2025-12-06 03:38:32'),
+(23, 'christian1485@example.com', '168754', '2025-12-06 11:46:37', 1, '2025-12-06 03:41:37');
 
 -- --------------------------------------------------------
 
@@ -499,7 +494,11 @@ INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lNa
 ('LMSU-00098', 'LMSS-00006', 'Register ', 'New', 'Account', 'Kahit saan', 'RegisterAccount', '09870987635', 'register@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$D2ObH0uhdJl1VwhX2bU4iuXK4RpcvAB1LdiBWc6Cs5C.J77GvkKg6', '2025-11-30', 'CUSTOMER'),
 ('LMSU-00100', 'LMSS-00006', 'Kahit', 'Pa', 'Sino', 'Brgy. Diaz Gandara, Samar', 'HaHu', '+639631199812', 'haha@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$Lmk9zOrqLLugV7k57m6fJ.1i95Q7dpUiokTgtC4silUevRXa2dK8u', '2025-12-05', 'CUSTOMER'),
 ('LMSU-00104', 'LMSS-00006', 'hah', 'hdhd', 'hash', 'Biringan City', 'hdhd', '+639631199862', 'hd@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$KsYVw5XkPYK50GTihE6mfe.iRCmHvrZXQaEyTgmjUzwwi.VAa8vxe', '2025-12-05', 'CUSTOMER'),
-('LMSU-00106', 'LMSS-00006', 'David', 'null', 'Brown', '654 Cedar Road, Foresthill', 'null', '555-7890', 'david06.brown@example.com', 'Staff', 'active', '$2b$10$p23AjMuJp1.90B14fs9h..E7mjrWHE0weRXker4za4C//NcfueZzS', '2025-12-05', 'CUSTOMER');
+('LMSU-00106', 'LMSS-00006', 'David', 'null', 'Brown', '654 Cedar Road, Foresthill', 'null', '555-7890', 'david06.brown@example.com', 'Staff', 'active', '$2b$10$p23AjMuJp1.90B14fs9h..E7mjrWHE0weRXker4za4C//NcfueZzS', '2025-12-05', 'CUSTOMER'),
+('LMSU-00107', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Caparangasan Gandara, Samar', 'ITchan022002', '+639631199862', 'christianlamostem@gmail.com', 'CUSTOMER', 'ACTIVE', '$2b$10$d.XIja7ItwF27B8ALf9omOAhhWcj53BCybmApb13lC/14kB.DXWBO', '2025-12-05', 'CUSTOMER'),
+('LMSU-00108', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'jojo', '+639631199863', 'kahit@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$AQQOFAd98aLnJm4dM14eSeLodlMizWSp7u9eQnfb4vKL5G1ppt3GS', '2025-12-06', 'CUSTOMER'),
+('LMSU-00109', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'jojo123', '+639631199811', 'christian1234@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$8uUt/mR.utMPIgR4zYUVfOwLtuHWN99WZkPkgV5WBvoEhMzklcCEy', '2025-12-06', 'CUSTOMER'),
+('LMSU-00110', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Itchan6554', '+639631199000', 'christian1485@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$dFLovl6xwsgvhaE1b48NPOvjCu8HeZ57w.ZKBH1fguVOrbEK6Kth2', '2025-12-06', 'CUSTOMER');
 
 --
 -- Indexes for dumped tables
@@ -590,7 +589,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `email_otps`
 --
 ALTER TABLE `email_otps`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `payment_method`

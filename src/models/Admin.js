@@ -9,6 +9,12 @@ class Admin extends BaseModel {
     return results[0];
   }
 
+  static async findByPhoneNum(contactNum) {
+    const sql = "SELECT * FROM admins WHERE admin_contactNum = ?";
+    const results = await this.query(sql, [contactNum]);
+    return results[0];
+  }
+
   static async generateAdminId() {
     try {
       // Get the highest admin ID
@@ -131,8 +137,8 @@ class Admin extends BaseModel {
       }
 
       const match = await bcrypt.compare(password, admin.password);
-       console.log('Password match:', match ? 'Yes' : 'No');
-       
+      console.log("Password match:", match ? "Yes" : "No");
+
       if (!match) {
         return { error: "Invalid credentials" };
       }
