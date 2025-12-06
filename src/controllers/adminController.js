@@ -23,7 +23,7 @@ const registerAdmin = async (req, res) => {
     }
 
     const existingEmail = await Admin.findByEmail(req.body.email);
-    const existingUsername = await Admin.findByEmail(req.body.admin_username);
+    const existingUsername = await Admin.findByUsername(req.body.admin_username);
     const existingContactNum = await Admin.findByPhoneNum(
       req.body.admin_contactNum
     );
@@ -56,7 +56,7 @@ const registerAdmin = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Admin registered successfully",
-      admin_id: result.insertId,
+      data: result,
     });
   } catch (error) {
     console.error("Admin registration error:", error);

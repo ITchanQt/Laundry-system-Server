@@ -47,14 +47,15 @@ class LaundryShops extends BaseModel {
         owner_contactNum,
         shop_address,
         shop_name,
+        slug,
         shop_type,
       } = shopData;
 
       // Insert new shop
       const insertShopSql = `
       INSERT INTO laundry_shops 
-      (shop_id, admin_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, shop_type)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (shop_id, admin_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, slug, shop_type)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
       await this.query(insertShopSql, [
@@ -67,11 +68,12 @@ class LaundryShops extends BaseModel {
         owner_contactNum,
         shop_address,
         shop_name,
+        slug,
         shop_type,
       ]);
 
       // Automatically update the admin's shop_id
-      const updateAdminSql = `UPDATE admins SET shop_id = ? WHERE admin_id = ?`;
+      const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
       await this.query(updateAdminSql, [shop_id, admin_id]);
 
       // Return both for confirmation

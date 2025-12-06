@@ -4,31 +4,45 @@ const jwt = require("jsonwebtoken");
 
 class Admin extends BaseModel {
   static async findByUsername(username) {
-    const sql = "SELECT * FROM admins WHERE admin_username = ?";
+    const sql = "SELECT * FROM users WHERE username = ?";
     const results = await this.query(sql, [username]);
     return results[0];
   }
 
   static async findByPhoneNum(contactNum) {
-    const sql = "SELECT * FROM admins WHERE admin_contactNum = ?";
+    const sql = "SELECT * FROM users WHERE contactNum = ?";
     const results = await this.query(sql, [contactNum]);
     return results[0];
+  }
+
+  static async findByEmail(admin_email) {
+    try {
+      const sql = "SELECT * FROM users WHERE email = ?";
+      const results = await this.query(sql, [admin_email]);
+      return results[0];
+    } catch (error) {
+      throw new Error(`Failed to find admin by email: ${error.message}`);
+    }
   }
 
   static async generateAdminId() {
     try {
       // Get the highest admin ID
-      const sql = "SELECT admin_id FROM admins ORDER BY admin_id DESC LIMIT 1";
+      const sql = ` SELECT user_id 
+                    FROM users 
+                    ORDER BY CAST(SUBSTRING(user_id, 6) AS UNSIGNED) DESC 
+                    LIMIT 1`;
+
       const results = await this.query(sql);
 
       let nextNumber = 1;
       if (results && results.length > 0) {
-        const lastId = results[0].admin_id;
+        const lastId = results[0].user_id;
         const lastNumber = parseInt(lastId.split("-")[1]);
         nextNumber = lastNumber + 1;
       }
 
-      // Format: LMSA-00001
+      // Format: LMSU-00001
       return `LMSA-${String(nextNumber).padStart(5, "0")}`;
     } catch (error) {
       throw new Error(`Failed to generate admin ID: ${error.message}`);
@@ -48,8 +62,9 @@ class Admin extends BaseModel {
         admin_username,
         admin_contactNum,
         email,
-        role = "Admin", // Default value
-        status = "Active", // Default value
+        role = "ADMIN", // Default value
+        status = "ACTIVE", // Default value
+        registered_by = "S-ADMIN",
         password,
       } = adminData;
 
@@ -67,33 +82,34 @@ class Admin extends BaseModel {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const sql = `
-            INSERT INTO admins (
-                admin_id,
-                admin_fName, 
-                admin_mName, 
-                admin_lName, 
-                admin_address, 
-                admin_username, 
-                admin_contactNum, 
-                email,
-                role,
-                status, 
-                password
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const sql = `INSERT INTO users 
+                  (user_id, 
+                  username, 
+                  email, 
+                  password, 
+                  user_fName, 
+                  user_mName, 
+                  user_lName, 
+                  user_address,
+                  contactNum, 
+                  role, 
+                  status, 
+                  registered_by) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const params = [
         admin_id,
+        admin_username,
+        email,
+        hashedPassword,
         admin_fName,
         admin_mName,
         admin_lName,
-        admin_address || null, // Convert empty string to null
-        admin_username,
+        admin_address || null,
         admin_contactNum,
-        email,
         role,
         status,
-        hashedPassword,
+        registered_by,
       ];
 
       // Debug log
@@ -110,7 +126,7 @@ class Admin extends BaseModel {
 
   static async findByEmailOrUsername(shop_id, emailOrUsername) {
     const sql =
-      "SELECT * FROM admins WHERE shop_id = ? AND (email = ? OR admin_username = ?)";
+      "SELECT * FROM users WHERE role = 'ADMIN' AND shop_id = ? AND (email = ? OR username = ?)";
     const results = await this.query(sql, [
       shop_id,
       emailOrUsername,
@@ -145,8 +161,8 @@ class Admin extends BaseModel {
 
       const token = jwt.sign(
         {
-          id: admin.admin_id,
-          username: admin.admin_username,
+          id: admin.user_id,
+          username: admin.username,
           role: "admin",
           shop_id: admin.shop_id,
         },
@@ -157,7 +173,7 @@ class Admin extends BaseModel {
       return {
         token,
         admin: {
-          id: admin.admin_id,
+          id: admin.user_id,
           username: admin.admin_username,
           email: admin.email,
           shop_id: admin.shop_id,
@@ -180,20 +196,10 @@ class Admin extends BaseModel {
     }
   }
 
-  static async findByEmail(admin_email) {
-    try {
-      const sql = "SELECT * FROM admins WHERE email = ?";
-      const results = await this.query(sql, [admin_email]);
-      return results[0];
-    } catch (error) {
-      throw new Error(`Failed to find admin by email: ${error.message}`);
-    }
-  }
-
   static async searchByEmail(partialEmail) {
     try {
       const sql =
-        "SELECT admin_id, email, admin_fName, admin_mName, admin_lName, admin_address, admin_contactNum FROM admins WHERE email LIKE ?";
+        "SELECT user_id, email, user_fName, user_mName, user_lName, user_address, contactNum FROM users WHERE role = 'ADMIN' AND email LIKE ?";
       const results = await this.query(sql, [`%${partialEmail}%`]);
       return results;
     } catch (error) {

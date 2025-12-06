@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 06, 2025 at 06:21 AM
+-- Generation Time: Dec 06, 2025 at 09:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -165,8 +165,7 @@ INSERT INTO `customer_receipt` (`laundryId`, `shop_id`, `cus_id`, `cus_name`, `c
 ('12052025-00001', 'LMSS-00006', 'LMSU-00097', 'Rob Manugalpok', 'Brgy. Panabatan Sta. Margarita, Samar', '09890481767', 2, 0, 0, 0, 0, 4, 3, 2, 14, 'Machine Wash, Folding', 9, 500.00, 'Ready to pick-up', '2025-12-05 10:27:37', '2025-12-05 10:36:29'),
 ('12052025-00002', 'LMSS-00006', 'LMSU-00096', 'Ichigo Urusoka', 'Soul Society', '+639553472448', 2, 0, 0, 0, 0, 5, 3, 2, 14, 'Machine Wash, Folding', 10, 500.00, 'Laundry Done', '2025-12-05 10:30:43', '2025-12-05 12:31:35'),
 ('12052025-00003', 'LMSS-00006', 'LMSU-00070', 'Kantotero Manatad', 'Brgy. Erenas San Jorge, Samar', '09876234523', 4, 0, 0, 0, 0, 3, 5, 4, 28, 'Machine Wash, Folding', 12, 1000.00, 'Ready to pick up', '2025-12-05 10:48:11', '2025-12-05 10:50:03'),
-('12052025-00004', 'LMSS-00006', 'LMSU-00060', 'Harith Harley', 'Jungle Area, Land of Dawn', '09833476254', 4, 0, 0, 0, 0, 4, 5, 8, 28, 'Machine Wash, Folding, Ironing', 17, 1000.00, 'On Service', '2025-12-05 10:53:59', '2025-12-05 10:53:59'),
-('12052025-00005', 'LMSS-00006', 'LMSU-00107', 'Christian Lamoste', 'Brgy. Caparangasan Gandara, Samar', '+639631199862', 2, 6, 4, 6, 6, 0, 0, 0, 14, 'Machine Wash, Folding', 22, 280.00, 'On Service', '2025-12-05 16:41:36', '2025-12-05 16:41:36');
+('12052025-00004', 'LMSS-00006', 'LMSU-00060', 'Harith Harley', 'Jungle Area, Land of Dawn', '09833476254', 4, 0, 0, 0, 0, 4, 5, 8, 28, 'Machine Wash, Folding, Ironing', 17, 1000.00, 'On Service', '2025-12-05 10:53:59', '2025-12-05 10:53:59');
 
 -- --------------------------------------------------------
 
@@ -193,8 +192,8 @@ INSERT INTO `email_otps` (`id`, `email`, `otp_code`, `expires_at`, `is_verified`
 (6, 'christian123@example.com', '901138', '2025-12-06 11:16:54', 0, '2025-12-06 03:11:54'),
 (7, 'christian1234@example.com', '228315', '2025-12-06 11:17:36', 0, '2025-12-06 03:12:36'),
 (14, 'sample01111@test.com', '681119', '2025-12-06 11:28:58', 0, '2025-12-06 03:23:58'),
-(21, 'christianlamostem@gmail.com', '415646', '2025-12-06 11:43:32', 1, '2025-12-06 03:38:32'),
-(23, 'christian1485@example.com', '168754', '2025-12-06 11:46:37', 1, '2025-12-06 03:41:37');
+(23, 'christian1485@example.com', '168754', '2025-12-06 11:46:37', 1, '2025-12-06 03:41:37'),
+(29, 'christianlamostem@gmail.com', '751216', '2025-12-06 15:02:40', 1, '2025-12-06 06:57:40');
 
 -- --------------------------------------------------------
 
@@ -228,7 +227,8 @@ INSERT INTO `laundry_shops` (`shop_id`, `admin_id`, `owner_fName`, `owner_mName`
 ('LMSS-00003', 'LMSA-00012', 'Christian', 'Macorol', 'Lamoste', 'emily.chen@nursing.edu', '09631199863', 'Purok 2', 'itchan69', '', 'Active', 'Washing', '2025-10-28'),
 ('LMSS-00004', 'LMSA-00025', 'Christian', 'Macorol', 'Lamoste', 'example@john45.com', '09999999999', 'Purok 2', 'itchnQt4ever', 'itchnqt4ever', 'Active', 'Washing, DryClean', '2025-10-31'),
 ('LMSS-00005', 'LMSA-00026', 'Tina', 'Kalo', 'Moran', 'tina.moran@sample.com', '09999999998', 'Brgy. Panabatan Sta. Margarita, Samar', 'Tina Moran Shop', 'tina-moran-shop', 'Active', 'Washing, DryClean', '2025-10-31'),
-('LMSS-00006', 'LMSA-00027', 'Pining', 'Gar', 'Siya', 'pining.garsiya@sample.com', '09876544444', 'Brgy. Calanyugan Pagsanghan, Samar', 'Pining Gar Siya Laundry Shop', 'pining-gar-siya-laundry-shop', 'Active', 'Washing, DryClean', '2025-10-31');
+('LMSS-00006', 'LMSA-00027', 'Pining', 'Gar', 'Siya', 'pining.garsiya@sample.com', '09876544444', 'Brgy. Calanyugan Pagsanghan, Samar', 'Pining Gar Siya Laundry Shop', 'pining-gar-siya-laundry-shop', 'Active', 'Washing, DryClean', '2025-10-31'),
+('LMSS-00007', 'LMSA-00111', 'Christian', 'Macorol', 'Lamoste', 'christianlamostem@gmail.com', '09631199864', 'Purok 2, Brgy. Caparangasan Gandara, Samar', 'ITchan\'s Laundry Shop', 'itchan-s-laundry-shop', 'Active', 'Washing, DryClean', '2025-12-06');
 
 -- --------------------------------------------------------
 
@@ -438,7 +438,7 @@ INSERT INTO `shop_inventory` (`item_id`, `shop_id`, `item_name`, `categories`, `
 
 CREATE TABLE `users` (
   `user_id` varchar(11) NOT NULL,
-  `shop_id` varchar(10) NOT NULL,
+  `shop_id` varchar(10) DEFAULT NULL,
   `user_fName` varchar(255) NOT NULL,
   `user_mName` varchar(100) DEFAULT NULL,
   `user_lName` varchar(255) NOT NULL,
@@ -450,55 +450,57 @@ CREATE TABLE `users` (
   `status` varchar(100) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `date_registered` date NOT NULL DEFAULT curdate(),
-  `registered_by` varchar(50) NOT NULL
+  `registered_by` varchar(50) NOT NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expires` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lName`, `user_address`, `username`, `contactNum`, `email`, `role`, `status`, `password`, `date_registered`, `registered_by`) VALUES
-('LMSU-00059', 'LMSS-00006', 'Christian', 'Dela', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'Itchan695', '09874637287', 'Itchan695@test.com', 'customer', 'Active', '$2b$10$vifiagi4fB6B6zuUjqsjI.wr2z2iQRHPWbR8HIZ7k5KhczD9eKUlm', '2025-10-31', 'ADMIN'),
-('LMSU-00060', 'LMSS-00006', 'Harith', 'Joy', 'Harley', 'Jungle Area, Land of Dawn', 'HarithHarley', '09833476254', 'HarithHarley@ex.com', 'CUSTOMER', 'Active', '$2b$10$VyVk9k82VTH1xXGqyAsFK.Peg8hWVqePimaS9IYMSztcbXfDlTmcO', '2025-10-31', 'ADMIN'),
-('LMSU-00067', 'LMSS-00006', 'Boang', 'Ka', 'Man', 'brgy. Curry Sta. Margarita, Samar', 'BuangKaMan', '0937268465', 'buang.ka.man@sample.com', 'CUSTOMER', 'Active', '$2b$10$aXYbaIJ09XmNOEsh7xKnfO6q5FaL3c7JaG9xf4ywu3vYpCDurG7HW', '2025-11-03', 'Customer'),
-('LMSU-00068', 'LMSS-00006', 'Hello', 'Haha', 'World', 'Brgy. Panabatan Sta. Margarita, Samar', 'helloWorld', '09874563214', 'hello.world@test.com', 'CUSTOMER', 'Active', '$2b$10$QZdpouLfHENU33gZeB9cde2FmK195ymNyxqO/EO.6FBsREzSae306', '2025-11-03', 'Customer'),
-('LMSU-00069', 'LMSS-00006', 'Harry', 'Bulawan', 'Potter', 'Brgy. Calanyugan Pagsanghan, Samar', 'HarryPotter', '09874532718', 'harry.potter@sample.com', 'STAFF', 'Active', '$2b$10$TPCOxs894oIAM8nx9k78bexx.ueMhDZQd26YHsiqpyFAu6lGRRLMS', '2025-11-03', 'ADMIN'),
-('LMSU-00070', 'LMSS-00006', 'Kantotero', 'Kaluko', 'Manatad', 'Brgy. Erenas San Jorge, Samar', 'KantoteroManatad', '09876234523', 'Kantotero.Manatad@sample.com', 'customer', 'Active', '$2b$10$GD429Sg6oYZmfYDV1bGcHubTjaljv9sGKhQ2wVqxJ80hiKriZDqry', '2025-11-03', 'ADMIN'),
-('LMSU-00071', 'LMSS-00006', 'Christian', 'So', 'Lamoste', 'Biringan City', 'ChistianLamoste', '09857643521', 'christian2002@example.com', 'CUSTOMER', 'Active', '$2b$10$hCMg8IwrF0NawtEx7SZjvu5Hbpbbc9KqLtvodcL.fChsQJ5xr.FBq', '2025-11-03', 'Customer'),
-('LMSU-00072', 'LMSS-00006', 'Kai', 'Dacuba', 'Sotto', 'Brgy. Dapdap Tarangnan, Samar', 'KaiSotto', '09874634256', 'KaiSotto@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$LrTzBf8YmKhFsMo.pLWbIOqCcPKKjWcUSCXXvI6JLx.6EdCHbrMBa', '2025-11-03', 'CUSTOMER'),
-('LMSU-00073', 'LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Dapdap Tarangnan, Samar', 'christian.lamoste', '09876546372', 'christian123@example.com', 'CUSTOMER', 'Pending', '$2b$10$qw.xoDwDy8XtKw6xmjZc6ud8wVjDTspvWvF/SfJtjtIDpbFfapO/e', '2025-11-03', 'CUSTOMER'),
-('LMSU-00074', 'LMSS-00005', 'Pining', 'Gar', 'Siyasa', 'Brgy. Calanyugan Pagsanghan, Samar', 'PiningGarSiya', '09875647398', 'pining.gar.siya@yahoo.com', 'STAFF', 'Pending', '$2b$10$6xyuyuhwjq8eAqM/.oFscOVkj4gAu2NZAXqMEFJqgwMnnOF8h2uh2', '2025-11-03', 'ADMIN'),
-('LMSU-00075', 'LMSS-00005', 'Albert', 'Torre', 'Nicolas', 'Brgy. Panabatan Sta. Margarita, Samar', 'AlbertNicolas', '09874653782', 'alibert.nicolas@sample.com', 'customer', 'Active', '$2b$10$l14AZpHPNZOQz2bljuvyoujShD87jY.sioWiUk93RSClla3B0SgK2', '2025-11-03', 'ADMIN'),
-('LMSU-00076', 'LMSS-00005', 'Lloyd', 'Manogalpok', 'Ampatuan', 'Brgy. Ilo Sta. Margarita, Samar', 'Llyodie', '09874653987', 'lloyd.ampatuan@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$7MQQOnW45Xxx95s5LHy9re8wHWBNYlNmWfJA0dZT/OGSp7Z1R6OT6', '2025-11-03', 'CUSTOMER'),
-('LMSU-00077', 'LMSS-00005', 'Christian', 'Batumbakal', 'Lamoste', 'Brgy. San Agustin Gandara, Samar', 'Batumbakal69', '09874908756', 'lamoste123@test.co', 'CUSTOMER', 'ACTIVE', '$2b$10$OcY0FLXgRR/OLS/srNQnGu6u3N0jvK6pVPFJMVe5if/FDExqjx5vG', '2025-11-03', 'CUSTOMER'),
-('LMSU-00078', 'LMSS-00005', 'He', 'Ho', 'Ha', 'Brgy. Panabatan Sta. Margarita, Samar', 'hehaho', '0980989786', 'hehaho@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$KOG7t1G6KcCFY4by9y9OueMBL3/HAdlPQ6sbyqKYVFFdnuvKmpvx2', '2025-11-03', 'CUSTOMER'),
-('LMSU-00079', 'LMSS-00005', 'Christian', 'So', 'Lamoste', 'Biringan City', 'Itchan601', '09860986098', 'itchan123@test.cp', 'CUSTOMER', 'ACTIVE', '$2b$10$1yS8apY6diP1r36KiN9f7OMRgcEmdEagLDMDtmkHyYSVTqyKUSueu', '2025-11-03', 'CUSTOMER'),
-('LMSU-00080', 'LMSS-00005', 'qwerty', 'qwerty', 'qwerty', 'Brgy. Diaz Gandara, Samar', 'qwerty', '09090909090', 'qwerty@qwerty.com', 'CUSTOMER', 'Active', '$2b$10$d/WEJd0/EF2YMDZG2BWudOoop3Uf2ro1BVcELsQLeohljnoQiNbb.', '2025-11-03', 'CUSTOMER'),
-('LMSU-00081', 'LMSS-00005', 'John', 'John', 'John', 'Brgy. San Agustin Gandara, Samar', 'jjj', '0987465348', 'john@sample.com', 'CUSTOMER', 'Active', '$2b$10$o3KrX6qpaKN.HjjVTa6GYe/FNrsMeEgr4zva8fIz216rEcJ0ouc7S', '2025-11-03', 'CUSTOMER'),
-('LMSU-00082', 'LMSS-00005', 'Ambot', 'ambot', 'ambot', 'Biringan City', 'ambot', '09876098754', 'ambot.@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$OwrxKt.2exRoG5nGBlWWDuWlkoJOI3LKu2l.ddC.PD98b.tn3vJWW', '2025-11-03', 'CUSTOMER'),
-('LMSU-00083', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Brgy. San Jaun San Jorge, Samar', 'ChristianLamoste', '09875098467', 'lamoste.christian@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$6tcHHmMzpRQHZMiO24USS.aeQYOchPeWur6k/6urqs308FWGU8Tfa', '2025-11-04', 'CUSTOMER'),
-('LMSU-00084', 'LMSS-00005', 'Agapito', 'Sagirit', 'Hampaslupa', 'Brgy. Panabatan Sta. Margarita, Samar', 'agapitoHampaslupa', '09870947381', 'agapitoHampaslupa@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$DW/BVFhLJBZsQ1JHW7trYukkTRrkdP3X/f6jbXOnhLpzvJxJbZ8f.', '2025-11-04', 'CUSTOMER'),
-('LMSU-00085', 'LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'testuser1', '09898746352', 'testuser1@example.com', 'staff', 'Active', '$2b$10$MgNXjdqaN0FCnMPW1hvtgetcMfNKbsaCSAXHX68RZGUCCZv0InQk.', '2025-11-15', 'ADMIN'),
-('LMSU-00086', 'LMSS-00004', 'LeBron', 'Cupal', 'James', 'Brgy. Calanyugan Pagsanghan, Samar', 'LeBronJames123', '9876543210', 'LeBron.James@sample.com', 'STAFF', 'Active', '$2b$10$CIbdLECsuaTHi7BqIPadeeHxtRgD/tibL7Vmj/rcoLaqjEzj0MyX6', '2025-11-21', 'ADMIN'),
-('LMSU-00087', 'LMSS-00006', 'Christian', 'Te', 'Lamoste', 'Brgy. Panabatan Sta. Margarita, Samar', 'Itchan.qt', '09631199862', 'christian1@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$indpHZj3ZtX9qA/Es8sTo.CXAtC3JnaE/23/S0Ln7FXuuzZK2iB6a', '2025-11-24', 'CUSTOMER'),
-('LMSU-00088', 'LMSS-00006', 'Tina ', 'Moran', 'Moko', 'Biringan City', 'tina.moran.moko', '09809876543', 'tina.moran.moko@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$8zdB9BKoKV7LE54S5VtqBOnxOSq5gmzo379JrV4GsIHXYQk0MG9BS', '2025-11-24', 'CUSTOMER'),
-('LMSU-00089', 'LMSS-00006', 'LeBron', 'Cabubas', 'James', 'Brgy. Panabatan Sta. Margarita, Samar', 'LeBronJames123', '09631199862', 'lebron.james123@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$25C3r41TXt.hOlbmxRmb0eQtnmbUfzoGzYyauFRDk6PITD4PqgWQa', '2025-11-26', 'CUSTOMER'),
-('LMSU-00090', 'LMSS-00006', 'Victor', 'Manlolo', 'Wembanyama', 'Brgy. Diaz Gandara, Samar', 'VictorWem', '09631199862', 'wembanyama@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$rHkaRi.7IwGYhd1YdAB2RuWp2UvZA/gt4l7MtGd/oEPfs5zgmm7N6', '2025-11-26', 'CUSTOMER'),
-('LMSU-00091', 'LMSS-00006', 'Kobe', 'Kantotero', 'Brayant', 'Brgy. San Agustin Gandara, Samar', 'kobe.brayant', '09897865412', 'kobe.brayant@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$sQsN1YS.FagMYazSdYEo3uGtbzdLb90UCFMhm7cn4fwtlu3DHJGYy', '2025-11-30', 'CUSTOMER'),
-('LMSU-00092', 'LMSS-00006', 'Justine', 'Dumanacal', 'Brownlee', 'Brgy. Malayog Gandara, Samar', 'jus.Brownlee', '09809876485', 'justine.brownlee@test.com', 'CUSTOMER', 'Inactive', '$2b$10$HeeYFmHGIbuKBiv78p/qDuNFKCOliGLHleJIf/zjhV4bj9nRe1bA.', '2025-11-30', 'CUSTOMER'),
-('LMSU-00093', 'LMSS-00006', 'Justine', 'Kantotero', 'Doe', 'Brgy. Malayog Gandara, Samar', 'jusDoe', '09809876905', 'jus.doe@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$BwT0nFAZwHmCPgAvQj1kq.Tr2Eh9crhiLRdHYyq58LRxNtixLly12', '2025-11-30', 'CUSTOMER'),
-('LMSU-00094', 'LMSS-00006', 'Majin', 'Tu', 'Boo', 'Brgy. Dapdap Tarangnan, Samar', 'magin.boo', '09809785986', 'majin.boo@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$kFoYNhhCa9AwU717FuhICOhec7tCWzQTmCUMpqxmlbQDIQ3B5tYK.', '2025-11-30', 'CUSTOMER'),
-('LMSU-00095', 'LMSS-00006', 'Tarugo', 'Kantotero', 'Maigit', 'Mundo ng mga Halimaw', 'Tarugo69', '09809870968', 'tarugo69@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$gKiHqoVcNp2ozY2n.btqFezETSaDzH4AyGyvE10.jejXiMAcLd7XK', '2025-11-30', 'CUSTOMER'),
-('LMSU-00096', 'LMSS-00006', 'Ichigo', 'Manyakol', 'Urusoka', 'Soul Society', 'ichigoUrusoka', '09127645231', 'ichigo.urusoka@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$187AukMEVOgV5Kykv3OWVul.vJu0ziPyB9fvANHyw/EMtBh0sTkIu', '2025-11-30', 'CUSTOMER'),
-('LMSU-00097', 'LMSS-00006', 'Rob', 'Sagirit', 'Manugalpok', 'Brgy. Panabatan Sta. Margarita, Samar', 'rob123', '09890481767', 'rob@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$F5RajgxqEE.qVT5c0H/A6.SlLddMIo.bwE2MF621dGe7gOAQ4Mdja', '2025-11-30', 'CUSTOMER'),
-('LMSU-00098', 'LMSS-00006', 'Register ', 'New', 'Account', 'Kahit saan', 'RegisterAccount', '09870987635', 'register@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$D2ObH0uhdJl1VwhX2bU4iuXK4RpcvAB1LdiBWc6Cs5C.J77GvkKg6', '2025-11-30', 'CUSTOMER'),
-('LMSU-00100', 'LMSS-00006', 'Kahit', 'Pa', 'Sino', 'Brgy. Diaz Gandara, Samar', 'HaHu', '+639631199812', 'haha@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$Lmk9zOrqLLugV7k57m6fJ.1i95Q7dpUiokTgtC4silUevRXa2dK8u', '2025-12-05', 'CUSTOMER'),
-('LMSU-00104', 'LMSS-00006', 'hah', 'hdhd', 'hash', 'Biringan City', 'hdhd', '+639631199862', 'hd@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$KsYVw5XkPYK50GTihE6mfe.iRCmHvrZXQaEyTgmjUzwwi.VAa8vxe', '2025-12-05', 'CUSTOMER'),
-('LMSU-00106', 'LMSS-00006', 'David', 'null', 'Brown', '654 Cedar Road, Foresthill', 'null', '555-7890', 'david06.brown@example.com', 'Staff', 'active', '$2b$10$p23AjMuJp1.90B14fs9h..E7mjrWHE0weRXker4za4C//NcfueZzS', '2025-12-05', 'CUSTOMER'),
-('LMSU-00107', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Caparangasan Gandara, Samar', 'ITchan022002', '+639631199862', 'christianlamostem@gmail.com', 'CUSTOMER', 'ACTIVE', '$2b$10$d.XIja7ItwF27B8ALf9omOAhhWcj53BCybmApb13lC/14kB.DXWBO', '2025-12-05', 'CUSTOMER'),
-('LMSU-00108', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'jojo', '+639631199863', 'kahit@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$AQQOFAd98aLnJm4dM14eSeLodlMizWSp7u9eQnfb4vKL5G1ppt3GS', '2025-12-06', 'CUSTOMER'),
-('LMSU-00109', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'jojo123', '+639631199811', 'christian1234@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$8uUt/mR.utMPIgR4zYUVfOwLtuHWN99WZkPkgV5WBvoEhMzklcCEy', '2025-12-06', 'CUSTOMER'),
-('LMSU-00110', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Itchan6554', '+639631199000', 'christian1485@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$dFLovl6xwsgvhaE1b48NPOvjCu8HeZ57w.ZKBH1fguVOrbEK6Kth2', '2025-12-06', 'CUSTOMER');
+INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lName`, `user_address`, `username`, `contactNum`, `email`, `role`, `status`, `password`, `date_registered`, `registered_by`, `reset_token`, `reset_token_expires`) VALUES
+('LMSA-00111', 'LMSS-00007', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'itchaQT', '+639631199862', 'christianlamostem@gmail.com', 'Admin', 'Active', '$2b$10$ebYgu00rVw7ehgYLbOnGmucveXun4lawPmxPahrvKxjMpp3m/wnce', '2025-12-06', 'S-ADMIN', NULL, NULL),
+('LMSU-00059', 'LMSS-00006', 'Christian', 'Dela', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'Itchan695', '09874637287', 'Itchan695@test.com', 'customer', 'Active', '$2b$10$vifiagi4fB6B6zuUjqsjI.wr2z2iQRHPWbR8HIZ7k5KhczD9eKUlm', '2025-10-31', 'ADMIN', NULL, NULL),
+('LMSU-00060', 'LMSS-00006', 'Harith', 'Joy', 'Harley', 'Jungle Area, Land of Dawn', 'HarithHarley', '09833476254', 'HarithHarley@ex.com', 'CUSTOMER', 'Active', '$2b$10$VyVk9k82VTH1xXGqyAsFK.Peg8hWVqePimaS9IYMSztcbXfDlTmcO', '2025-10-31', 'ADMIN', NULL, NULL),
+('LMSU-00067', 'LMSS-00006', 'Boang', 'Ka', 'Man', 'brgy. Curry Sta. Margarita, Samar', 'BuangKaMan', '0937268465', 'buang.ka.man@sample.com', 'CUSTOMER', 'Active', '$2b$10$aXYbaIJ09XmNOEsh7xKnfO6q5FaL3c7JaG9xf4ywu3vYpCDurG7HW', '2025-11-03', 'Customer', NULL, NULL),
+('LMSU-00068', 'LMSS-00006', 'Hello', 'Haha', 'World', 'Brgy. Panabatan Sta. Margarita, Samar', 'helloWorld', '09874563214', 'hello.world@test.com', 'CUSTOMER', 'Active', '$2b$10$QZdpouLfHENU33gZeB9cde2FmK195ymNyxqO/EO.6FBsREzSae306', '2025-11-03', 'Customer', NULL, NULL),
+('LMSU-00069', 'LMSS-00006', 'Harry', 'Bulawan', 'Potter', 'Brgy. Calanyugan Pagsanghan, Samar', 'HarryPotter', '09874532718', 'harry.potter@sample.com', 'STAFF', 'Active', '$2b$10$TPCOxs894oIAM8nx9k78bexx.ueMhDZQd26YHsiqpyFAu6lGRRLMS', '2025-11-03', 'ADMIN', NULL, NULL),
+('LMSU-00070', 'LMSS-00006', 'Kantotero', 'Kaluko', 'Manatad', 'Brgy. Erenas San Jorge, Samar', 'KantoteroManatad', '09876234523', 'Kantotero.Manatad@sample.com', 'customer', 'Active', '$2b$10$GD429Sg6oYZmfYDV1bGcHubTjaljv9sGKhQ2wVqxJ80hiKriZDqry', '2025-11-03', 'ADMIN', NULL, NULL),
+('LMSU-00071', 'LMSS-00006', 'Christian', 'So', 'Lamoste', 'Biringan City', 'ChistianLamoste', '09857643521', 'christian2002@example.com', 'CUSTOMER', 'Active', '$2b$10$hCMg8IwrF0NawtEx7SZjvu5Hbpbbc9KqLtvodcL.fChsQJ5xr.FBq', '2025-11-03', 'Customer', NULL, NULL),
+('LMSU-00072', 'LMSS-00006', 'Kai', 'Dacuba', 'Sotto', 'Brgy. Dapdap Tarangnan, Samar', 'KaiSotto', '09874634256', 'KaiSotto@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$LrTzBf8YmKhFsMo.pLWbIOqCcPKKjWcUSCXXvI6JLx.6EdCHbrMBa', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00073', 'LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Dapdap Tarangnan, Samar', 'christian.lamoste', '09876546372', 'christian123@example.com', 'CUSTOMER', 'Pending', '$2b$10$qw.xoDwDy8XtKw6xmjZc6ud8wVjDTspvWvF/SfJtjtIDpbFfapO/e', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00074', 'LMSS-00005', 'Pining', 'Gar', 'Siyasa', 'Brgy. Calanyugan Pagsanghan, Samar', 'PiningGarSiya', '09875647398', 'pining.gar.siya@yahoo.com', 'STAFF', 'Pending', '$2b$10$6xyuyuhwjq8eAqM/.oFscOVkj4gAu2NZAXqMEFJqgwMnnOF8h2uh2', '2025-11-03', 'ADMIN', NULL, NULL),
+('LMSU-00075', 'LMSS-00005', 'Albert', 'Torre', 'Nicolas', 'Brgy. Panabatan Sta. Margarita, Samar', 'AlbertNicolas', '09874653782', 'alibert.nicolas@sample.com', 'customer', 'Active', '$2b$10$l14AZpHPNZOQz2bljuvyoujShD87jY.sioWiUk93RSClla3B0SgK2', '2025-11-03', 'ADMIN', NULL, NULL),
+('LMSU-00076', 'LMSS-00005', 'Lloyd', 'Manogalpok', 'Ampatuan', 'Brgy. Ilo Sta. Margarita, Samar', 'Llyodie', '09874653987', 'lloyd.ampatuan@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$7MQQOnW45Xxx95s5LHy9re8wHWBNYlNmWfJA0dZT/OGSp7Z1R6OT6', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00077', 'LMSS-00005', 'Christian', 'Batumbakal', 'Lamoste', 'Brgy. San Agustin Gandara, Samar', 'Batumbakal69', '09874908756', 'lamoste123@test.co', 'CUSTOMER', 'ACTIVE', '$2b$10$OcY0FLXgRR/OLS/srNQnGu6u3N0jvK6pVPFJMVe5if/FDExqjx5vG', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00078', 'LMSS-00005', 'He', 'Ho', 'Ha', 'Brgy. Panabatan Sta. Margarita, Samar', 'hehaho', '0980989786', 'hehaho@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$KOG7t1G6KcCFY4by9y9OueMBL3/HAdlPQ6sbyqKYVFFdnuvKmpvx2', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00079', 'LMSS-00005', 'Christian', 'So', 'Lamoste', 'Biringan City', 'Itchan601', '09860986098', 'itchan123@test.cp', 'CUSTOMER', 'ACTIVE', '$2b$10$1yS8apY6diP1r36KiN9f7OMRgcEmdEagLDMDtmkHyYSVTqyKUSueu', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00080', 'LMSS-00005', 'qwerty', 'qwerty', 'qwerty', 'Brgy. Diaz Gandara, Samar', 'qwerty', '09090909090', 'qwerty@qwerty.com', 'CUSTOMER', 'Active', '$2b$10$d/WEJd0/EF2YMDZG2BWudOoop3Uf2ro1BVcELsQLeohljnoQiNbb.', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00081', 'LMSS-00005', 'John', 'John', 'John', 'Brgy. San Agustin Gandara, Samar', 'jjj', '0987465348', 'john@sample.com', 'CUSTOMER', 'Active', '$2b$10$o3KrX6qpaKN.HjjVTa6GYe/FNrsMeEgr4zva8fIz216rEcJ0ouc7S', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00082', 'LMSS-00005', 'Ambot', 'ambot', 'ambot', 'Biringan City', 'ambot', '09876098754', 'ambot.@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$OwrxKt.2exRoG5nGBlWWDuWlkoJOI3LKu2l.ddC.PD98b.tn3vJWW', '2025-11-03', 'CUSTOMER', NULL, NULL),
+('LMSU-00083', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Brgy. San Jaun San Jorge, Samar', 'ChristianLamoste', '09875098467', 'lamoste.christian@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$6tcHHmMzpRQHZMiO24USS.aeQYOchPeWur6k/6urqs308FWGU8Tfa', '2025-11-04', 'CUSTOMER', NULL, NULL),
+('LMSU-00084', 'LMSS-00005', 'Agapito', 'Sagirit', 'Hampaslupa', 'Brgy. Panabatan Sta. Margarita, Samar', 'agapitoHampaslupa', '09870947381', 'agapitoHampaslupa@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$DW/BVFhLJBZsQ1JHW7trYukkTRrkdP3X/f6jbXOnhLpzvJxJbZ8f.', '2025-11-04', 'CUSTOMER', NULL, NULL),
+('LMSU-00085', 'LMSS-00005', 'Christian', 'Macorol', 'Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', 'testuser1', '09898746352', 'testuser1@example.com', 'staff', 'Active', '$2b$10$MgNXjdqaN0FCnMPW1hvtgetcMfNKbsaCSAXHX68RZGUCCZv0InQk.', '2025-11-15', 'ADMIN', NULL, NULL),
+('LMSU-00086', 'LMSS-00004', 'LeBron', 'Cupal', 'James', 'Brgy. Calanyugan Pagsanghan, Samar', 'LeBronJames123', '9876543210', 'LeBron.James@sample.com', 'STAFF', 'Active', '$2b$10$CIbdLECsuaTHi7BqIPadeeHxtRgD/tibL7Vmj/rcoLaqjEzj0MyX6', '2025-11-21', 'ADMIN', NULL, NULL),
+('LMSU-00087', 'LMSS-00006', 'Christian', 'Te', 'Lamoste', 'Brgy. Panabatan Sta. Margarita, Samar', 'Itchan.qt', '09631199862', 'christian1@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$indpHZj3ZtX9qA/Es8sTo.CXAtC3JnaE/23/S0Ln7FXuuzZK2iB6a', '2025-11-24', 'CUSTOMER', NULL, NULL),
+('LMSU-00088', 'LMSS-00006', 'Tina ', 'Moran', 'Moko', 'Biringan City', 'tina.moran.moko', '09809876543', 'tina.moran.moko@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$8zdB9BKoKV7LE54S5VtqBOnxOSq5gmzo379JrV4GsIHXYQk0MG9BS', '2025-11-24', 'CUSTOMER', NULL, NULL),
+('LMSU-00089', 'LMSS-00006', 'LeBron', 'Cabubas', 'James', 'Brgy. Panabatan Sta. Margarita, Samar', 'LeBronJames123', '09631199862', 'lebron.james123@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$25C3r41TXt.hOlbmxRmb0eQtnmbUfzoGzYyauFRDk6PITD4PqgWQa', '2025-11-26', 'CUSTOMER', NULL, NULL),
+('LMSU-00090', 'LMSS-00006', 'Victor', 'Manlolo', 'Wembanyama', 'Brgy. Diaz Gandara, Samar', 'VictorWem', '09631199862', 'wembanyama@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$rHkaRi.7IwGYhd1YdAB2RuWp2UvZA/gt4l7MtGd/oEPfs5zgmm7N6', '2025-11-26', 'CUSTOMER', NULL, NULL),
+('LMSU-00091', 'LMSS-00006', 'Kobe', 'Kantotero', 'Brayant', 'Brgy. San Agustin Gandara, Samar', 'kobe.brayant', '09897865412', 'kobe.brayant@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$sQsN1YS.FagMYazSdYEo3uGtbzdLb90UCFMhm7cn4fwtlu3DHJGYy', '2025-11-30', 'CUSTOMER', NULL, NULL),
+('LMSU-00092', 'LMSS-00006', 'Justine', 'Dumanacal', 'Brownlee', 'Brgy. Malayog Gandara, Samar', 'jus.Brownlee', '09809876485', 'justine.brownlee@test.com', 'CUSTOMER', 'Inactive', '$2b$10$HeeYFmHGIbuKBiv78p/qDuNFKCOliGLHleJIf/zjhV4bj9nRe1bA.', '2025-11-30', 'CUSTOMER', NULL, NULL),
+('LMSU-00093', 'LMSS-00006', 'Justine', 'Kantotero', 'Doe', 'Brgy. Malayog Gandara, Samar', 'jusDoe', '09809876905', 'jus.doe@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$BwT0nFAZwHmCPgAvQj1kq.Tr2Eh9crhiLRdHYyq58LRxNtixLly12', '2025-11-30', 'CUSTOMER', NULL, NULL),
+('LMSU-00094', 'LMSS-00006', 'Majin', 'Tu', 'Boo', 'Brgy. Dapdap Tarangnan, Samar', 'magin.boo', '09809785986', 'majin.boo@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$kFoYNhhCa9AwU717FuhICOhec7tCWzQTmCUMpqxmlbQDIQ3B5tYK.', '2025-11-30', 'CUSTOMER', NULL, NULL),
+('LMSU-00095', 'LMSS-00006', 'Tarugo', 'Kantotero', 'Maigit', 'Mundo ng mga Halimaw', 'Tarugo69', '09809870968', 'tarugo69@test.com', 'CUSTOMER', 'ACTIVE', '$2b$10$gKiHqoVcNp2ozY2n.btqFezETSaDzH4AyGyvE10.jejXiMAcLd7XK', '2025-11-30', 'CUSTOMER', NULL, NULL),
+('LMSU-00096', 'LMSS-00006', 'Ichigo', 'Manyakol', 'Urusoka', 'Soul Society', 'ichigoUrusoka', '09127645231', 'ichigo.urusoka@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$187AukMEVOgV5Kykv3OWVul.vJu0ziPyB9fvANHyw/EMtBh0sTkIu', '2025-11-30', 'CUSTOMER', NULL, NULL),
+('LMSU-00097', 'LMSS-00006', 'Rob', 'Sagirit', 'Manugalpok', 'Brgy. Panabatan Sta. Margarita, Samar', 'rob123', '09890481767', 'rob@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$F5RajgxqEE.qVT5c0H/A6.SlLddMIo.bwE2MF621dGe7gOAQ4Mdja', '2025-11-30', 'CUSTOMER', NULL, NULL),
+('LMSU-00098', 'LMSS-00006', 'Register ', 'New', 'Account', 'Kahit saan', 'RegisterAccount', '09870987635', 'register@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$D2ObH0uhdJl1VwhX2bU4iuXK4RpcvAB1LdiBWc6Cs5C.J77GvkKg6', '2025-11-30', 'CUSTOMER', NULL, NULL),
+('LMSU-00100', 'LMSS-00006', 'Kahit', 'Pa', 'Sino', 'Brgy. Diaz Gandara, Samar', 'HaHu', '+639631199812', 'haha@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$Lmk9zOrqLLugV7k57m6fJ.1i95Q7dpUiokTgtC4silUevRXa2dK8u', '2025-12-05', 'CUSTOMER', NULL, NULL),
+('LMSU-00104', 'LMSS-00006', 'hah', 'hdhd', 'hash', 'Biringan City', 'hdhd', '+639631199862', 'hd@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$KsYVw5XkPYK50GTihE6mfe.iRCmHvrZXQaEyTgmjUzwwi.VAa8vxe', '2025-12-05', 'CUSTOMER', NULL, NULL),
+('LMSU-00106', 'LMSS-00006', 'David', 'null', 'Brown', '654 Cedar Road, Foresthill', 'null', '555-7890', 'david06.brown@example.com', 'Staff', 'active', '$2b$10$p23AjMuJp1.90B14fs9h..E7mjrWHE0weRXker4za4C//NcfueZzS', '2025-12-05', 'CUSTOMER', NULL, NULL),
+('LMSU-00108', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'jojo', '+639631199863', 'kahit@sample.com', 'CUSTOMER', 'ACTIVE', '$2b$10$AQQOFAd98aLnJm4dM14eSeLodlMizWSp7u9eQnfb4vKL5G1ppt3GS', '2025-12-06', 'CUSTOMER', NULL, NULL),
+('LMSU-00109', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'jojo123', '+639631199811', 'christian1234@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$8uUt/mR.utMPIgR4zYUVfOwLtuHWN99WZkPkgV5WBvoEhMzklcCEy', '2025-12-06', 'CUSTOMER', NULL, NULL),
+('LMSU-00110', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Itchan6554', '+639631199000', 'christian1485@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$dFLovl6xwsgvhaE1b48NPOvjCu8HeZ57w.ZKBH1fguVOrbEK6Kth2', '2025-12-06', 'CUSTOMER', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -589,7 +591,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `email_otps`
 --
 ALTER TABLE `email_otps`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `payment_method`
