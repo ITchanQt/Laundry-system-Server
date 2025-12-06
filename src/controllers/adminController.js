@@ -1,4 +1,5 @@
 const Admin = require("../models/Admin");
+const OtpModel = require("../models/otpModel");
 
 const registerAdmin = async (req, res) => {
   try {
@@ -30,6 +31,14 @@ const registerAdmin = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Email, username or phone number is unavailable!",
+      });
+    }
+
+    const verified = await OtpModel.isEmailVerified(req.body.email);
+    if (!verified) {
+      return res.status(400).json({
+        success: false,
+        message: "Please verify your OTP before registering",
       });
     }
 
