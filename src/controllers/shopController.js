@@ -54,18 +54,18 @@ const getAllShops = async (req, res) => {
 const editShop = async (req, res) => {
   try {
     const { shop_id } = req.params;
+    const { services, data } = req.body;
 
     if (!shop_id) {
-      return res.status(400).json({
-        success: false,
-        error: "Shop ID is required",
-      });
+      return res
+        .status(400)
+        .json({ success: false, error: "Shop ID is required" });
     }
 
-    // Log incoming data
     console.log("Received update data:", req.body);
     console.log("Shop ID:", shop_id);
 
+    // Wrap main shop fields in `data`
     const updatedShop = await LaundryShops.editShopById(shop_id, req.body);
 
     res.status(200).json({
