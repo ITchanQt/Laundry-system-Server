@@ -3,7 +3,7 @@ const BaseModel = require("./BaseModel");
 class LaundryShops extends BaseModel {
   static async findByName(shopName, ownerEmail, ownerContactNum) {
     const sql =
-      "SELECT * FROM laundry_shops WHERE owner_emailAdd = ? AND owner_contactNum = ? AND shop_name = ?";
+      "SELECT * FROM laundry_shops WHERE admin_emailAdd = ? AND admin_contactNum = ? AND shop_name = ?";
     const results = await this.query(sql, [
       ownerEmail,
       ownerContactNum,
@@ -59,7 +59,7 @@ class LaundryShops extends BaseModel {
     // Insert laundry shop
     const insertShopSql = `
       INSERT INTO laundry_shops 
-      (shop_id, admin_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, slug, shop_type)
+      (shop_id, admin_id, admin_fName, admin_mName, admin_lName, admin_emailAdd, admin_contactNum, shop_address, shop_name, slug, shop_type)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
@@ -162,10 +162,10 @@ class LaundryShops extends BaseModel {
 
       const updateQuery = `
       UPDATE laundry_shops 
-      SET owner_fName = ?,
-          owner_mName = ?,
-          owner_lName = ?,
-          owner_contactNum = ?,
+      SET admin_fName = ?,
+          admin_mName = ?,
+          admin_lName = ?,
+          admin_contactNum = ?,
           shop_address = ?,
           shop_name = ?,
           shop_status = ?,
