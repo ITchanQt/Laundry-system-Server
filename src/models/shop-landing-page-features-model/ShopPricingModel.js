@@ -2,14 +2,14 @@ const BaseModel = require("../BaseModel");
 
 class PricingModel extends BaseModel {
   static async findServiceById(id) {
-    const sql = `SELECT * FROM shoplandingpage_pricing WHERE pricing_id = ?`;
+    const sql = `SELECT * FROM shop_pricing WHERE pricing_id = ?`;
     const result = await this.query(sql, [id]);
     return result[0];
   }
 
   static async findPricingById(shop_id) {
     try {
-      const sql = "SELECT * FROM shoplandingpage_pricing WHERE is_displayed = 'true' AND shop_id = ?";
+      const sql = "SELECT * FROM shop_pricing WHERE is_displayed = 'true' AND shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -21,7 +21,7 @@ class PricingModel extends BaseModel {
   static async findByTitle(categories, shop_id) {
     try {
       const sql =
-        "SELECT * FROM shoplandingpage_pricing WHERE categories = ? AND shop_id = ?";
+        "SELECT * FROM shop_pricing WHERE categories = ? AND shop_id = ?";
       const results = await this.query(sql, [categories, shop_id]);
       return results;
     } catch (error) {
@@ -43,7 +43,7 @@ class PricingModel extends BaseModel {
       } = pricesData;
 
       const sql = `
-      INSERT INTO shoplandingpage_pricing (shop_id, categories, description, price, pricing_label, image_url, is_displayed)
+      INSERT INTO shop_pricing (shop_id, categories, description, price, pricing_label, image_url, is_displayed)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
@@ -64,7 +64,7 @@ class PricingModel extends BaseModel {
 
   static async findAllPrices(shop_id) {
     try {
-      const sql = "SELECT * FROM shoplandingpage_pricing WHERE shop_id = ?";
+      const sql = "SELECT * FROM shop_pricing WHERE shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -75,7 +75,7 @@ class PricingModel extends BaseModel {
   static async updatePrices(pricing_id, data) {
     try {
       const sql = `
-      UPDATE shoplandingpage_pricing
+      UPDATE shop_pricing
       SET categories = ?, description = ?, price = ?, pricing_label = ?,  image_url = ?, is_displayed = ?
       WHERE pricing_id = ?
     `;
@@ -102,7 +102,7 @@ class PricingModel extends BaseModel {
   static async updateDisplaySettings(shop_id, displayedPricesIds) {
     try {
       const hideAllSql =
-        "UPDATE shoplandingpage_pricing SET is_displayed = 'false' WHERE shop_id = ?";
+        "UPDATE shop_pricing SET is_displayed = 'false' WHERE shop_id = ?";
       await this.query(hideAllSql, [shop_id]);
 
       if (
@@ -111,7 +111,7 @@ class PricingModel extends BaseModel {
       ) {
         const placeholders = displayedPricesIds.map(() => "?").join(", ");
         const showSql = `
-        UPDATE shoplandingpage_pricing
+        UPDATE shop_pricing
         SET is_displayed = 'true'
         WHERE shop_id = ?
         AND pricing_id IN (${placeholders})
@@ -130,7 +130,7 @@ class PricingModel extends BaseModel {
 
   static async searchDisplyedPriceByShopId(shop_id) {
     try {
-      const sql = "SELECT * FROM shoplandingpage_pricing WHERE is_displayed = 'true' AND shop_id = ?";
+      const sql = "SELECT * FROM shop_pricing WHERE is_displayed = 'true' AND shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
