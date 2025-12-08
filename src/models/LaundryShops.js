@@ -86,7 +86,7 @@ class LaundryShops extends BaseModel {
       .filter(s => s.length > 0);
 
     const insertServiceSQL = `
-      INSERT INTO shopLandingPage_services
+      INSERT INTO shop_services
       (shop_id, service_name, is_displayed)
       VALUES (?, ?, ?)
     `;
@@ -109,7 +109,7 @@ class LaundryShops extends BaseModel {
       const shops = await this.query(shopSql);
 
       const servicesSql =
-        "SELECT service_id, shop_id, service_name, is_displayed FROM shopLandingPage_services";
+        "SELECT service_id, shop_id, service_name, is_displayed FROM shop_services";
       const allServices = await this.query(servicesSql);
 
       const servicesByShopId = allServices.reduce((acc, service) => {
@@ -188,7 +188,7 @@ class LaundryShops extends BaseModel {
 
       if (Array.isArray(services) && services.length > 0) {
         const hideAllSql =
-          "UPDATE shopLandingPage_services SET is_displayed = 'false' WHERE shop_id = ?";
+          "UPDATE shop_services SET is_displayed = 'false' WHERE shop_id = ?";
         await this.query(hideAllSql, [shop_id]);
 
         const servicesToShow = services
@@ -198,7 +198,7 @@ class LaundryShops extends BaseModel {
         if (servicesToShow.length > 0) {
           const placeholders = servicesToShow.map(() => "?").join(", ");
           const showSql = `
-          UPDATE shopLandingPage_services
+          UPDATE shop_services
           SET is_displayed = 'true'
           WHERE shop_id = ?
           AND service_id IN (${placeholders})
