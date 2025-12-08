@@ -12,6 +12,12 @@ class LaundryShops extends BaseModel {
     return results[0];
   }
 
+  static async findByEmail(email) {
+    const sql = "SELECT * FROM users WHERE role = 'ADMIN' AND email = ?";
+    const result = await this.query(sql, [email]);
+    return result[0];
+  }
+
   static async generateShopId() {
     try {
       // Get the highest admin ID
@@ -34,53 +40,68 @@ class LaundryShops extends BaseModel {
   }
 
   static async create(shopData) {
-    try {
-      // Generate a new shop ID
-      const shop_id = await this.generateShopId();
+  try {
+    const shop_id = await this.generateShopId();
 
-      const {
-        admin_id,
-        owner_fName,
-        owner_mName,
-        owner_lName,
-        owner_emailAdd,
-        owner_contactNum,
-        shop_address,
-        shop_name,
-        slug,
-        shop_type,
-      } = shopData;
+    const {
+      admin_id,
+      owner_fName,
+      owner_mName,
+      owner_lName,
+      owner_emailAdd,
+      owner_contactNum,
+      shop_address,
+      shop_name,
+      slug,
+      shop_type,
+    } = shopData;
 
-      // Insert new shop
-      const insertShopSql = `
+    // Insert laundry shop
+    const insertShopSql = `
       INSERT INTO laundry_shops 
       (shop_id, admin_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, slug, shop_type)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-      await this.query(insertShopSql, [
-        shop_id,
-        admin_id,
-        owner_fName,
-        owner_mName,
-        owner_lName,
-        owner_emailAdd,
-        owner_contactNum,
-        shop_address,
-        shop_name,
-        slug,
-        shop_type,
-      ]);
+    await this.query(insertShopSql, [
+      shop_id,
+      admin_id,
+      owner_fName,
+      owner_mName,
+      owner_lName,
+      owner_emailAdd,
+      owner_contactNum,
+      shop_address,
+      shop_name,
+      slug,
+      shop_type,
+    ]);
 
-      const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
-      await this.query(updateAdminSql, [shop_id, admin_id]);
+    const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
+    await this.query(updateAdminSql, [shop_id, admin_id]);
 
-      return { success: true, shop_id, admin_id };
-    } catch (error) {
-      console.error("Error creating laundry shop:", error);
-      throw new Error(`Failed to create laundry shop: ${error.message}`);
+    const serviceList = shop_type
+      .split(",")
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    const insertServiceSQL = `
+      INSERT INTO shopLandingPage_services
+      (shop_id, service_name, is_displayed)
+      VALUES (?, ?, ?)
+    `;
+
+    for (const service of serviceList) {
+      await this.query(insertServiceSQL, [shop_id, service, 'true']);
     }
+
+    return { success: true, shop_id, admin_id };
+  } catch (error) {
+    console.error("Error creating laundry shop:", error);
+    throw new Error(`Failed to create laundry shop: ${error.message}`);
   }
+}
+
 
   static async getAllShops() {
     try {

@@ -4,6 +4,14 @@ const registerLaundryShop = async (req, res) => {
   try {
     const { admin_id, owner_emailAdd, owner_contactNum, shop_name } = req.body;
 
+    const adminExist = await LaundryShops.findByEmail(owner_emailAdd);
+    if (!adminExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Email doesn't exist!",
+      });
+    }
+
     // Check if the shop already exists
     const existingShop = await LaundryShops.findByName(
       shop_name,
