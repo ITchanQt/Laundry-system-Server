@@ -4,6 +4,14 @@ const registerLaundryShop = async (req, res) => {
   try {
     const { admin_id, owner_emailAdd, owner_contactNum, shop_name } = req.body;
 
+    const adminExist = await LaundryShops.findByEmail(owner_emailAdd);
+    if (!adminExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Email doesn't exist!",
+      });
+    }
+
     // Check if the shop already exists
     const existingShop = await LaundryShops.findByName(
       shop_name,
@@ -54,18 +62,18 @@ const getAllShops = async (req, res) => {
 const editShop = async (req, res) => {
   try {
     const { shop_id } = req.params;
+    const { services, data } = req.body;
 
     if (!shop_id) {
-      return res.status(400).json({
-        success: false,
-        error: "Shop ID is required",
-      });
+      return res
+        .status(400)
+        .json({ success: false, error: "Shop ID is required" });
     }
 
-    // Log incoming data
     console.log("Received update data:", req.body);
     console.log("Shop ID:", shop_id);
 
+    // Wrap main shop fields in `data`
     const updatedShop = await LaundryShops.editShopById(shop_id, req.body);
 
     res.status(200).json({

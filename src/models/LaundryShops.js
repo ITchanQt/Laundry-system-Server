@@ -12,6 +12,12 @@ class LaundryShops extends BaseModel {
     return results[0];
   }
 
+  static async findByEmail(email) {
+    const sql = "SELECT * FROM users WHERE role = 'ADMIN' AND email = ?";
+    const result = await this.query(sql, [email]);
+    return result[0];
+  }
+
   static async generateShopId() {
     try {
       // Get the highest admin ID
@@ -34,60 +40,105 @@ class LaundryShops extends BaseModel {
   }
 
   static async create(shopData) {
-    try {
-      // Generate a new shop ID
-      const shop_id = await this.generateShopId();
+  try {
+    const shop_id = await this.generateShopId();
 
-      const {
-        admin_id,
-        owner_fName,
-        owner_mName,
-        owner_lName,
-        owner_emailAdd,
-        owner_contactNum,
-        shop_address,
-        shop_name,
-        slug,
-        shop_type,
-      } = shopData;
+    const {
+      admin_id,
+      owner_fName,
+      owner_mName,
+      owner_lName,
+      owner_emailAdd,
+      owner_contactNum,
+      shop_address,
+      shop_name,
+      slug,
+      shop_type,
+    } = shopData;
 
-      // Insert new shop
-      const insertShopSql = `
+    // Insert laundry shop
+    const insertShopSql = `
       INSERT INTO laundry_shops 
       (shop_id, admin_id, owner_fName, owner_mName, owner_lName, owner_emailAdd, owner_contactNum, shop_address, shop_name, slug, shop_type)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-      await this.query(insertShopSql, [
-        shop_id,
-        admin_id,
-        owner_fName,
-        owner_mName,
-        owner_lName,
-        owner_emailAdd,
-        owner_contactNum,
-        shop_address,
-        shop_name,
-        slug,
-        shop_type,
-      ]);
+    await this.query(insertShopSql, [
+      shop_id,
+      admin_id,
+      owner_fName,
+      owner_mName,
+      owner_lName,
+      owner_emailAdd,
+      owner_contactNum,
+      shop_address,
+      shop_name,
+      slug,
+      shop_type,
+    ]);
 
-      // Automatically update the admin's shop_id
-      const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
-      await this.query(updateAdminSql, [shop_id, admin_id]);
+    const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
+    await this.query(updateAdminSql, [shop_id, admin_id]);
 
-      // Return both for confirmation
-      return { success: true, shop_id, admin_id };
-    } catch (error) {
-      console.error("Error creating laundry shop:", error);
-      throw new Error(`Failed to create laundry shop: ${error.message}`);
+    const serviceList = shop_type
+      .split(",")
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    const insertServiceSQL = `
+      INSERT INTO shopLandingPage_services
+      (shop_id, service_name, is_displayed)
+      VALUES (?, ?, ?)
+    `;
+
+    for (const service of serviceList) {
+      await this.query(insertServiceSQL, [shop_id, service, 'true']);
     }
+
+    return { success: true, shop_id, admin_id };
+  } catch (error) {
+    console.error("Error creating laundry shop:", error);
+    throw new Error(`Failed to create laundry shop: ${error.message}`);
   }
+}
+
 
   static async getAllShops() {
-    const sql = "SELECT * FROM laundry_shops";
-    const results = await this.query(sql);
-    return results;
+    try {
+      const shopSql = "SELECT * FROM laundry_shops";
+      const shops = await this.query(shopSql);
+
+      const servicesSql =
+        "SELECT service_id, shop_id, service_name, is_displayed FROM shopLandingPage_services";
+      const allServices = await this.query(servicesSql);
+
+      const servicesByShopId = allServices.reduce((acc, service) => {
+        const shopId = service.shop_id;
+        if (!acc[shopId]) {
+          acc[shopId] = [];
+        }
+        acc[shopId].push(service);
+        return acc;
+      }, {});
+
+      const shopsWithServices = shops.map((shop) => {
+        const shopId = shop.shop_id;
+        const shopServices = servicesByShopId[shopId] || [];
+
+        return {
+          ...shop,
+          services: shopServices,
+        };
+      });
+
+      return {
+        shops: shopsWithServices,
+      };
+    } catch (error) {
+      throw new Error(
+        `Failed to fetch shop data or services: ${error.message}`
+      );
+    }
   }
 
   static async findById(shop_id) {
@@ -98,48 +149,68 @@ class LaundryShops extends BaseModel {
 
   static async editShopById(shop_id, shopData) {
     try {
-      if (!shop_id) {
-        throw new Error("Shop ID is required");
+      if (!shop_id) throw new Error("Shop ID is required");
+
+      const { services, ...data } = shopData;
+
+      if (!data || Object.keys(data).length === 0) {
+        throw new Error("Shop main data is missing");
       }
 
-      // First check if shop exists
       const shopExists = await this.findById(shop_id);
-      if (!shopExists) {
-        throw new Error("Shop not found");
-      }
+      if (!shopExists) throw new Error("Shop not found");
 
-      const query = `UPDATE laundry_shops 
-            SET owner_fName = ?,
-                owner_mName = ?,
-                owner_lName = ?,
-                owner_contactNum = ?,
-                shop_address = ?,
-                shop_name = ?,
-                shop_status = ?,
-                shop_type = ?
-            WHERE shop_id = ?`;
+      const updateQuery = `
+      UPDATE laundry_shops 
+      SET owner_fName = ?,
+          owner_mName = ?,
+          owner_lName = ?,
+          owner_contactNum = ?,
+          shop_address = ?,
+          shop_name = ?,
+          shop_status = ?,
+          shop_type = ?
+      WHERE shop_id = ?`;
 
       const params = [
-        shopData.owner_fName,
-        shopData.owner_mName || "",
-        shopData.owner_lName,
-        shopData.owner_contactNum,
-        shopData.shop_address,
-        shopData.shop_name,
-        shopData.shop_status || "active",
-        shopData.shop_type,
+        data.owner_fName,
+        data.owner_mName || "",
+        data.owner_lName,
+        data.owner_contactNum,
+        data.shop_address,
+        data.shop_name,
+        data.shop_status || "active",
+        data.shop_type,
         shop_id,
       ];
 
-      console.log("Update params:", params);
+      await this.query(updateQuery, params);
 
-      const result = await this.query(query, params);
+      if (Array.isArray(services) && services.length > 0) {
+        const hideAllSql =
+          "UPDATE shopLandingPage_services SET is_displayed = 'false' WHERE shop_id = ?";
+        await this.query(hideAllSql, [shop_id]);
 
-      if (result.affectedRows === 0) {
-        throw new Error("Failed to update shop");
+        const servicesToShow = services
+          .filter((s) => s.is_displayed === "true")
+          .map((s) => s.service_id);
+
+        if (servicesToShow.length > 0) {
+          const placeholders = servicesToShow.map(() => "?").join(", ");
+          const showSql = `
+          UPDATE shopLandingPage_services
+          SET is_displayed = 'true'
+          WHERE shop_id = ?
+          AND service_id IN (${placeholders})
+        `;
+          const showParams = [shop_id, ...servicesToShow];
+          await this.query(showSql, showParams);
+        }
       }
 
-      return await this.findById(shop_id);
+      // Return updated shop
+      const updatedShop = await this.findById(shop_id);
+      return updatedShop;
     } catch (error) {
       console.error("Shop update error:", error);
       throw error;
