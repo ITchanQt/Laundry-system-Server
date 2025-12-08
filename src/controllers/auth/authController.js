@@ -42,7 +42,7 @@ const forgotPassword = async (req, res) => {
     );
     console.log(adminUser.user_id, hashedToken, expiresAt);
     const resetUrl = `${
-      process.env.FRONTEND_URL
+      process.env.ADMIN_FRONTEND_URL
     }/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
     // send email
