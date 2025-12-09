@@ -4,6 +4,7 @@ const {
   registerUser,
   loginUser,
   loginAdmin,
+  loginStaff,
 } = require("../controllers/authController");
 const { registerAdmin } = require("../controllers/adminController");
 const {
@@ -27,6 +28,7 @@ const {
 // Public routes that don't need authentication
 router.post("/register", registerUser);
 router.post("/user/login", loginUser);
+router.post('/staff/login', loginStaff)
 router.post("/admin/login", loginAdmin);
 router.post("/register-admin", registerAdmin);
 router.post("/register-laundry-shop", registerLaundryShop);
