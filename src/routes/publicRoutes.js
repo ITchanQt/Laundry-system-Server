@@ -4,6 +4,7 @@ const {
   registerUser,
   loginUser,
   loginAdmin,
+  loginStaff,
 } = require("../controllers/authController");
 const { registerAdmin } = require("../controllers/adminController");
 const {
@@ -20,11 +21,14 @@ const {
 const {
   forgotPassword,
   resetPassword,
+  forgotPasswordAdmin,
+  forgotPasswordCustomer,
 } = require("../controllers/auth/authController");
 
 // Public routes that don't need authentication
 router.post("/register", registerUser);
 router.post("/user/login", loginUser);
+router.post('/staff/login', loginStaff)
 router.post("/admin/login", loginAdmin);
 router.post("/register-admin", registerAdmin);
 router.post("/register-laundry-shop", registerLaundryShop);
@@ -39,7 +43,8 @@ router.get("/shop-services/:slug", getShopServices);
 router.get("/shop-pricing/:slug", getShopPricing);
 
 //________ROUTES FOR ADMIN FORGOT AND RESET PASSWORD______________
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password", forgotPasswordAdmin);
+router.post("/customer-forgot-password", forgotPasswordCustomer);
 router.post("/reset-password", resetPassword);
 
 module.exports = router;

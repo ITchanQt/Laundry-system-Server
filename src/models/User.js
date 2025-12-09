@@ -100,7 +100,7 @@ class User extends BaseModel {
 
   static async findByEmailOrUsername(shop_id, emailOrUsername) {
     const sql =
-      "SELECT * FROM users WHERE shop_id = ? AND (email = ? OR username = ?)";
+      "SELECT * FROM users WHERE role = 'CUSTOMER' AND shop_id = ? AND (email = ? OR username = ?)";
     const results = await this.query(sql, [
       shop_id,
       emailOrUsername,
@@ -109,7 +109,7 @@ class User extends BaseModel {
     return results[0];
   }
 
-  static async login(shop_id, emailOrUsername, password) {
+  static async loginCustomer(shop_id, emailOrUsername, password) {
     try {
       console.log("Login attempt with:", { emailOrUsername, password });
 
@@ -120,6 +120,69 @@ class User extends BaseModel {
       }
 
       const user = await this.findByEmailOrUsername(shop_id, emailOrUsername);
+      console.log("Found user:", user ? "Yes" : "No");
+
+      if (!user) {
+        return { error: "Invalid credentials" };
+      }
+
+      const match = await bcrypt.compare(password, user.password);
+      console.log("Password match:", match ? "Yes" : "No");
+
+      if (!match) {
+        return { error: "Invalid credentials" };
+      }
+
+      const token = jwt.sign(
+        {
+          id: user.user_id,
+          user_lName: user.user_lName,
+          user_fName: user.user_fName,
+          role: user.role,
+          shop_id: user.shop_id,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
+
+      return {
+        token,
+        user: {
+          id: user.user_id,
+          user_lName: user.user_lName,
+          user_fName: user.user_fName,
+          role: user.role,
+          shop_id: user.shop_id,
+        },
+      };
+    } catch (error) {
+      console.error("User Login error:", error);
+      throw error;
+    }
+  }
+
+  static async findByEmailOrUsernameStaffRole(shop_id, emailOrUsername) {
+    const sql =
+      "SELECT * FROM users WHERE role = 'STAFF' AND shop_id = ? AND (email = ? OR username = ?)";
+    const results = await this.query(sql, [
+      shop_id,
+      emailOrUsername,
+      emailOrUsername,
+    ]);
+    return results[0];
+  }
+
+  static async loginStaff(shop_id, emailOrUsername, password) {
+    try {
+      console.log("Login attempt with:", { emailOrUsername, password });
+
+      if (!shop_id) {
+        return {
+          error: "Invalid shop. Please login from the correct shop URL.",
+        };
+      }
+
+      const user = await this.findByEmailOrUsernameStaffRole(shop_id, emailOrUsername);
       console.log("Found user:", user ? "Yes" : "No");
 
       if (!user) {
