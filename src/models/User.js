@@ -100,7 +100,7 @@ class User extends BaseModel {
 
   static async findByEmailOrUsername(shop_id, emailOrUsername) {
     const sql =
-      "SELECT * FROM users WHERE shop_id = ? AND (email = ? OR username = ?)";
+      "SELECT * FROM users WHERE role = 'CUSTOMER' AND shop_id = ? AND (email = ? OR username = ?)";
     const results = await this.query(sql, [
       shop_id,
       emailOrUsername,

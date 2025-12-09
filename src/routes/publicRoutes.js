@@ -20,6 +20,8 @@ const {
 const {
   forgotPassword,
   resetPassword,
+  forgotPasswordAdmin,
+  forgotPasswordCustomer,
 } = require("../controllers/auth/authController");
 
 // Public routes that don't need authentication
@@ -39,7 +41,8 @@ router.get("/shop-services/:slug", getShopServices);
 router.get("/shop-pricing/:slug", getShopPricing);
 
 //________ROUTES FOR ADMIN FORGOT AND RESET PASSWORD______________
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password", forgotPasswordAdmin);
+router.post("/customer-forgot-password", forgotPasswordCustomer);
 router.post("/reset-password", resetPassword);
 
 module.exports = router;

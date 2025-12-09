@@ -14,7 +14,7 @@ function hashToken(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
-const forgotPassword = async (req, res) => {
+const forgotPasswordAdmin = async (req, res) => {
   try {
     const { email } = req.body;
     if (!email)
@@ -22,7 +22,9 @@ const forgotPassword = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Email is required!" });
 
-    const adminUser = await ForgotAndResetPasswordModel.findByEmail(email);
+    const adminUser = await ForgotAndResetPasswordModel.findByEmailAndAdminRole(
+      email
+    );
     if (!adminUser) {
       // Do not reveal whether email exists — still send 200 to avoid enumeration.
       return res.status(200).json({
@@ -38,7 +40,7 @@ const forgotPassword = async (req, res) => {
     await ForgotAndResetPasswordModel.saveResetToken(
       hashedToken,
       expiresAt,
-       adminUser.user_id
+      adminUser.user_id
     );
     console.log(adminUser.user_id, hashedToken, expiresAt);
     const resetUrl = `${
@@ -58,16 +60,60 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+const forgotPasswordCustomer = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email)
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required!" });
+
+    const adminUser = await ForgotAndResetPasswordModel.findByEmailAndCustomerRole(
+      email
+    );
+    if (!adminUser) {
+      // Do not reveal whether email exists — still send 200 to avoid enumeration.
+      return res.status(200).json({
+        success: true,
+        message: "If the email exists, a reset link will be sent",
+      });
+    }
+    // generate & hash token
+    const resetToken = generateResetToken();
+    const hashedToken = hashToken(resetToken);
+    const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_MINUTES * 60 * 1000);
+
+    await ForgotAndResetPasswordModel.saveResetToken(
+      hashedToken,
+      expiresAt,
+      adminUser.user_id
+    );
+    console.log(adminUser.user_id, hashedToken, expiresAt);
+    const resetUrl = `${
+      process.env.CUSTOMER_FRONTEND_URL
+    }/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
+
+    // send email
+    await sendResetEmail(email, resetUrl);
+
+    return res.status(200).json({
+      success: true,
+      message: "If the email exists, a reset link will be sent",
+    });
+  } catch (error) {
+    console.error("forgotPassword error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 const resetPassword = async (req, res) => {
   try {
     const { token, email, newPassword } = req.body;
     if (!token || !newPassword || !email) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Token, email and new password are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Token, email and new password are required",
+      });
     }
 
     // hash token and lookup
@@ -86,11 +132,10 @@ const resetPassword = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const password = await bcrypt.hash(newPassword, salt);
 
- await ForgotAndResetPasswordModel.updatePassword(
-  adminUser.user_id,
-  password
-);
-
+    await ForgotAndResetPasswordModel.updatePassword(
+      adminUser.user_id,
+      password
+    );
 
     return res
       .status(200)
@@ -101,4 +146,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { forgotPassword, resetPassword };
+module.exports = { forgotPasswordAdmin, forgotPasswordCustomer, resetPassword };

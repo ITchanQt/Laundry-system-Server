@@ -1,9 +1,19 @@
 const BaseModel = require("../BaseModel");
 
 class ForgotAndResetPassword extends BaseModel {
-  static async findByEmail(email) {
+  static async findByEmailAndAdminRole(email) {
     try {
-      const sql = "SELECT * FROM users WHERE email = ?";
+      const sql = "SELECT * FROM users WHERE role = 'ADMIN' AND email = ?";
+      const results = await this.query(sql, [email]);
+      return results[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async findByEmailAndCustomerRole(email) {
+    try {
+      const sql = "SELECT * FROM users WHERE role = 'CUSTOMER' AND email = ?";
       const results = await this.query(sql, [email]);
       return results[0];
     } catch (error) {
