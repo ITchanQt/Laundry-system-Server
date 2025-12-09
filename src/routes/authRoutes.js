@@ -54,6 +54,7 @@ const {
 const { getAllItemsReport, getDisplayedServicesByShopId, getAllCustomerRecordsByShopId } = require("../controllers/report-controllers/reportController");
 const send = require("../controllers/smsController");
 const { sendOtp, verifyOtp } = require("../controllers/otpController");
+const { verifySuperAdmin, dashboard } = require("../controllers/superAdminController");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -222,6 +223,8 @@ router.get('/displayed-prices/:shop_id', getDisplayedPriceByShopId);
 router.get('/displayed-services/:shop_id', getDisplayedServicesByShopId);
 
 router.get('/displayed-payment-method/:shop_id', getPaymentMethodByShopId);
+
+router.get ("/dashboard", verifySuperAdmin, dashboard);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
