@@ -210,7 +210,7 @@ class User extends BaseModel {
 
       return {
         token,
-        user: {
+        staff: {
           id: user.user_id,
           user_lName: user.user_lName,
           user_fName: user.user_fName,

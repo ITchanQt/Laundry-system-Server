@@ -23,16 +23,20 @@ const {
   resetPassword,
   forgotPasswordAdmin,
   forgotPasswordCustomer,
+  forgotPasswordStaff,
 } = require("../controllers/auth/authController");
+const { verifyOtp, sendOtp } = require("../controllers/otpController");
 
 // Public routes that don't need authentication
 router.post("/register", registerUser);
 router.post("/user/login", loginUser);
-router.post('/staff/login', loginStaff)
+router.post("/staff/login", loginStaff);
 router.post("/admin/login", loginAdmin);
 router.post("/register-admin", registerAdmin);
 router.post("/register-laundry-shop", registerLaundryShop);
 router.put("/edit-shop/:shop_id", editShop);
+router.post("/send-otp", sendOtp);
+router.post("/verify-otp", verifyOtp);
 
 router.get("/shop-name-slug", getShopNameAndSlug);
 router.get("/shop-slug/:slug", getShopBySlug);
@@ -44,6 +48,7 @@ router.get("/shop-pricing/:slug", getShopPricing);
 
 //________ROUTES FOR ADMIN FORGOT AND RESET PASSWORD______________
 router.post("/forgot-password", forgotPasswordAdmin);
+router.post("/staff-forgot-password", forgotPasswordStaff);
 router.post("/customer-forgot-password", forgotPasswordCustomer);
 router.post("/reset-password", resetPassword);
 
