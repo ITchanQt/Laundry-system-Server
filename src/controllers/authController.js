@@ -77,8 +77,8 @@ const loginStaff = async (req, res) => {
     }
 
     return res.json({
-      message: "Admin login successful",
-      admin: result.admin,
+      message: "Staff login successful",
+      staff: result.staff,
       token: `Bearer ${result.token}`,
       apiKey: process.env.API_KEY,
     });

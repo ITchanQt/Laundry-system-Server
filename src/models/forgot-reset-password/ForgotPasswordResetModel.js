@@ -11,6 +11,16 @@ class ForgotAndResetPassword extends BaseModel {
     }
   }
 
+    static async findByEmailAndStaffRole(email) {
+    try {
+      const sql = "SELECT * FROM users WHERE role = 'STAFF' AND email = ?";
+      const results = await this.query(sql, [email]);
+      return results[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async findByEmailAndCustomerRole(email) {
     try {
       const sql = "SELECT * FROM users WHERE role = 'CUSTOMER' AND email = ?";

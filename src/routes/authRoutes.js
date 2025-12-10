@@ -17,6 +17,8 @@ const {
   editUser,
   getUsersByIdOrNameWithCustomerRole,
   getUserByIdAndShopId,
+  getUserByUserIdShopIdRole,
+  updateStaffByUserIdShopId,
 } = require("../controllers/userController");
 const {
   getAllShops,
@@ -51,10 +53,17 @@ const {
   updatePaymentMethodDisplaySettings,
   getPaymentMethodByShopId,
 } = require("../controllers/payment-methods-controller/paymentMethodsContoller");
-const { getAllItemsReport, getDisplayedServicesByShopId, getAllCustomerRecordsByShopId } = require("../controllers/report-controllers/reportController");
+const {
+  getAllItemsReport,
+  getDisplayedServicesByShopId,
+  getAllCustomerRecordsByShopId,
+} = require("../controllers/report-controllers/reportController");
 const send = require("../controllers/smsController");
 const { sendOtp, verifyOtp } = require("../controllers/otpController");
-const { verifySuperAdmin, dashboard } = require("../controllers/superAdminController");
+const {
+  verifySuperAdmin,
+  dashboard,
+} = require("../controllers/superAdminController");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -78,7 +87,6 @@ router.get("/users/search/:shop_id", getUsersByIdOrNameWithCustomerRole);
 router.get("/users/search/:shop_id/:user_id", getUserByIdAndShopId);
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
-
 
 //-----SHOP INVENTORY API's-------//
 router.post("/add-shop-inventory", addShopInventory);
@@ -215,16 +223,21 @@ router.put(
 router.post("/send-sms", send);
 
 //-----SHOP REPORTS API's-------//
-router.get('/get-items-report/:shop_id', getAllItemsReport); //Get all items
-router.get('/get-customer-records/:shop_id', getAllCustomerRecordsByShopId); //Get all customer receipt(API FOR REPORTS AND CUSTOMER RECORD)
+router.get("/get-items-report/:shop_id", getAllItemsReport); //Get all items
+router.get("/get-customer-records/:shop_id", getAllCustomerRecordsByShopId); //Get all customer receipt(API FOR REPORTS AND CUSTOMER RECORD)
 
 //-----CUSTOMER RECIEPT DYNAMIC PRICES AND SERVICES FOR SHOP API's-------//
-router.get('/displayed-prices/:shop_id', getDisplayedPriceByShopId);
-router.get('/displayed-services/:shop_id', getDisplayedServicesByShopId);
+router.get("/displayed-prices/:shop_id", getDisplayedPriceByShopId);
+router.get("/displayed-services/:shop_id", getDisplayedServicesByShopId);
 
-router.get('/displayed-payment-method/:shop_id', getPaymentMethodByShopId);
+router.get("/displayed-payment-method/:shop_id", getPaymentMethodByShopId);
 
-router.get ("/dashboard", verifySuperAdmin, dashboard);
+//-----SUPER ADMIN LOGIN(Google OAuth) API's-------//
+router.get("/dashboard", verifySuperAdmin, dashboard);
+
+// Customer fetching on customer module
+router.get("/get-staff/:user_id/:shop_id", getUserByUserIdShopIdRole);
+router.put("/update-staff/:user_id/:shop_id", updateStaffByUserIdShopId);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
