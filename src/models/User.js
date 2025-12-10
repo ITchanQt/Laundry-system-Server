@@ -182,7 +182,10 @@ class User extends BaseModel {
         };
       }
 
-      const user = await this.findByEmailOrUsernameStaffRole(shop_id, emailOrUsername);
+      const user = await this.findByEmailOrUsernameStaffRole(
+        shop_id,
+        emailOrUsername
+      );
       console.log("Found user:", user ? "Yes" : "No");
 
       if (!user) {
@@ -310,6 +313,83 @@ class User extends BaseModel {
       return results;
     } catch (error) {
       throw new Error(`Failed to search users: ${error.message}`);
+    }
+  }
+
+  // Staff fetching on staff module
+  static async selectUserByIdShopIdRole(user_id, shop_id) {
+    try {
+      const sql =
+        "SELECT * FROM users WHERE role = 'STAFF' AND user_id = ? AND shop_id = ?";
+      const results = await this.query(sql, [user_id, shop_id]);
+      return results[0];
+    } catch (error) {
+      console.error("Error selecting customer:", error);
+      throw new Error(`Failed to fetch customer: ${error.message}`);
+    }
+  }
+
+  static async editCustomerByUserIdShopId(
+    user_id,
+    shop_id,
+    updateData
+  ) {
+    try {
+      if (!user_id || !shop_id) {
+        throw new Error("Staff ID, shop ID and Staff role is required");
+      }
+
+      // First check if staff exists
+      const staff = await this.selectUserByIdShopIdRole(
+        user_id,
+        shop_id,
+      );
+      if (!staff) {
+        throw new Error("Customer not found");
+      }
+      const updatedStaffData = {
+        user_fName: updateData.user_fName || staff.user_fName,
+        user_mName: updateData.user_mName || staff.user_mName,
+        user_lName: updateData.user_lName || staff.user_lName,
+        email: updateData.email || staff.email,
+        contactNum: updateData.contactNum || staff.contactNum,
+        user_address: updateData.user_address || staff.user_address,
+        username: updateData.username || staff.username,
+      };
+
+      const query = `UPDATE users
+            SET user_fName = ?,
+                user_mName = ?,
+                user_lName = ?,
+                email = ?,
+                contactNum = ?,
+                user_address = ?,
+                username = ?
+            WHERE role = 'STAFF'
+            AND user_id = ?
+            AND shop_id = ?`;
+
+      const result = await this.query(query, [
+        updatedStaffData.user_fName,
+        updatedStaffData.user_mName,
+        updatedStaffData.user_lName,
+        updatedStaffData.email,
+        updatedStaffData.contactNum,
+        updatedStaffData.user_address,
+        updatedStaffData.username,
+        user_id,
+        shop_id,
+      ]);
+
+      if (result.affectedRows === 0) {
+        throw new Error("Failed to update staff");
+      }
+
+      // Return updated staff data
+      return this.selectUserByIdShopIdRole(user_id, shop_id);
+    } catch (error) {
+      console.error("Error editing staff:", error);
+      throw new Error(`Failed to editing staff: ${error.message}`);
     }
   }
 }
