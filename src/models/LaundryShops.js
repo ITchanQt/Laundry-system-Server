@@ -40,68 +40,67 @@ class LaundryShops extends BaseModel {
   }
 
   static async create(shopData) {
-  try {
-    const shop_id = await this.generateShopId();
+    try {
+      const shop_id = await this.generateShopId();
 
-    const {
-      admin_id,
-      owner_fName,
-      owner_mName,
-      owner_lName,
-      owner_emailAdd,
-      owner_contactNum,
-      shop_address,
-      shop_name,
-      slug,
-      shop_type,
-    } = shopData;
+      const {
+        admin_id,
+        owner_fName,
+        owner_mName,
+        owner_lName,
+        owner_emailAdd,
+        owner_contactNum,
+        shop_address,
+        shop_name,
+        slug,
+        shop_type,
+      } = shopData;
 
-    // Insert laundry shop
-    const insertShopSql = `
+      // Insert laundry shop
+      const insertShopSql = `
       INSERT INTO laundry_shops 
       (shop_id, admin_id, admin_fName, admin_mName, admin_lName, admin_emailAdd, admin_contactNum, shop_address, shop_name, slug, shop_type)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    await this.query(insertShopSql, [
-      shop_id,
-      admin_id,
-      owner_fName,
-      owner_mName,
-      owner_lName,
-      owner_emailAdd,
-      owner_contactNum,
-      shop_address,
-      shop_name,
-      slug,
-      shop_type,
-    ]);
+      await this.query(insertShopSql, [
+        shop_id,
+        admin_id,
+        owner_fName,
+        owner_mName,
+        owner_lName,
+        owner_emailAdd,
+        owner_contactNum,
+        shop_address,
+        shop_name,
+        slug,
+        shop_type,
+      ]);
 
-    const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
-    await this.query(updateAdminSql, [shop_id, admin_id]);
+      const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
+      await this.query(updateAdminSql, [shop_id, admin_id]);
 
-    const serviceList = shop_type
-      .split(",")
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      const serviceList = shop_type
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
 
-    const insertServiceSQL = `
+      const insertServiceSQL = `
       INSERT INTO shop_services
       (shop_id, service_name, is_displayed)
       VALUES (?, ?, ?)
     `;
 
-    for (const service of serviceList) {
-      await this.query(insertServiceSQL, [shop_id, service, 'true']);
+      for (const service of serviceList) {
+        await this.query(insertServiceSQL, [shop_id, service, "true"]);
+      }
+
+      return { success: true, shop_id, admin_id };
+    } catch (error) {
+      console.error("Error creating laundry shop:", error);
+      throw new Error(`Failed to create laundry shop: ${error.message}`);
     }
-
-    return { success: true, shop_id, admin_id };
-  } catch (error) {
-    console.error("Error creating laundry shop:", error);
-    throw new Error(`Failed to create laundry shop: ${error.message}`);
   }
-}
-
 
   static async getAllShops() {
     try {
@@ -287,7 +286,7 @@ class LaundryShops extends BaseModel {
                     item_description,
                     item_quantity,
                     item_uPrice,
-                    item_reoderLevel)
+                    item_reorderLevel)
                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
       return this.query(sql, [
@@ -345,7 +344,7 @@ class LaundryShops extends BaseModel {
                        item_description = ?,
                        item_quantity = ?,
                        item_uPrice = ?,
-                       item_reoderLevel = ?,
+                       item_reorderLevel = ?,
                        date_updated = NOW()
                    WHERE item_id = ?`;
 
@@ -371,6 +370,21 @@ class LaundryShops extends BaseModel {
       console.error("Item update error:", error);
       throw error;
     }
+  }
+
+  static async getInventoryItemById(item_id) {
+    const sql = `SELECT item_quantity, item_reorderLevel FROM shop_inventory WHERE item_id = ? LIMIT 1`;
+    const rows = await this.query(sql, [item_id]);
+    return rows[0] || null;
+  }
+
+  static async updateStockAndReorderLevel(item_id, newQuantity, newReorder) {
+    const sql = `
+      UPDATE shop_inventory 
+      SET item_quantity = ?, item_reorderLevel = ?, date_updated = NOW()
+      WHERE item_id = ?
+  `;
+    return await this.query(sql, [newQuantity, newReorder, item_id]);
   }
 }
 

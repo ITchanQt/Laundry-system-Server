@@ -15,7 +15,7 @@ class ReportModels extends BaseModel {
   static async searchDisplayedServicesById(shop_id) {
     try {
       const sql =
-        "SELECT * FROM shopLandingPage_services WHERE is_displayed = 'true' AND shop_id = ?";
+        "SELECT * FROM shop_services WHERE is_displayed = 'true' AND shop_id = ?";
       const result = await this.query(sql, [shop_id]);
       return result;
     } catch (error) {
