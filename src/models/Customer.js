@@ -142,7 +142,10 @@ class Customer extends BaseModel {
         service,
         kg = 0,
         num_items = 0,
+        cleaning_products,
         total_amount = "0",
+        payment_status,
+        process_by,
       } = customerReceiptData;
 
       const sql = `
@@ -163,9 +166,12 @@ class Customer extends BaseModel {
                 bed_sheets, 
                 service, 
                 kg, 
-                num_items, 
-                total_amount
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                num_items,
+                cleaning_products,
+                total_amount,
+                payment_status,
+                process_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       await this.query(sql, [
         newLaundryId,
@@ -185,7 +191,10 @@ class Customer extends BaseModel {
         service,
         kg,
         num_items,
+        cleaning_products,
         total_amount,
+        payment_status,
+        process_by,
       ]);
 
       // Return the generated ID
@@ -384,6 +393,21 @@ class Customer extends BaseModel {
       const result = await this.query(sql, [cus_id, shop_id]);
       return result[0];
     } catch (error) {}
+  }
+
+  static async updateStatus(laundryId, service_status) {
+    try {
+      const sql = `
+    UPDATE customer_receipt
+    SET status = ?, updated_at = NOW()
+    WHERE laundryId = ?
+  `;
+
+      return await this.query(sql, [service_status, laundryId]);
+    } catch (error) {
+      console.error("Error updating status:", error);
+      throw new Error(`Failed to update status: ${error.message}`);
+    }
   }
 }
 

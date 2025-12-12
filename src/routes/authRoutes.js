@@ -27,6 +27,7 @@ const {
   addShopInventory,
   getAllShopInventoryItems,
   editItemById,
+  updateMultipleInventoryItems,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -64,6 +65,7 @@ const {
   verifySuperAdmin,
   dashboard,
 } = require("../controllers/superAdminController");
+const { updateLaundryStatus } = require("../controllers/customerController");
 
 // Apply API key validation to all routes
 // router.use(validateApiKey);
@@ -238,6 +240,13 @@ router.get("/dashboard", verifySuperAdmin, dashboard);
 // Customer fetching on customer module
 router.get("/get-staff/:user_id/:shop_id", getUserByUserIdShopIdRole);
 router.put("/update-staff/:user_id/:shop_id", updateStaffByUserIdShopId);
+
+// ---------UPDATE ITEMS QUANTITY AND REORDER LEVEL-----------//
+router.put("/update-inventory-items", updateMultipleInventoryItems);
+
+
+// -----------UPDATE CUSTOMER RECIEPT
+router.put("/update-laundry-status/:laundryId", updateLaundryStatus);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

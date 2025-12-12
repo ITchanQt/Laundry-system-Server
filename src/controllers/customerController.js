@@ -302,6 +302,35 @@ const getTotalCountReadyToPickUpOrders = async (req, res) => {
   }
 };
 
+const updateLaundryStatus = async (req, res) => {
+  try {
+    const { laundryId } = req.params;
+    const { service_status } = req.body;
+
+    if (!laundryId || !service_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Laundry ID and status are required.",
+      });
+    }
+
+    const result = await Customer.updateStatus(laundryId, service_status);
+
+    return res.status(200).json({
+      success: true,
+      message: "Service status successfully updated.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("updateLaundryStatus Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -315,4 +344,6 @@ module.exports = {
   getCompletedOrdersOfTheMonthByShopId,
   getMonthTotal,
   getTotalCountReadyToPickUpOrders,
+
+  updateLaundryStatus,
 };

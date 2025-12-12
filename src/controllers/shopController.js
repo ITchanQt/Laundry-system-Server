@@ -185,6 +185,72 @@ const editItemById = async (req, res) => {
   }
 };
 
+// Update multiple inventory items in one request
+const updateMultipleInventoryItems = async (req, res) => {
+  try {
+    const { items } = req.body;
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Items array is required.",
+      });
+    }
+
+    // Validate each row
+    for (const item of items) {
+      if (
+        !item.item_id ||
+        item.item_quantity === undefined ||
+        item.item_reorderLevel === undefined
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Each item must include item_id, item_quantity, and item_reorderLevel.",
+        });
+      }
+    }
+
+    // Process each item
+    for (const item of items) {
+      // 1. Get existing record from DB
+      const existingItem = await LaundryShops.getInventoryItemById(
+        item.item_id
+      );
+
+      if (!existingItem) {
+        console.warn(`Item ${item.item_id} not found. Skipping.`);
+        continue;
+      }
+
+      const existingReorder = parseInt(existingItem.item_reorderLevel) || 0;
+      const incomingReorder = parseInt(item.item_reorderLevel) || 0;
+
+      // 2. Add reorder levels correctly
+      const newReorderLevel = existingReorder + incomingReorder;
+
+      // 3. Update using the SUMMED reorder level
+      await LaundryShops.updateStockAndReorderLevel(
+        item.item_id,
+        item.item_quantity,
+        newReorderLevel
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Inventory successfully updated.",
+    });
+  } catch (error) {
+    console.error("Error updating items:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -193,4 +259,5 @@ module.exports = {
   addShopInventory,
   getAllShopInventoryItems,
   editItemById,
+  updateMultipleInventoryItems,
 };
