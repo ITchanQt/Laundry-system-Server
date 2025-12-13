@@ -2,7 +2,7 @@ const BaseModel = require("../BaseModel");
 
 class ServicesModel extends BaseModel {
   static async findServiceById(id) {
-    const sql = `SELECT * FROM shopLandingPage_services WHERE service_id = ?`;
+    const sql = `SELECT * FROM shop_services WHERE service_id = ?`;
     const result = await this.query(sql, [id]);
     return result[0];
   }
@@ -10,7 +10,7 @@ class ServicesModel extends BaseModel {
   static async findByTitle(service_name, shop_id) {
     try {
       const sql =
-        "SELECT * FROM shopLandingPage_services WHERE service_name = ? AND shop_id = ?";
+        "SELECT * FROM shop_services WHERE service_name = ? AND shop_id = ?";
       const results = await this.query(sql, [service_name, shop_id]);
       return results;
     } catch (error) {
@@ -21,7 +21,7 @@ class ServicesModel extends BaseModel {
 
   static async findServicesByShopId(shop_id) {
     try {
-      const sql = "SELECT * FROM shopLandingPage_services WHERE shop_id = ?";
+      const sql = "SELECT * FROM shop_services WHERE is_displayed = 'true' AND shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -40,7 +40,7 @@ class ServicesModel extends BaseModel {
       serviceData;
 
     const sql = `
-      INSERT INTO shopLandingPage_services (shop_id, service_name, service_description, image_url, is_displayed)
+      INSERT INTO shop_services (shop_id, service_name, service_description, image_url, is_displayed)
       VALUES (?, ?, ?, ?, ?)
     `;
 
@@ -55,7 +55,7 @@ class ServicesModel extends BaseModel {
 
   static async findAllServices(shop_id) {
     try {
-      const sql = "SELECT * FROM shopLandingPage_services WHERE shop_id = ?";
+      const sql = "SELECT * FROM shop_services WHERE shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -66,7 +66,7 @@ class ServicesModel extends BaseModel {
   static async updateService(service_id, data) {
     try {
       const sql = `
-      UPDATE shopLandingPage_services
+      UPDATE shop_services
       SET service_name = ?, service_description = ?, image_url = ?, is_displayed = ?
       WHERE service_id = ?
     `;
@@ -91,7 +91,7 @@ class ServicesModel extends BaseModel {
   static async updateDisplaySettings(shop_id, displayedServicesIds) {
     try {
       const hideAllSql =
-        "UPDATE shopLandingPage_services SET is_displayed = 'false' WHERE shop_id = ?";
+        "UPDATE shop_services SET is_displayed = 'false' WHERE shop_id = ?";
       await this.query(hideAllSql, [shop_id]);
 
       if (
@@ -100,7 +100,7 @@ class ServicesModel extends BaseModel {
       ) {
         const placeholders = displayedServicesIds.map(() => "?").join(", ");
         const showSql = `
-        UPDATE shopLandingPage_services
+        UPDATE shop_services
         SET is_displayed = 'true'
         WHERE shop_id = ?
         AND service_id IN (${placeholders})

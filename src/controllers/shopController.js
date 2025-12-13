@@ -2,12 +2,15 @@ const LaundryShops = require("../models/LaundryShops");
 
 const registerLaundryShop = async (req, res) => {
   try {
-    const {
-      admin_id,
-      owner_emailAdd,
-      owner_contactNum,
-      shop_name,
-    } = req.body;
+    const { admin_id, owner_emailAdd, owner_contactNum, shop_name } = req.body;
+
+    const adminExist = await LaundryShops.findByEmail(owner_emailAdd);
+    if (!adminExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Email doesn't exist!",
+      });
+    }
 
     // Check if the shop already exists
     const existingShop = await LaundryShops.findByName(
@@ -17,9 +20,9 @@ const registerLaundryShop = async (req, res) => {
     );
 
     if (existingShop) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Shop already exists" 
+      return res.status(400).json({
+        success: false,
+        message: "Shop already exists",
       });
     }
 
@@ -30,14 +33,13 @@ const registerLaundryShop = async (req, res) => {
       success: true,
       message: "Laundry shop registered successfully",
       shop_id: result.shop_id,
-      admin_id: result.admin_id
+      admin_id: result.admin_id,
     });
-
   } catch (error) {
     console.error("Register laundry shop error:", error);
     return res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -58,106 +60,204 @@ const getAllShops = async (req, res) => {
 };
 
 const editShop = async (req, res) => {
-    try {
-        const { shop_id } = req.params;
-        
-        if (!shop_id) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Shop ID is required' 
-            });
-        }
+  try {
+    const { shop_id } = req.params;
+    const { services, data } = req.body;
 
-        // Log incoming data
-        console.log('Received update data:', req.body);
-        console.log('Shop ID:', shop_id);
-
-        const updatedShop = await LaundryShops.editShopById(shop_id, req.body);
-        
-        res.status(200).json({
-            success: true,
-            message: "Shop updated successfully",
-            data: updatedShop
-        });
-    } catch (error) {
-        console.error('Shop update error:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
+    if (!shop_id) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Shop ID is required" });
     }
+
+    console.log("Received update data:", req.body);
+    console.log("Shop ID:", shop_id);
+
+    // Wrap main shop fields in `data`
+    const updatedShop = await LaundryShops.editShopById(shop_id, req.body);
+
+    res.status(200).json({
+      success: true,
+      message: "Shop updated successfully",
+      data: updatedShop,
+    });
+  } catch (error) {
+    console.error("Shop update error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
 };
 
 //-----SHOP INVENTORY API's-------//
 
 const addShopInventory = async (req, res) => {
   try {
-    const { item_name } = req.body;
-    const existingItem = await LaundryShops.getShopInventoryByName(item_name);
-    if (existingItem) {
-      return res.status(400).json({ 
+    const { shop_id, item_name } = req.body;
+
+    const existingItem = await LaundryShops.findByItemNameAndShopId(
+      item_name,
+      shop_id
+    );
+    if (existingItem && existingItem.length > 0) {
+      return res.status(400).json({
         success: false,
-        message: "Item already exists"
+        message: "Item already exists!",
       });
     }
+
     await LaundryShops.addShopInventory(req.body);
     res.status(200).json({
       status: true,
-      message: "Item added successfully"
+      message: "Item added successfully",
     });
-  console.log('Item added: ', req.body);
+    console.log("Item added: ", req.body);
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
 
 const getAllShopInventoryItems = async (req, res) => {
   try {
-    const items = await LaundryShops.findAllShopInventory();
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop id parameters required!",
+      });
+    }
+
+    const items = await LaundryShops.findAllShopInventory(shop_id);
     res.status(200).json({
       success: true,
-      data: items
+      data: items,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
 
 const editItemById = async (req, res) => {
   try {
+    const { shop_id, item_name } = req.body;
     const { item_id } = req.params;
     if (!item_id) {
       return res.status(400).json({
         success: false,
-        error: "Item ID is required"
+        error: "Item ID is required",
       });
     }
-    const updatedItem = await LaundryShops.editShopInventoryById(item_id, req.body);
-      res.status(200).json({
-        success: true,
-        message: "Item updated successfully",
-        data: updatedItem
+
+    const duplicates = await LaundryShops.findDuplicateByNameAndShopId(
+      item_name,
+      shop_id,
+      item_id
+    );
+
+    if (duplicates && duplicates.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Item name already exists for another item in this shop!",
       });
+    }
+    const updatedItem = await LaundryShops.editShopInventoryById(
+      item_id,
+      req.body
+    );
+    res.status(200).json({
+      success: true,
+      message: "Item updated successfully",
+      data: updatedItem,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
+    });
+  }
+};
+
+// Update multiple inventory items in one request
+const updateMultipleInventoryItems = async (req, res) => {
+  try {
+    const { items } = req.body;
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Items array is required.",
+      });
+    }
+
+    // Validate each row
+    for (const item of items) {
+      if (
+        !item.item_id ||
+        item.item_quantity === undefined ||
+        item.item_reorderLevel === undefined
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Each item must include item_id, item_quantity, and item_reorderLevel.",
+        });
+      }
+    }
+
+    // Process each item
+    for (const item of items) {
+      // 1. Get existing record from DB
+      const existingItem = await LaundryShops.getInventoryItemById(
+        item.item_id
+      );
+
+      if (!existingItem) {
+        console.warn(`Item ${item.item_id} not found. Skipping.`);
+        continue;
+      }
+
+      const existingReorder = parseInt(existingItem.item_reorderLevel) || 0;
+      const incomingReorder = parseInt(item.item_reorderLevel) || 0;
+
+      // 2. Add reorder levels correctly
+      const newReorderLevel = existingReorder + incomingReorder;
+
+      // 3. Update using the SUMMED reorder level
+      await LaundryShops.updateStockAndReorderLevel(
+        item.item_id,
+        item.item_quantity,
+        newReorderLevel
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Inventory successfully updated.",
+    });
+  } catch (error) {
+    console.error("Error updating items:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
     });
   }
 };
 
 // Add getAllShops to exports
 module.exports = {
-                  registerLaundryShop,
-                  getAllShops,
-                  editShop,
-                  addShopInventory,
-                  getAllShopInventoryItems,
-                  editItemById
-                };
+  registerLaundryShop,
+  getAllShops,
+  editShop,
+  addShopInventory,
+  getAllShopInventoryItems,
+  editItemById,
+  updateMultipleInventoryItems,
+};

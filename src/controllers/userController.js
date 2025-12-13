@@ -91,9 +91,87 @@ const getUserByIdAndShopId = async (req, res) => {
   }
 };
 
+// Customer fetching on customer module
+const getUserByUserIdShopIdRole = async (req, res) => {
+  try {
+    const { user_id, shop_id } = req.params;
+
+    if (!user_id || !shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID, Shop ID, and Staff role are required.",
+      });
+    }
+
+    const staff = await User.selectUserByIdShopIdRole(user_id, shop_id);
+
+    if (!staff) {
+      return res.status(404).json({
+        success: false,
+        message: "Staff not found or invalid shop/user combination.",
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Staff get successfully!",
+      data: staff,
+    });
+  } catch (error) {
+    console.error("userController.getUserByUserIdShopIdRole error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+const updateStaffByUserIdShopId = async (req, res) => {
+  try {
+    const { user_id, shop_id } = req.params;
+
+    if (!user_id || !shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID, Shop ID, and staff role are required.",
+      });
+    }
+
+    const updatedStaffData = await User.editCustomerByUserIdShopId(
+      user_id,
+      shop_id,
+      req.body
+    );
+
+    if (!updatedStaffData) {
+      return res.status(404).json({
+        success: false,
+        message: "Staff not found or invalid shop/user combination.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Staff updated successfully!",
+      data: updatedStaffData,
+    });
+  } catch (error) {
+    console.error("userController.updateStaffByUserIdShopId error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllUsers,
   editUser,
   getUsersByIdOrNameWithCustomerRole,
   getUserByIdAndShopId,
+  getUserByUserIdShopIdRole,
+  updateStaffByUserIdShopId,
 };

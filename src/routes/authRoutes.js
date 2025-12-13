@@ -17,6 +17,8 @@ const {
   editUser,
   getUsersByIdOrNameWithCustomerRole,
   getUserByIdAndShopId,
+  getUserByUserIdShopIdRole,
+  updateStaffByUserIdShopId,
 } = require("../controllers/userController");
 const {
   getAllShops,
@@ -25,6 +27,7 @@ const {
   addShopInventory,
   getAllShopInventoryItems,
   editItemById,
+  updateMultipleInventoryItems,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -36,16 +39,35 @@ const {
   updateShopService,
   updateServicesDisplaySettings,
   addShopPrices,
+  getAllPricesByShopId,
+  updateShopPrice,
+  updatePricesDisplaySettings,
+  getDisplayedPriceByShopId,
 } = require("../controllers/shop-landing-page-features-contoller/shopLandingPageFeature");
 const { upload } = require("../middlewares/upload");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
 const multer = require("multer");
+const {
+  getAllPaymentMethodsByShopId,
+  addPaymentMethod,
+  updateShopPaymentMethod,
+  updatePaymentMethodDisplaySettings,
+  getPaymentMethodByShopId,
+} = require("../controllers/payment-methods-controller/paymentMethodsContoller");
+const {
+  getAllItemsReport,
+  getDisplayedServicesByShopId,
+  getAllCustomerRecordsByShopId,
+} = require("../controllers/report-controllers/reportController");
+const send = require("../controllers/smsController");
+const { sendOtp, verifyOtp } = require("../controllers/otpController");
+const { updateLaundryStatus } = require("../controllers/customerController");
 
 // Apply API key validation to all routes
-// router.use(validateApiKey);
+router.use(validateApiKey);
 
-// Protected routes that need authentication
-// router.use(authenticate); // Apply authentication middleware to all routes below
+// // Protected routes that need authentication
+router.use(authenticate); // Apply authentication middleware to all routes below
 
 router.post("/register-user", registerUser);
 router.post("/login", loginUser);
@@ -61,10 +83,12 @@ router.put("/edit-user/:userId", editUser);
 router.get("/admin/search", searchAdminsByEmail);
 router.get("/users/search/:shop_id", getUsersByIdOrNameWithCustomerRole);
 router.get("/users/search/:shop_id/:user_id", getUserByIdAndShopId);
+router.post("/send-otp", sendOtp);
+router.post("/verify-otp", verifyOtp);
 
 //-----SHOP INVENTORY API's-------//
 router.post("/add-shop-inventory", addShopInventory);
-router.get("/shop-inventory-items", getAllShopInventoryItems);
+router.get("/shop-inventory-items/:shop_id", getAllShopInventoryItems);
 router.put("/edit-inventory-item/:item_id", editItemById);
 
 //-----SHOP ABOUT MANAGEMENT API's-------//
@@ -108,7 +132,10 @@ router.put(
   upload.single("image"),
   updateShopService
 );
-router.put("/update-services-display-settings/:shop_id", updateServicesDisplaySettings);
+router.put(
+  "/update-services-display-settings/:shop_id",
+  updateServicesDisplaySettings
+);
 
 //-----SHOP PRICES MANAGEMENT API's-------//
 router.post(
@@ -139,6 +166,81 @@ router.post(
   },
   addShopPrices
 );
+router.get("/get-all-prices/:shop_id", getAllPricesByShopId);
+router.put(
+  "/update-price/:pricing_id",
+  upload.single("image"),
+  updateShopPrice
+);
+router.put(
+  "/update-prices-display-settings/:shop_id",
+  updatePricesDisplaySettings
+);
+
+//-----SHOP PAYMENT METHODS MANAGEMENT API's-------//
+router.get("/get-all-payment-methods/:shop_id", getAllPaymentMethodsByShopId);
+router.post(
+  "/add-payment-method",
+  (req, res, next) => {
+    upload.single("image")(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        // Handle Multer-specific errors
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(400).json({
+            success: false,
+            message: "File too large. Maximum allowed size is 2MB.",
+          });
+        }
+        return res.status(400).json({
+          success: false,
+          message: `Upload error: ${err.message}`,
+        });
+      } else if (err) {
+        // Handle invalid file type, etc.
+        return res.status(400).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      next(); // Continue to controller if no upload errors
+    });
+  },
+  addPaymentMethod
+);
+router.put(
+  "/update-payment-method/:pm_id",
+  upload.single("image"),
+  updateShopPaymentMethod
+);
+router.put(
+  "/update-mp-display-settings/:shop_id",
+  updatePaymentMethodDisplaySettings
+);
+
+//-----SMS NOTIFICATION-------//
+router.post("/send-sms", send);
+
+//-----SHOP REPORTS API's-------//
+router.get("/get-items-report/:shop_id", getAllItemsReport); //Get all items
+router.get("/get-customer-records/:shop_id", getAllCustomerRecordsByShopId); //Get all customer receipt(API FOR REPORTS AND CUSTOMER RECORD)
+
+//-----CUSTOMER RECIEPT DYNAMIC PRICES AND SERVICES FOR SHOP API's-------//
+router.get("/displayed-prices/:shop_id", getDisplayedPriceByShopId);
+router.get("/displayed-services/:shop_id", getDisplayedServicesByShopId);
+
+router.get("/displayed-payment-method/:shop_id", getPaymentMethodByShopId);
+
+// Customer fetching on customer module
+router.get("/get-staff/:user_id/:shop_id", getUserByUserIdShopIdRole);
+router.put("/update-staff/:user_id/:shop_id", updateStaffByUserIdShopId);
+
+// ---------UPDATE ITEMS QUANTITY AND REORDER LEVEL-----------//
+router.put("/update-inventory-items", updateMultipleInventoryItems);
+
+
+// -----------UPDATE CUSTOMER RECIEPT
+router.put("/update-laundry-status/:laundryId", updateLaundryStatus);
+
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
 

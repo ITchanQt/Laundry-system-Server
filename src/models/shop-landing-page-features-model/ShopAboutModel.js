@@ -4,7 +4,7 @@ class AboutModel extends BaseModel {
   static async findByTitle(title, shop_id) {
     try {
       const sql =
-        "SELECT * FROM shopLandingPage_about WHERE title = ? AND shop_id = ?";
+        "SELECT * FROM shop_about WHERE title = ? AND shop_id = ?";
       const results = await this.query(sql, [title, shop_id]);
       return results;
     } catch (error) {
@@ -16,7 +16,7 @@ class AboutModel extends BaseModel {
   static async findByTitleUsingAboutId(title, about_id) {
     try {
       const sql = `
-      SELECT * FROM shopLandingPage_about
+      SELECT * FROM shop_about
       WHERE title = ?
       AND about_id != ?
     `;
@@ -30,7 +30,7 @@ class AboutModel extends BaseModel {
 
   static async findAboutById(about_id) {
     try {
-      const sql = "SELECT * FROM shopLandingPage_about WHERE about_id = ?";
+      const sql = "SELECT * FROM shop_about WHERE about_id = ?";
       const results = await this.query(sql, [about_id]);
       return results;
     } catch (error) {
@@ -41,7 +41,7 @@ class AboutModel extends BaseModel {
 
   static async findAboutByShopId(shop_id) {
     try {
-      const sql = "SELECT * FROM shopLandingPage_about WHERE shop_id = ?";
+      const sql = "SELECT * FROM shop_about WHERE is_displayed = 'true' AND shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -57,7 +57,7 @@ class AboutModel extends BaseModel {
       const displayValue = String(is_displayed);
 
       const sql = `
-      INSERT INTO shopLandingPage_about (shop_id, title, description, is_displayed)
+      INSERT INTO shop_about (shop_id, title, description, is_displayed)
       VALUES (?, ?, ?, ?)
     `;
 
@@ -79,7 +79,7 @@ class AboutModel extends BaseModel {
         throw new Error("About not found!");
       }
 
-      const sql = `UPDATE shopLandingPage_about
+      const sql = `UPDATE shop_about
                     SET title = ?,
                     description = ?,
                     is_displayed = ?
@@ -109,7 +109,7 @@ class AboutModel extends BaseModel {
 
   static async searchAllAboutByShopId(shop_id) {
     try {
-      const sql = "SELECT * FROM shopLandingPage_about WHERE shop_id = ?";
+      const sql = "SELECT * FROM shop_about WHERE shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -121,7 +121,7 @@ class AboutModel extends BaseModel {
   static async updateDisplaySettings(shop_id, displayedFeatureIds) {
     try {
       const hideAllSql =
-        "UPDATE shopLandingPage_about SET is_displayed = 'false' WHERE shop_id = ?";
+        "UPDATE shop_about SET is_displayed = 'false' WHERE shop_id = ?";
       await this.query(hideAllSql, [shop_id]);
 
       if (
@@ -130,7 +130,7 @@ class AboutModel extends BaseModel {
       ) {
         const placeholders = displayedFeatureIds.map(() => "?").join(", ");
         const showSql = `
-        UPDATE shopLandingPage_about
+        UPDATE shop_about
         SET is_displayed = 'true'
         WHERE shop_id = ?
         AND about_id IN (${placeholders})

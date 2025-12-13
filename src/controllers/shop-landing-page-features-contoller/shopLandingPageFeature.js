@@ -3,6 +3,7 @@ const ShopAboutModel = require("../../models/shop-landing-page-features-model/Sh
 const ShopServicesModel = require("../../models/shop-landing-page-features-model/ShopServicesModel");
 const ShopPricingModel = require("../../models/shop-landing-page-features-model/ShopPricingModel");
 const { supabase } = require("../../config/supabase");
+const ShopNameAndSlugModel = require("../../models/shop-landing-page-features-model/ShopNameAndSlugModel");
 
 const getShopAbout = async (req, res) => {
   try {
@@ -240,6 +241,24 @@ const updateDisplaySettings = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Internal server error while updating display settings",
+    });
+  }
+};
+
+const getShopNameAndSlug = async (req, res) => {
+  try {
+    const shopNameAndSlug =
+      await ShopNameAndSlugModel.searchAllShopNameAndSlug();
+    res.status(200).json({
+      success: true,
+      message: "Shop name and slug fetch successfully",
+      data: shopNameAndSlug,
+    });
+  } catch (error) {
+    console.error("ShopNameAndSlugModel error ", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
     });
   }
 };
@@ -544,6 +563,217 @@ const addShopPrices = async (req, res) => {
   }
 };
 
+const getAllPricesByShopId = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message,
+      });
+    }
+
+    const shopServices = await ShopPricingModel.findAllPrices(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "Prices fetch successfully!",
+      data: shopServices,
+    });
+  } catch (error) {
+    console.error("Get Shop Prices error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+const updateShopPrice = async (req, res) => {
+  try {
+    const pricing_id = req.params.pricing_id;
+    const { categories, description, price, pricing_label, is_displayed } =
+      req.body;
+
+    // Validate required fields
+    if (!pricing_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Service ID is required",
+      });
+    }
+
+    if (!categories || !description) {
+      return res.status(400).json({
+        success: false,
+        message: "Categories and description are required",
+      });
+    }
+
+    // Fetch existing service
+    const existingPrice = await ShopPricingModel.findServiceById(pricing_id);
+    if (!existingPrice) {
+      return res.status(404).json({
+        success: false,
+        message: "Service not found",
+      });
+    }
+
+    // Prevent duplicate service name (ignore current)
+    const duplicate = await ShopPricingModel.findByTitle(
+      categories,
+      existingPrice.shop_id
+    );
+    if (
+      duplicate &&
+      duplicate.length > 0 &&
+      duplicate[0].pricing_id !== Number(pricing_id)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Service name already exists",
+      });
+    }
+
+    // Default image = old image
+    let image_url = existingPrice.image_url;
+
+    // If new image uploaded -> upload to Supabase
+    if (req.file) {
+      const fileName = `${existingPrice.shop_id}-${Date.now()}-${
+        req.file.originalname
+      }`;
+
+      const { data, error } = await supabase.storage
+        .from("shop-images")
+        .upload(`prices/${fileName}`, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: publicData } = supabase.storage
+        .from("shop-images")
+        .getPublicUrl(`prices/${fileName}`);
+
+      image_url = publicData.publicUrl;
+    }
+
+    // Update DB with correct field names
+    const updated = await ShopPricingModel.updatePrices(pricing_id, {
+      categories,
+      description,
+      price,
+      pricing_label,
+      image_url: image_url ?? null,
+      is_displayed: is_displayed === "true" ? "true" : "false",
+    });
+
+    res.json({
+      success: true,
+      message: "Service updated successfully!",
+      data: updated,
+    });
+  } catch (error) {
+    console.error("updateShopPrice error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+const updatePricesDisplaySettings = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { displayedPricesIds } = req.body;
+
+    if (!Array.isArray(displayedPricesIds) || displayedPricesIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No features selected for display",
+      });
+    }
+
+    // Update in DB
+    await ShopPricingModel.updateDisplaySettings(shop_id, displayedPricesIds);
+
+    res.json({
+      success: true,
+      message: "Display settings updated successfully",
+    });
+  } catch (error) {
+    console.error("updatePricesDisplaySettings error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while updating display settings",
+    });
+  }
+};
+
+const getDisplayedPriceByShopId = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const displayedPrice = await ShopPricingModel.searchDisplyedPriceByShopId(
+      shop_id
+    );
+    res.status(200).json({
+      success: true,
+      message: "Displayed prices successfully get",
+      data: displayedPrice,
+    });
+  } catch (error) {
+    console.error("getDisplayedPriceByShopId error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error!",
+    });
+  }
+};
+
+
+const getShopBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    if (!slug) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop slug is require",
+      });
+    }
+
+    const shop = await ShopModel.findBySlug(slug);
+    if (!shop) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Shop existed",
+      data: shop,
+    });
+  } catch (error) {
+    console.error("getShopBySlug error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 module.exports = {
   getShopAbout,
   getShopServices,
@@ -563,4 +793,11 @@ module.exports = {
 
   //__________________SHOP PRICES______________________//
   addShopPrices,
+  getAllPricesByShopId,
+  updateShopPrice,
+  updatePricesDisplaySettings,
+  getDisplayedPriceByShopId,
+
+  getShopNameAndSlug,
+  getShopBySlug
 };
