@@ -26,7 +26,7 @@ class Customer extends BaseModel {
 
       // Get the last customer ID for today
       const sql =
-        "SELECT laundryId FROM customer_receipt WHERE laundryId LIKE ? ORDER BY laundryId DESC LIMIT 1";
+        "SELECT laundryId FROM customer_transactions WHERE laundryId LIKE ? ORDER BY laundryId DESC LIMIT 1";
       const results = await this.query(sql, [`${datePrefix}%`]);
 
       let sequence = "00001";
@@ -87,7 +87,7 @@ class Customer extends BaseModel {
     try {
       // Query to get the highest laundry ID
       const sql =
-        "SELECT laundryId FROM customer_receipt ORDER BY laundryId DESC LIMIT 1";
+        "SELECT laundryId FROM customer_transactions ORDER BY laundryId DESC LIMIT 1";
       const results = await this.query(sql);
 
       let nextId = 1; // Default start if no records exist
@@ -149,7 +149,7 @@ class Customer extends BaseModel {
       } = customerReceiptData;
 
       const sql = `
-            INSERT INTO customer_receipt (
+            INSERT INTO customer_transactions (
                 laundryId,
                 shop_id, 
                 cus_id, 
@@ -350,7 +350,7 @@ class Customer extends BaseModel {
                    service,
                    status,
                    created_at FROM
-                   customer_receipt WHERE
+                   customer_transactions WHERE
                    YEAR(created_at) = YEAR(NOW())
                    AND MONTH(created_at) = MONTH(NOW()) 
                    AND shop_id = ?
@@ -368,7 +368,7 @@ class Customer extends BaseModel {
   static async totalAmountForMonth(cus_id, shop_id) {
     try {
       const sql = `SELECT COALESCE(SUM(total_amount), 0) AS total
-                 FROM customer_receipt
+                 FROM customer_transactions
                  WHERE cus_id = ?
                  AND shop_id = ?
                  AND status = 'Laundry Done'
@@ -386,7 +386,7 @@ class Customer extends BaseModel {
     try {
       const sql = `SELECT
                   COUNT(*) AS total_ready_orders
-                  FROM customer_receipt
+                  FROM customer_transactions
                   WHERE status = 'Ready to pick-up'
                   AND cus_id = ?
                   AND shop_id = ?`;
@@ -398,7 +398,7 @@ class Customer extends BaseModel {
   static async updateStatus(laundryId, service_status) {
     try {
       const sql = `
-    UPDATE customer_receipt
+    UPDATE customer_transactions
     SET status = ?, updated_at = NOW()
     WHERE laundryId = ?
   `;

@@ -61,17 +61,13 @@ const {
 } = require("../controllers/report-controllers/reportController");
 const send = require("../controllers/smsController");
 const { sendOtp, verifyOtp } = require("../controllers/otpController");
-const {
-  verifySuperAdmin,
-  dashboard,
-} = require("../controllers/superAdminController");
 const { updateLaundryStatus } = require("../controllers/customerController");
 
 // Apply API key validation to all routes
-// router.use(validateApiKey);
+router.use(validateApiKey);
 
 // // Protected routes that need authentication
-// router.use(authenticate); // Apply authentication middleware to all routes below
+router.use(authenticate); // Apply authentication middleware to all routes below
 
 router.post("/register-user", registerUser);
 router.post("/login", loginUser);
@@ -233,9 +229,6 @@ router.get("/displayed-prices/:shop_id", getDisplayedPriceByShopId);
 router.get("/displayed-services/:shop_id", getDisplayedServicesByShopId);
 
 router.get("/displayed-payment-method/:shop_id", getPaymentMethodByShopId);
-
-//-----SUPER ADMIN LOGIN(Google OAuth) API's-------//
-router.get("/dashboard", verifySuperAdmin, dashboard);
 
 // Customer fetching on customer module
 router.get("/get-staff/:user_id/:shop_id", getUserByUserIdShopIdRole);
