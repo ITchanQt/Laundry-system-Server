@@ -26,6 +26,7 @@ const {
   forgotPasswordStaff,
 } = require("../controllers/auth/authController");
 const { verifyOtp, sendOtp } = require("../controllers/otpController");
+const { verifySuperAdmin, dashboard, superAdminLogin } = require("../controllers/superAdminController");
 
 // Public routes that don't need authentication
 router.post("/register", registerUser);
@@ -51,5 +52,9 @@ router.post("/forgot-password", forgotPasswordAdmin);
 router.post("/staff-forgot-password", forgotPasswordStaff);
 router.post("/customer-forgot-password", forgotPasswordCustomer);
 router.post("/reset-password", resetPassword);
+
+//-----SUPER ADMIN LOGIN(Google OAuth) API's-------//
+router.get("/dashboard", verifySuperAdmin, dashboard);
+router.post('/super-admin/login', superAdminLogin);
 
 module.exports = router;

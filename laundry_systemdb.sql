@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 12, 2025 at 09:08 AM
+-- Generation Time: Dec 13, 2025 at 09:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -95,10 +95,10 @@ INSERT INTO `customers` (`cus_id`, `cus_fName`, `cus_mName`, `cus_lName`, `cus_e
 -- --------------------------------------------------------
 
 --
--- Table structure for table `customer_receipt`
+-- Table structure for table `customer_transactions`
 --
 
-CREATE TABLE `customer_receipt` (
+CREATE TABLE `customer_transactions` (
   `laundryId` varchar(100) NOT NULL,
   `shop_id` varchar(10) NOT NULL,
   `cus_id` varchar(50) NOT NULL,
@@ -126,10 +126,10 @@ CREATE TABLE `customer_receipt` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `customer_receipt`
+-- Dumping data for table `customer_transactions`
 --
 
-INSERT INTO `customer_receipt` (`laundryId`, `shop_id`, `cus_id`, `cus_name`, `cus_address`, `cus_phoneNum`, `batch`, `shirts`, `pants`, `jeans`, `shorts`, `towels`, `pillow_case`, `bed_sheets`, `kg`, `service`, `num_items`, `cleaning_products`, `total_amount`, `status`, `payment_status`, `created_at`, `updated_at`, `process_by`) VALUES
+INSERT INTO `customer_transactions` (`laundryId`, `shop_id`, `cus_id`, `cus_name`, `cus_address`, `cus_phoneNum`, `batch`, `shirts`, `pants`, `jeans`, `shorts`, `towels`, `pillow_case`, `bed_sheets`, `kg`, `service`, `num_items`, `cleaning_products`, `total_amount`, `status`, `payment_status`, `created_at`, `updated_at`, `process_by`) VALUES
 ('11042025-00001', 'LMSS-00005', 'LMSU-00079', 'Christian Lamoste', 'Biringan City', '09860986098', 10, 7, 7, 7, 7, 7, 7, 7, 7, '1', 49, '', 910.00, '', '', '2025-11-04 15:59:52', '2025-12-05 02:24:19', ''),
 ('11042025-00002', 'LMSS-00005', 'LMSU-00079', 'Christian Lamoste', 'Biringan City', '09860986098', 3, 5, 5, 5, 5, 5, 5, 5, 5, '1', 35, '', 650.00, '', '', '2025-11-04 15:59:52', '2025-12-05 02:24:19', ''),
 ('11042025-00003', 'LMSS-00005', 'LMSU-00073', 'Christian Lamoste', 'Brgy. Dapdap Tarangnan, Samar', '09876546372', 2, 5, 5, 5, 5, 5, 5, 5, 5, '1', 35, '', 650.00, 'Ready to pick up', '', '2025-11-04 16:01:47', '2025-12-05 02:24:19', ''),
@@ -189,8 +189,10 @@ INSERT INTO `customer_receipt` (`laundryId`, `shop_id`, `cus_id`, `cus_name`, `c
 ('12122025-00018', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 0, 3, 4, 5, 3, 0, 0, 0, 0, 'Machine Wash, Folding, Ironing', 20, '', 362.00, 'On Service', '', '2025-12-12 12:41:24', '2025-12-12 04:41:24', ''),
 ('12122025-00019', 'LMSS-00006', 'LMSU-00110', 'Christian Lamoste', 'Purok 2', '+639631199000', 3, 0, 0, 0, 0, 3, 4, 4, 21, 'Machine Wash, Folding, Ironing', 16, '', 1004.00, 'On Service', '', '2025-12-12 12:43:15', '2025-12-12 04:43:15', ''),
 ('12122025-00020', 'LMSS-00006', 'LMSU-00059', 'Christian Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', '09874637287', 2, 3, 4, 5, 6, 0, 0, 0, 14, 'Machine Wash, Folding, Ironing', 28, '', 794.00, 'On Service', '', '2025-12-12 12:44:13', '2025-12-12 04:44:13', ''),
-('12122025-00021', 'LMSS-00006', 'LMSU-00100', 'Kahit Sino', 'Brgy. Diaz Gandara, Samar', '+639631199812', 2, 0, 0, 0, 0, 3, 3, 2, 14, 'Machine Wash, Folding, Ironing', 18, '', 742.00, 'On Service', '', '2025-12-12 12:55:07', '2025-12-12 04:55:07', ''),
-('12122025-00022', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 2, 2, 2, 2, 2, 0, 0, 0, 14, 'Machine Wash, Folding, Ironing', 12, 'Surf-1 | Bisan ano-1 | Sabon-1 | Laundry Detergent-1', 323.00, 'Laundry Done', 'PAID', '2025-12-12 15:44:39', '2025-12-12 08:06:00', 'ADMIN');
+('12122025-00021', 'LMSS-00006', 'LMSU-00100', 'Kahit Sino', 'Brgy. Diaz Gandara, Samar', '+639631199812', 2, 0, 0, 0, 0, 3, 3, 2, 14, 'Machine Wash, Folding, Ironing', 18, '', 742.00, 'Laundry Done', '', '2025-12-12 12:55:07', '2025-12-12 08:11:33', ''),
+('12122025-00022', 'LMSS-00006', 'LMSU-00072', 'Kai Sotto', 'Brgy. Dapdap Tarangnan, Samar', '09874634256', 2, 2, 2, 2, 2, 0, 0, 0, 14, 'Machine Wash, Folding, Ironing', 12, 'Surf-1 | Bisan ano-1 | Sabon-1 | Laundry Detergent-1', 323.00, 'Laundry Done', 'PAID', '2025-12-12 15:44:39', '2025-12-12 08:06:00', 'ADMIN'),
+('12132025-00001', 'LMSS-00006', 'LMSU-00096', 'Ichigo Urusoka', 'Soul Society', '09127645231', 2, 0, 0, 0, 0, 3, 4, 5, 14, 'Machine Wash, Folding, Ironing', 21, 'Surf-3 | Ariel-3 | Laundry Detergent-3', 629.00, 'On Service', 'PAID', '2025-12-13 12:30:01', '2025-12-13 04:30:01', 'ADMIN'),
+('12132025-00002', 'LMSS-00006', 'LMSU-00059', 'Christian Lamoste', 'Brgy. Calanyugan Pagsanghan, Samar', '09874637287', 3, 2, 3, 2, 2, 0, 0, 0, 21, 'Machine Wash, Folding, Ironing', 15, 'Laundry Detergent-4 | Sabon-1 | Ariel-1', 490.00, 'On Service', 'PAID', '2025-12-13 12:43:27', '2025-12-13 04:43:27', 'ADMIN');
 
 -- --------------------------------------------------------
 
@@ -218,7 +220,8 @@ INSERT INTO `email_otps` (`id`, `email`, `otp_code`, `expires_at`, `is_verified`
 (7, 'christian1234@example.com', '228315', '2025-12-06 11:17:36', 0, '2025-12-06 03:12:36'),
 (14, 'sample01111@test.com', '681119', '2025-12-06 11:28:58', 0, '2025-12-06 03:23:58'),
 (23, 'christian1485@example.com', '168754', '2025-12-06 11:46:37', 1, '2025-12-06 03:41:37'),
-(53, 'christianlamostem@gmail.com', '600957', '2025-12-11 17:24:06', 1, '2025-12-11 09:19:06');
+(53, 'christianlamostem@gmail.com', '600957', '2025-12-11 17:24:06', 1, '2025-12-11 09:19:06'),
+(54, 'christianmacorol2002@gmail.com', '769869', '2025-12-13 15:23:26', 1, '2025-12-13 07:18:26');
 
 -- --------------------------------------------------------
 
@@ -377,8 +380,8 @@ INSERT INTO `shop_inventory` (`item_id`, `shop_id`, `item_name`, `categories`, `
 ('LMSI-00014', '00001', 'Ambot1', NULL, 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
 ('LMSI-00015', '00001', 'Ambot4', NULL, 'hahaha', 12, 12.00, 8, '2025-10-30', NULL),
 ('LMSI-00016', '00001', 'Bleach15', NULL, 'bisan ano', 32, 10.00, 12, '2025-10-30', NULL),
-('LMSI-00017', 'LMSS-00006', 'Surf ', NULL, 'Panbabad', 45, 16.00, 26, '2025-11-03', '2025-12-12'),
-('LMSI-00018', 'LMSS-00006', 'Sabon', NULL, 'Panlaba', 45, 7.00, 19, '2025-11-03', '2025-12-12'),
+('LMSI-00017', 'LMSS-00006', 'Surf ', NULL, 'Panbabad', 42, 16.00, 29, '2025-11-03', '2025-12-13'),
+('LMSI-00018', 'LMSS-00006', 'Sabon', NULL, 'Panlaba', 44, 7.00, 20, '2025-11-03', '2025-12-13'),
 ('LMSI-00019', 'LMSS-00005', 'Carbon Dioxide', NULL, 'Kahit ano basta ikaw', 50, 9.00, 30, '2025-11-03', '2025-11-21'),
 ('LMSI-00020', 'LMSS-00005', 'Lala', NULL, 'Ambot kun nano', 29, 45.00, 25, '2025-11-03', NULL),
 ('LMSI-00021', 'LMSS-00006', 'Bisan ano', NULL, 'bisan nano', 7, 8.00, 22, '2025-11-04', '2025-12-12'),
@@ -388,8 +391,8 @@ INSERT INTO `shop_inventory` (`item_id`, `shop_id`, `item_name`, `categories`, `
 ('LMSI-00025', 'LMSS-00005', 'Sabon', NULL, 'Kuan HAHAHA', 30, 13.00, 20, '2025-11-21', '2025-11-21'),
 ('LMSI-00026', 'LMSS-00004', 'Bleach', NULL, 'Panbabad', 40, 8.00, 1, '2025-11-24', NULL),
 ('LMSI-00027', 'LMSS-00004', 'Sabon', NULL, 'Scan QR code or send to mobile number', 2, 12.00, 1, '2025-11-24', NULL),
-('LMSI-00028', 'LMSS-00006', 'Laundry Detergent', NULL, 'Kuan HAHAHA', 77, 12.00, 21, '2025-11-24', '2025-12-12'),
-('LMSI-00029', 'LMSS-00006', 'Ariel', NULL, 'Panbabad', 23, 15.00, 25, '2025-11-24', '2025-12-12');
+('LMSI-00028', 'LMSS-00006', 'Laundry Detergent', NULL, 'Kuan HAHAHA', 70, 12.00, 28, '2025-11-24', '2025-12-13'),
+('LMSI-00029', 'LMSS-00006', 'Ariel', NULL, 'Panbabad', 19, 15.00, 29, '2025-11-24', '2025-12-13');
 
 -- --------------------------------------------------------
 
@@ -453,6 +456,26 @@ INSERT INTO `shop_services` (`service_id`, `shop_id`, `service_name`, `service_d
 (24, 'LMSS-00006', 'Ironing', 'HUHUHUHU', 'https://rgbiorinhvfpbeaghpcw.supabase.co/storage/v1/object/public/shop-images/services/LMSS-00006-1763535123975-Screenshot%20(1).jpg', 'true'),
 (25, 'LMSS-00007', 'Washing', NULL, NULL, 'true'),
 (26, 'LMSS-00007', 'DryClean', NULL, NULL, 'true');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `super_admins`
+--
+
+CREATE TABLE `super_admins` (
+  `id` int(10) NOT NULL,
+  `sAdmin_email` varchar(100) NOT NULL,
+  `sAdmin_password` varchar(100) NOT NULL,
+  `date_registered` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `super_admins`
+--
+
+INSERT INTO `super_admins` (`id`, `sAdmin_email`, `sAdmin_password`, `date_registered`) VALUES
+(1, 'christianlamostem@gmail.com', 'qwerty', '2025-12-13');
 
 -- --------------------------------------------------------
 
@@ -528,7 +551,9 @@ INSERT INTO `users` (`user_id`, `shop_id`, `user_fName`, `user_mName`, `user_lNa
 ('LMSU-00110', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2', 'Itchan6554', '+639631199000', 'christian1485@example.com', 'CUSTOMER', 'ACTIVE', '$2b$10$dFLovl6xwsgvhaE1b48NPOvjCu8HeZ57w.ZKBH1fguVOrbEK6Kth2', '2025-12-06', 'CUSTOMER', NULL, NULL),
 ('LMSU-00111', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2 Caparangasan Gandara Samar', 'kahitAno', '09908764532', 'example@john45.com', 'STAFF', 'ACTIVE', '$2b$10$29WudU5DD2uUXr/vbFqMg.cXS6GzlvojGP/V/GxXTAtYFFXx5CHkS', '2025-12-10', 'STAFF', NULL, NULL),
 ('LMSU-00112', 'LMSS-00006', 'Christian', 'Macorol', 'Lamoste', 'Purok 2 Caparangasan Gandara Samar', 'kahitAno', '09908764532', 'example@john435.com', 'STAFF', 'ACTIVE', '$2b$10$4T.Nu6Jc6mxGKhORwjTghuFm.NS5PfmzDxpN21UnV3boNu6ulWCoi', '2025-12-10', 'STAFF', NULL, NULL),
-('LMSU-00113', 'LMSS-00006', 'John', 'Dominggo', 'Doe', 'Brgy. Malayog Gandara, Samar', 'DoeJohn', '+639890987645', 'christianlamostem@gmail.com', 'STAFF', 'ACTIVE', '$2b$10$P2K/29BMrPKlCcoQZQwUSuYxjHcOV6Md3Qh950fU8VvREjJ.up4tm', '2025-12-11', 'STAFF', NULL, NULL);
+('LMSU-00113', 'LMSS-00006', 'John', 'Dominggo', 'Doe', 'Brgy. Malayog Gandara, Samar', 'DoeJohn', '+639890987645', 'christianlamostem@gmail.com', 'STAFF', 'ACTIVE', '$2b$10$P2K/29BMrPKlCcoQZQwUSuYxjHcOV6Md3Qh950fU8VvREjJ.up4tm', '2025-12-11', 'STAFF', NULL, NULL),
+('LMSU-00114', 'LMSS-00006', 'Ambot', 'Sa', 'Imo', 'Brgy. Calanyugan Pagsanghan, Samar', 'ambotSaImo', '09126748932', 'ambotsaimo@sample.com', 'customer', 'Active', '$2b$10$P9lnbJRpG5dYIjlwDNzvAeiKwZe7X41C.08cgIl5Li8wc91yGhfDy', '2025-12-13', 'ADMIN', NULL, NULL),
+('LMSU-00115', 'LMSS-00006', 'Love', 'Ofmy', 'Life', 'Brgy. Panabatan Sta. Margarita, Samar', 'OhhmyVenus', '+639128764536', 'example@john455.com', 'staff', 'ACTIVE', '$2b$10$YwsLgrySbY9lfz0YX0jfhuE4h6wJFusZbV2zOjJsu5GgFX/iFFpI6', '2025-12-13', 'ADMIN', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -553,9 +578,9 @@ ALTER TABLE `customers`
   ADD UNIQUE KEY `cus_eMail_2` (`cus_eMail`,`cus_phoneNum`,`cus_username`);
 
 --
--- Indexes for table `customer_receipt`
+-- Indexes for table `customer_transactions`
 --
-ALTER TABLE `customer_receipt`
+ALTER TABLE `customer_transactions`
   ADD PRIMARY KEY (`laundryId`),
   ADD KEY `fk_customer_receipt_user` (`cus_id`);
 
@@ -605,6 +630,12 @@ ALTER TABLE `shop_services`
   ADD PRIMARY KEY (`service_id`);
 
 --
+-- Indexes for table `super_admins`
+--
+ALTER TABLE `super_admins`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -619,7 +650,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `email_otps`
 --
 ALTER TABLE `email_otps`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `payment_method`
@@ -646,13 +677,19 @@ ALTER TABLE `shop_services`
   MODIFY `service_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
+-- AUTO_INCREMENT for table `super_admins`
+--
+ALTER TABLE `super_admins`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `customer_receipt`
+-- Constraints for table `customer_transactions`
 --
-ALTER TABLE `customer_receipt`
+ALTER TABLE `customer_transactions`
   ADD CONSTRAINT `fk_customer_receipt_user` FOREIGN KEY (`cus_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 

@@ -29,7 +29,7 @@ class ReportModels extends BaseModel {
 
   static async searchAllCustomerReceiptByShopId(shop_id) {
     try {
-      const sql = "SELECT * FROM customer_receipt WHERE shop_id = ?";
+      const sql = "SELECT * FROM customer_transactions WHERE shop_id = ?";
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
