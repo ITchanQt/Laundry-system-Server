@@ -386,6 +386,48 @@ class LaundryShops extends BaseModel {
   `;
     return await this.query(sql, [newQuantity, newReorder, item_id]);
   }
+
+  static async selectAllDashboardDetails(shop_id) {
+    try {
+      const getDashboardDataQuery = `
+                                    SELECT
+                                    SUM(CASE WHEN status = 'Ready to pick up' THEN 1 ELSE 0 END) AS readyToPickUpCount,
+                                    SUM(CASE WHEN payment_status = 'PENDING' THEN 1 ELSE 0 END) AS pendingPaymentCount,
+                                    SUM(CASE WHEN status = 'On Service' THEN 1 ELSE 0 END) AS onServiceCount,
+                                    SUM(CASE WHEN status = 'On Service' AND DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) AS onServiceTodayCount,
+                                    
+                                    SUM(
+                                        CASE 
+                                            WHEN 
+                                                YEAR(created_at) = YEAR(CURDATE()) 
+                                                AND MONTH(created_at) = MONTH(CURDATE()) 
+                                            THEN 
+                                                total_amount
+                                            ELSE 
+                                                0
+                                        END
+                                    ) AS monthlyEarnings,
+                                    (
+                                        SELECT 
+                                            COUNT(*) 
+                                        FROM 
+                                            shop_inventory 
+                                        WHERE 
+                                            shop_inventory.shop_id = t1.shop_id 
+                                    ) AS totalInventoryItems
+                                FROM 
+                                    customer_transactions AS t1
+                                WHERE 
+                                    t1.shop_id = ?`;
+
+      const results = await this.query(getDashboardDataQuery, [shop_id]);
+
+      return results[0];
+    } catch (error) {
+      console.error("LaundryShops.selectAllDashboardDetails error: ", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = LaundryShops;
