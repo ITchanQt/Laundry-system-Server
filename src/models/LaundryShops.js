@@ -274,6 +274,7 @@ class LaundryShops extends BaseModel {
         shop_id,
         item_name,
         item_description = "",
+        item_category,
         item_quantity,
         item_uPrice,
         item_reoderLevel,
@@ -284,16 +285,18 @@ class LaundryShops extends BaseModel {
                     shop_id,
                     item_name,
                     item_description,
+                    item_category,
                     item_quantity,
                     item_uPrice,
                     item_reorderLevel)
-                  VALUES (?, ?, ?, ?, ?, ?, ?)`;
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
       return this.query(sql, [
         item_id,
         shop_id,
         item_name,
         item_description,
+        item_category,
         item_quantity,
         item_uPrice,
         item_reoderLevel,
@@ -342,6 +345,7 @@ class LaundryShops extends BaseModel {
       const sql = `UPDATE shop_inventory
                    SET item_name = ?,
                        item_description = ?,
+                       item_category = ?,
                        item_quantity = ?,
                        item_uPrice = ?,
                        item_reorderLevel = ?,
@@ -351,6 +355,7 @@ class LaundryShops extends BaseModel {
       const params = [
         inventoryData.item_name,
         inventoryData.item_description || "",
+        inventoryData.item_category || "",
         inventoryData.item_quantity,
         inventoryData.item_uPrice,
         inventoryData.item_reoderLevel,
