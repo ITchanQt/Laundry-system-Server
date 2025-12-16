@@ -26,7 +26,6 @@ const registerLaundryShop = async (req, res) => {
       });
     }
 
-    // Create the shop and auto-update admin table
     const result = await LaundryShops.create(req.body);
 
     res.status(201).json({
@@ -73,7 +72,6 @@ const editShop = async (req, res) => {
     console.log("Received update data:", req.body);
     console.log("Shop ID:", shop_id);
 
-    // Wrap main shop fields in `data`
     const updatedShop = await LaundryShops.editShopById(shop_id, req.body);
 
     res.status(200).json({
@@ -185,7 +183,6 @@ const editItemById = async (req, res) => {
   }
 };
 
-// Update multiple inventory items in one request
 const updateMultipleInventoryItems = async (req, res) => {
   try {
     const { items } = req.body;
@@ -197,7 +194,6 @@ const updateMultipleInventoryItems = async (req, res) => {
       });
     }
 
-    // Validate each row
     for (const item of items) {
       if (
         !item.item_id ||
@@ -212,9 +208,7 @@ const updateMultipleInventoryItems = async (req, res) => {
       }
     }
 
-    // Process each item
     for (const item of items) {
-      // 1. Get existing record from DB
       const existingItem = await LaundryShops.getInventoryItemById(
         item.item_id
       );
@@ -227,10 +221,8 @@ const updateMultipleInventoryItems = async (req, res) => {
       const existingReorder = parseInt(existingItem.item_reorderLevel) || 0;
       const incomingReorder = parseInt(item.item_reorderLevel) || 0;
 
-      // 2. Add reorder levels correctly
       const newReorderLevel = existingReorder + incomingReorder;
 
-      // 3. Update using the SUMMED reorder level
       await LaundryShops.updateStockAndReorderLevel(
         item.item_id,
         item.item_quantity,
@@ -251,6 +243,32 @@ const updateMultipleInventoryItems = async (req, res) => {
   }
 };
 
+const getDashboardCounts = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: true,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const result = await LaundryShops.selectAllDashboardDetails(shop_id);
+    const dashboardCounts = result;
+    return res.status(200).json({
+      success: true,
+      message: "Dashboard counts fetched successfully!",
+      data: dashboardCounts,
+    });
+  } catch (error) {
+    console.error("Error geting dashboard counts:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -260,4 +278,5 @@ module.exports = {
   getAllShopInventoryItems,
   editItemById,
   updateMultipleInventoryItems,
+  getDashboardCounts,
 };
