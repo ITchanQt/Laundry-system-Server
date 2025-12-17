@@ -294,6 +294,31 @@ const getWeeklyTrasactions = async (req, res) => {
   }
 };
 
+const getPendingServiceTrans = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectPendingServiceTrans(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "On Service transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Error fetching On service transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -305,4 +330,5 @@ module.exports = {
   updateMultipleInventoryItems,
   getDashboardCounts,
   getWeeklyTrasactions,
+  getPendingServiceTrans,
 };
