@@ -29,6 +29,7 @@ const {
   editItemById,
   updateMultipleInventoryItems,
   getDashboardCounts,
+  getWeeklyTrasactions,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -243,6 +244,8 @@ router.put("/update-laundry-status/:laundryId", updateLaundryStatus);
 
 // -----------STAFF DASHBOARD COUNTS
 router.get("/get-dashboard-counts/:shop_id", getDashboardCounts);
+
+router.get("/get-weekly-on-process-trans/:shop_id", getWeeklyTrasactions);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

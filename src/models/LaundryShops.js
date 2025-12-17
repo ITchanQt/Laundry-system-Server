@@ -399,8 +399,8 @@ class LaundryShops extends BaseModel {
                                     SUM(CASE WHEN status = 'Ready to pick up' THEN 1 ELSE 0 END) AS readyToPickUpCount,
                                     SUM(CASE WHEN payment_status = 'PENDING' THEN 1 ELSE 0 END) AS pendingPaymentCount,
                                     SUM(CASE WHEN status = 'On Service' THEN 1 ELSE 0 END) AS onServiceCount,
-                                    SUM(CASE WHEN status = 'On Service' AND DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) AS onServiceTodayCount,
-                                    
+                                    SUM(CASE WHEN status = 'On Service' AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1) THEN 1 ELSE 0 END) AS onServiceThisWeekCount,
+                                  
                                     SUM(
                                         CASE 
                                             WHEN 
@@ -430,6 +430,35 @@ class LaundryShops extends BaseModel {
       return results[0];
     } catch (error) {
       console.error("LaundryShops.selectAllDashboardDetails error: ", error);
+      throw error;
+    }
+  }
+
+  static async selectWeeklyTransactions(shop_id) {
+    try {
+      const sql = `
+            SELECT 
+            laundryId, 
+            shop_id, 
+            cus_id, 
+            cus_name, 
+            cus_address, 
+            cus_phoneNum, 
+            batch, 
+            kg, 
+            service, 
+            status,
+            total_amount
+            FROM customer_transactions 
+            WHERE YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)
+            AND status = 'On Service'
+            AND shop_id = ?
+            ORDER BY created_at DESC`;
+
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("Error fetching weekly transactions:", error);
       throw error;
     }
   }
