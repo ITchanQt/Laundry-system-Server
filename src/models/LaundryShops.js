@@ -277,7 +277,7 @@ class LaundryShops extends BaseModel {
         item_category,
         item_quantity,
         item_uPrice,
-        item_reoderLevel,
+        item_reorderLevel,
       } = inventoryData;
 
       const sql = `INSERT INTO shop_inventory
@@ -299,7 +299,7 @@ class LaundryShops extends BaseModel {
         item_category,
         item_quantity,
         item_uPrice,
-        item_reoderLevel,
+        item_reorderLevel,
       ]);
     } catch (error) {
       throw new Error(`Failed to create shop inventory: ${error.message}`);
@@ -358,7 +358,7 @@ class LaundryShops extends BaseModel {
         inventoryData.item_category || "",
         inventoryData.item_quantity,
         inventoryData.item_uPrice,
-        inventoryData.item_reoderLevel,
+        inventoryData.item_reorderLevel,
         item_id,
       ];
 
@@ -474,6 +474,37 @@ class LaundryShops extends BaseModel {
     } catch (error) {
       console.error("Error fetching On Service transactions:", error);
       throw error;
+    }
+  }
+
+  static async selectPendingPaymentsTrans(shop_id) {
+    try {
+      const sql = `SELECT * FROM customer_transactions
+                  WHERE payment_status = "PENDING"
+                  AND shop_id = ?
+                  ORDER BY created_at ASC`;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error(
+        "Error fetching pending payment status transactions:",
+        error
+      );
+      throw error;
+    }
+  }
+
+  static async updatePaymentStatus(laundryId, payment_status) {
+    try {
+      const sql = `
+                  UPDATE customer_transactions
+                  SET payment_status = ?, updated_at = NOW()
+                  WHERE laundryId = ?
+                  `;
+      return await this.query(sql, [payment_status, laundryId]); 
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      throw new Error(`Failed to update payment status: ${error.message}`);
     }
   }
 }

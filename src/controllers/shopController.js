@@ -319,6 +319,52 @@ const getPendingServiceTrans = async (req, res) => {
   }
 };
 
+const getPendingPaymentStatusTrans = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectPendingPaymentsTrans(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "Pending payment status fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Error fetching pending payment status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const updateTransPaymentStatus = async (req, res) => {
+  try {
+    const { laundryId } = req.params;
+    const { payment_status } = req.body;
+
+    if (!laundryId || !payment_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Laundry ID and status are required.",
+      });
+    }
+
+    const result = await LaundryShops.updatePaymentStatus(laundryId, payment_status);
+    return res.status(200).json({
+      success: true,
+      message: "Service status successfully updated.",
+      data: result,
+    });
+  } catch (error) {}
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -331,4 +377,6 @@ module.exports = {
   getDashboardCounts,
   getWeeklyTrasactions,
   getPendingServiceTrans,
+  getPendingPaymentStatusTrans,
+  updateTransPaymentStatus
 };
