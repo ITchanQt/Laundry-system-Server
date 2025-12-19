@@ -362,10 +362,16 @@ const updateTransPaymentStatus = async (req, res) => {
     );
     return res.status(200).json({
       success: true,
-      message: "Service status successfully updated.",
+      message: "Payment status successfully updated.",
       data: result,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error updating service status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
 };
 
 const getReadyToPickUpTrans = async (req, res) => {
@@ -396,6 +402,45 @@ const getReadyToPickUpTrans = async (req, res) => {
   }
 };
 
+const updateReadyToPickUpIfPaidTrans = async (req, res) => {
+  try {
+    const { laundryId } = req.params;
+    const { service_status } = req.body;
+
+    if (!laundryId || !service_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Laundry ID and status are required.",
+      });
+    }
+
+    const result = await LaundryShops.updateReadyToPickUpIfPaid(
+      service_status,
+      laundryId
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Update failed. transaction hasn't been PAID yet.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Service status successfully updated.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error updating service status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -411,4 +456,5 @@ module.exports = {
   getPendingPaymentStatusTrans,
   updateTransPaymentStatus,
   getReadyToPickUpTrans,
+  updateReadyToPickUpIfPaidTrans,
 };

@@ -406,6 +406,8 @@ class LaundryShops extends BaseModel {
                                             WHEN 
                                                 YEAR(created_at) = YEAR(CURDATE()) 
                                                 AND MONTH(created_at) = MONTH(CURDATE()) 
+                                                AND status = 'Laundry Done'      -- Condition 1
+                                                AND payment_status = 'PAID'      -- Condition 2
                                             THEN 
                                                 total_amount
                                             ELSE 
@@ -537,6 +539,19 @@ class LaundryShops extends BaseModel {
         error
       );
       throw error;
+    }
+  }
+
+  static async updateReadyToPickUpIfPaid(service_status, laundryId) {
+    try {
+      const sql = `
+                  UPDATE customer_transactions 
+                  SET status = ? 
+                  WHERE laundryId = ? AND payment_status = 'PAID'`;
+      return await this.query(sql, [service_status, laundryId]);
+    } catch (error) {
+      console.error("Error updating service status:", error);
+      throw new Error(`Failed to update service status: ${error.message}`);
     }
   }
 }

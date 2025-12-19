@@ -34,6 +34,7 @@ const {
   getPendingPaymentStatusTrans,
   updateTransPaymentStatus,
   getReadyToPickUpTrans,
+  updateReadyToPickUpIfPaidTrans,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -264,6 +265,10 @@ router.put("/update-payment-status/:laundryId", updateTransPaymentStatus);
 
 //-----------STAFF READY TO PICK UP SERVICE STATUS TRANSACTION
 router.get("/get-ready-to-pick-up-trans/:shop_id", getReadyToPickUpTrans);
+router.put(
+  "/update-ready-to-pick-up-trans/:laundryId",
+  updateReadyToPickUpIfPaidTrans
+);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
