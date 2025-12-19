@@ -501,10 +501,42 @@ class LaundryShops extends BaseModel {
                   SET payment_status = ?, updated_at = NOW()
                   WHERE laundryId = ?
                   `;
-      return await this.query(sql, [payment_status, laundryId]); 
+      return await this.query(sql, [payment_status, laundryId]);
     } catch (error) {
       console.error("Error updating payment status:", error);
       throw new Error(`Failed to update payment status: ${error.message}`);
+    }
+  }
+
+  static async selectReadyToPickUpTrans(shop_id) {
+    try {
+      const sql = `
+                  SELECT
+                    laundryId,
+                    shop_id,
+                    cus_id,
+                    cus_name,
+                    cus_address,
+                    cus_phoneNum,
+                    batch,
+                    kg,
+                    service,
+                    total_amount,
+                    status,
+                    payment_status
+                  FROM customer_transactions
+                  WHERE status = "Ready to pick up"
+                  AND shop_id = ?
+                  ORDER BY created_at ASC 
+                  `;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error(
+        "Error fetching ready to pick up service status transactions:",
+        error
+      );
+      throw error;
     }
   }
 }

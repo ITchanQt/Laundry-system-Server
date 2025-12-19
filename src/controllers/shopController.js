@@ -356,13 +356,44 @@ const updateTransPaymentStatus = async (req, res) => {
       });
     }
 
-    const result = await LaundryShops.updatePaymentStatus(laundryId, payment_status);
+    const result = await LaundryShops.updatePaymentStatus(
+      laundryId,
+      payment_status
+    );
     return res.status(200).json({
       success: true,
       message: "Service status successfully updated.",
       data: result,
     });
   } catch (error) {}
+};
+
+const getReadyToPickUpTrans = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectReadyToPickUpTrans(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "Ready to pick up transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching ready to pick up service status transactions:",
+      error
+    );
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
 };
 
 // Add getAllShops to exports
@@ -378,5 +409,6 @@ module.exports = {
   getWeeklyTrasactions,
   getPendingServiceTrans,
   getPendingPaymentStatusTrans,
-  updateTransPaymentStatus
+  updateTransPaymentStatus,
+  getReadyToPickUpTrans,
 };

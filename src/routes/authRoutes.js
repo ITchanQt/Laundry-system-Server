@@ -33,6 +33,7 @@ const {
   getPendingServiceTrans,
   getPendingPaymentStatusTrans,
   updateTransPaymentStatus,
+  getReadyToPickUpTrans,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -69,10 +70,10 @@ const { sendOtp, verifyOtp } = require("../controllers/otpController");
 const { updateLaundryStatus } = require("../controllers/customerController");
 
 // Apply API key validation to all routes
-// router.use(validateApiKey);
+router.use(validateApiKey);
 
 // Protected routes that need authentication
-// router.use(authenticate); // Apply authentication middleware to all routes below
+router.use(authenticate); // Apply authentication middleware to all routes below
 
 router.post("/register-user", registerUser);
 router.post("/login", loginUser);
@@ -255,8 +256,14 @@ router.get("/get-weekly-on-process-trans/:shop_id", getWeeklyTrasactions);
 router.get("/get-all-on-service-trans/:shop_id", getPendingServiceTrans);
 
 // -----------STAFF PENDING PAYMENT STATUS TRANSACTION
-router.get("/get-pending-payment-status-trans/:shop_id", getPendingPaymentStatusTrans);
+router.get(
+  "/get-pending-payment-status-trans/:shop_id",
+  getPendingPaymentStatusTrans
+);
 router.put("/update-payment-status/:laundryId", updateTransPaymentStatus);
+
+//-----------STAFF READY TO PICK UP SERVICE STATUS TRANSACTION
+router.get("/get-ready-to-pick-up-trans/:shop_id", getReadyToPickUpTrans);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
