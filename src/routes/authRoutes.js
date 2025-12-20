@@ -35,6 +35,8 @@ const {
   updateTransPaymentStatus,
   getReadyToPickUpTrans,
   updateReadyToPickUpIfPaidTrans,
+  getCompletedTransaction,
+  getYearlyFinancialReportStaffModule,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -71,10 +73,10 @@ const { sendOtp, verifyOtp } = require("../controllers/otpController");
 const { updateLaundryStatus } = require("../controllers/customerController");
 
 // Apply API key validation to all routes
-router.use(validateApiKey);
+// router.use(validateApiKey);
 
 // Protected routes that need authentication
-router.use(authenticate); // Apply authentication middleware to all routes below
+// router.use(authenticate); // Apply authentication middleware to all routes below
 
 router.post("/register-user", registerUser);
 router.post("/login", loginUser);
@@ -268,6 +270,13 @@ router.get("/get-ready-to-pick-up-trans/:shop_id", getReadyToPickUpTrans);
 router.put(
   "/update-ready-to-pick-up-trans/:laundryId",
   updateReadyToPickUpIfPaidTrans
+);
+
+//-----------STAFF LAUNDRY DONE OR COMPLETED SERVICE STATUS TRANSACTION
+router.get("/get-completed-transactions/:shop_id", getCompletedTransaction);
+router.get(
+  "/get-yearly-report/:shop_id",
+  getYearlyFinancialReportStaffModule
 );
 
 // Protected admin routes

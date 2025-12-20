@@ -554,6 +554,122 @@ class LaundryShops extends BaseModel {
       throw new Error(`Failed to update service status: ${error.message}`);
     }
   }
+
+  static async selectCompletedTransaction(shop_id) {
+    try {
+      const sql = `
+                  SELECT
+                  laundryId,
+                  shop_id,
+                  cus_id,
+                  service,
+                  total_amount,
+                  status,
+                  updated_at
+                  FROM customer_transactions
+                  WHERE status = 'Laundry Done'
+                  AND payment_status = 'PAID'  
+                  AND shop_id = ?`;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error(
+        "Error fetching laundry done or completed service status transactions:",
+        error
+      );
+      throw error;
+    }
+  }
+
+  static async getMonthlyStats(shop_id) {
+    const sql = `
+                SELECT
+                  MONTH(updated_at) AS month_number,
+                  MONTHNAME(updated_at) AS month_name,
+                  COUNT(*) AS transaction_count,
+                  SUM(total_amount) AS total_amount
+                FROM customer_transactions
+                WHERE shop_id = ?
+                  AND status = 'Laundry Done'
+                  AND payment_status = 'PAID' 
+                  AND YEAR(updated_at) = YEAR(CURDATE())
+                GROUP BY MONTH(updated_at), MONTHNAME(updated_at)
+                ORDER BY month_number;
+              `;
+    return this.query(sql, [shop_id]);
+  }
+
+  /* =========================
+     Yearly total amount
+     ========================= */
+  static async getYearlyTotal(shop_id) {
+    const sql = `
+                SELECT
+                  IFNULL(SUM(total_amount), 0) AS yearly_total_amount
+                FROM customer_transactions
+                WHERE shop_id = ?
+                  AND status = 'Laundry Done'
+                  AND payment_status = 'PAID' 
+                  AND YEAR(updated_at) = YEAR(CURDATE());
+              `;
+    return this.query(sql, [shop_id]);
+  }
+
+  /* =========================
+     Average monthly amount
+     ========================= */
+  static async getAverageMonthly(shop_id) {
+    const sql = `
+                SELECT
+                  IFNULL(AVG(monthly_total), 0) AS average_monthly_amount
+                FROM (
+                  SELECT SUM(total_amount) AS monthly_total
+                  FROM customer_transactions
+                  WHERE shop_id = ?
+                    AND status = 'Laundry Done'
+                    AND payment_status = 'PAID' 
+                    AND YEAR(updated_at) = YEAR(CURDATE())
+                  GROUP BY MONTH(updated_at)
+                ) t;
+              `;
+    return this.query(sql, [shop_id]);
+  }
+
+  /* =========================
+     Total transaction count
+     ========================= */
+  static async getTotalTransactions(shop_id) {
+    const sql = `
+                SELECT
+                  COUNT(*) AS total_transactions
+                FROM customer_transactions
+                WHERE shop_id = ?
+                  AND status = 'Laundry Done'
+                  AND payment_status = 'PAID' 
+                  AND YEAR(updated_at) = YEAR(CURDATE());
+              `;
+    return this.query(sql, [shop_id]);
+  }
+
+  /* =========================
+     Highest month
+     ========================= */
+  static async getHighestMonth(shop_id) {
+    const sql = `
+                SELECT
+                  MONTHNAME(updated_at) AS month,
+                  SUM(total_amount) AS total_amount
+                FROM customer_transactions
+                WHERE shop_id = ?
+                  AND status = 'Laundry Done'
+                  AND payment_status = 'PAID' 
+                  AND YEAR(updated_at) = YEAR(CURDATE())
+                GROUP BY MONTH(updated_at), MONTHNAME(updated_at)
+                ORDER BY total_amount DESC
+                LIMIT 1;
+              `;
+    return this.query(sql, [shop_id]);
+  }
 }
 
 module.exports = LaundryShops;
