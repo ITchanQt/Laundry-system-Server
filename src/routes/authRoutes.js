@@ -33,6 +33,10 @@ const {
   getPendingServiceTrans,
   getPendingPaymentStatusTrans,
   updateTransPaymentStatus,
+  getReadyToPickUpTrans,
+  updateReadyToPickUpIfPaidTrans,
+  getCompletedTransaction,
+  getYearlyFinancialReportStaffModule,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -255,8 +259,25 @@ router.get("/get-weekly-on-process-trans/:shop_id", getWeeklyTrasactions);
 router.get("/get-all-on-service-trans/:shop_id", getPendingServiceTrans);
 
 // -----------STAFF PENDING PAYMENT STATUS TRANSACTION
-router.get("/get-pending-payment-status-trans/:shop_id", getPendingPaymentStatusTrans);
+router.get(
+  "/get-pending-payment-status-trans/:shop_id",
+  getPendingPaymentStatusTrans
+);
 router.put("/update-payment-status/:laundryId", updateTransPaymentStatus);
+
+//-----------STAFF READY TO PICK UP SERVICE STATUS TRANSACTION
+router.get("/get-ready-to-pick-up-trans/:shop_id", getReadyToPickUpTrans);
+router.put(
+  "/update-ready-to-pick-up-trans/:laundryId",
+  updateReadyToPickUpIfPaidTrans
+);
+
+//-----------STAFF LAUNDRY DONE OR COMPLETED SERVICE STATUS TRANSACTION
+router.get("/get-completed-transactions/:shop_id", getCompletedTransaction);
+router.get(
+  "/get-yearly-report/:shop_id",
+  getYearlyFinancialReportStaffModule
+);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

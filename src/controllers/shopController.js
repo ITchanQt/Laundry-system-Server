@@ -356,13 +356,161 @@ const updateTransPaymentStatus = async (req, res) => {
       });
     }
 
-    const result = await LaundryShops.updatePaymentStatus(laundryId, payment_status);
+    const result = await LaundryShops.updatePaymentStatus(
+      laundryId,
+      payment_status
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Payment status successfully updated.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error updating service status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getReadyToPickUpTrans = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectReadyToPickUpTrans(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "Ready to pick up transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching ready to pick up service status transactions:",
+      error
+    );
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const updateReadyToPickUpIfPaidTrans = async (req, res) => {
+  try {
+    const { laundryId } = req.params;
+    const { service_status } = req.body;
+
+    if (!laundryId || !service_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Laundry ID and status are required.",
+      });
+    }
+
+    const result = await LaundryShops.updateReadyToPickUpIfPaid(
+      service_status,
+      laundryId
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Update failed. transaction hasn't been PAID yet.",
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Service status successfully updated.",
       data: result,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error updating service status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getCompletedTransaction = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID paramaters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectCompletedTransaction(shop_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Completed transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching Laundry Done or completed service status transactions:",
+      error
+    );
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getYearlyFinancialReportStaffModule = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required.",
+      });
+    }
+
+    const [
+      monthlyStats,
+      yearlyTotal,
+      averageMonthly,
+      totalTransactions,
+      highestMonth,
+    ] = await Promise.all([
+      LaundryShops.getMonthlyStats(shop_id),
+      LaundryShops.getYearlyTotal(shop_id),
+      LaundryShops.getAverageMonthly(shop_id),
+      LaundryShops.getTotalTransactions(shop_id),
+      LaundryShops.getHighestMonth(shop_id),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        monthly: monthlyStats,
+        yearly_total_amount: yearlyTotal[0].yearly_total_amount,
+        average_monthly_amount: averageMonthly[0].average_monthly_amount,
+        total_transactions: totalTransactions[0].total_transactions,
+        highest_month: highestMonth[0] || null,
+      },
+    });
+  } catch (error) {
+    console.error("Controller Error (getYearlyFinancialReport):", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to generate financial report.",
+    });
+  }
 };
 
 // Add getAllShops to exports
@@ -378,5 +526,9 @@ module.exports = {
   getWeeklyTrasactions,
   getPendingServiceTrans,
   getPendingPaymentStatusTrans,
-  updateTransPaymentStatus
+  updateTransPaymentStatus,
+  getReadyToPickUpTrans,
+  updateReadyToPickUpIfPaidTrans,
+  getCompletedTransaction,
+  getYearlyFinancialReportStaffModule,
 };
