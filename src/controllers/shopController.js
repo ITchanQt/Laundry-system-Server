@@ -26,7 +26,6 @@ const registerLaundryShop = async (req, res) => {
       });
     }
 
-    // Create the shop and auto-update admin table
     const result = await LaundryShops.create(req.body);
 
     res.status(201).json({
@@ -73,7 +72,6 @@ const editShop = async (req, res) => {
     console.log("Received update data:", req.body);
     console.log("Shop ID:", shop_id);
 
-    // Wrap main shop fields in `data`
     const updatedShop = await LaundryShops.editShopById(shop_id, req.body);
 
     res.status(200).json({
@@ -185,7 +183,6 @@ const editItemById = async (req, res) => {
   }
 };
 
-// Update multiple inventory items in one request
 const updateMultipleInventoryItems = async (req, res) => {
   try {
     const { items } = req.body;
@@ -197,7 +194,6 @@ const updateMultipleInventoryItems = async (req, res) => {
       });
     }
 
-    // Validate each row
     for (const item of items) {
       if (
         !item.item_id ||
@@ -212,9 +208,7 @@ const updateMultipleInventoryItems = async (req, res) => {
       }
     }
 
-    // Process each item
     for (const item of items) {
-      // 1. Get existing record from DB
       const existingItem = await LaundryShops.getInventoryItemById(
         item.item_id
       );
@@ -227,10 +221,8 @@ const updateMultipleInventoryItems = async (req, res) => {
       const existingReorder = parseInt(existingItem.item_reorderLevel) || 0;
       const incomingReorder = parseInt(item.item_reorderLevel) || 0;
 
-      // 2. Add reorder levels correctly
       const newReorderLevel = existingReorder + incomingReorder;
 
-      // 3. Update using the SUMMED reorder level
       await LaundryShops.updateStockAndReorderLevel(
         item.item_id,
         item.item_quantity,
@@ -251,6 +243,276 @@ const updateMultipleInventoryItems = async (req, res) => {
   }
 };
 
+const getDashboardCounts = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: true,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const result = await LaundryShops.selectAllDashboardDetails(shop_id);
+    const dashboardCounts = result;
+    return res.status(200).json({
+      success: true,
+      message: "Dashboard counts fetched successfully!",
+      data: dashboardCounts,
+    });
+  } catch (error) {
+    console.error("Error geting dashboard counts:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getWeeklyTrasactions = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameter is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectWeeklyTransactions(shop_id);
+    return res.status(200).json({
+      success: true,
+      message: "Customers weekly transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Error fetching weekly transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getPendingServiceTrans = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectPendingServiceTrans(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "On Service transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Error fetching On service transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getPendingPaymentStatusTrans = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectPendingPaymentsTrans(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "Pending payment status fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Error fetching pending payment status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const updateTransPaymentStatus = async (req, res) => {
+  try {
+    const { laundryId } = req.params;
+    const { payment_status } = req.body;
+
+    if (!laundryId || !payment_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Laundry ID and status are required.",
+      });
+    }
+
+    const result = await LaundryShops.updatePaymentStatus(
+      laundryId,
+      payment_status
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Payment status successfully updated.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error updating service status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getReadyToPickUpTrans = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID parameters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectReadyToPickUpTrans(shop_id);
+    res.status(200).json({
+      success: true,
+      message: "Ready to pick up transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching ready to pick up service status transactions:",
+      error
+    );
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const updateReadyToPickUpIfPaidTrans = async (req, res) => {
+  try {
+    const { laundryId } = req.params;
+    const { service_status } = req.body;
+
+    if (!laundryId || !service_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Laundry ID and status are required.",
+      });
+    }
+
+    const result = await LaundryShops.updateReadyToPickUpIfPaid(
+      service_status,
+      laundryId
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Update failed. transaction hasn't been PAID yet.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Service status successfully updated.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error updating service status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getCompletedTransaction = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID paramaters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectCompletedTransaction(shop_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Completed transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching Laundry Done or completed service status transactions:",
+      error
+    );
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getYearlyFinancialReportStaffModule = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required.",
+      });
+    }
+
+    const [
+      monthlyStats,
+      yearlyTotal,
+      averageMonthly,
+      totalTransactions,
+      highestMonth,
+    ] = await Promise.all([
+      LaundryShops.getMonthlyStats(shop_id),
+      LaundryShops.getYearlyTotal(shop_id),
+      LaundryShops.getAverageMonthly(shop_id),
+      LaundryShops.getTotalTransactions(shop_id),
+      LaundryShops.getHighestMonth(shop_id),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        monthly: monthlyStats,
+        yearly_total_amount: yearlyTotal[0].yearly_total_amount,
+        average_monthly_amount: averageMonthly[0].average_monthly_amount,
+        total_transactions: totalTransactions[0].total_transactions,
+        highest_month: highestMonth[0] || null,
+      },
+    });
+  } catch (error) {
+    console.error("Controller Error (getYearlyFinancialReport):", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to generate financial report.",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -260,4 +522,13 @@ module.exports = {
   getAllShopInventoryItems,
   editItemById,
   updateMultipleInventoryItems,
+  getDashboardCounts,
+  getWeeklyTrasactions,
+  getPendingServiceTrans,
+  getPendingPaymentStatusTrans,
+  updateTransPaymentStatus,
+  getReadyToPickUpTrans,
+  updateReadyToPickUpIfPaidTrans,
+  getCompletedTransaction,
+  getYearlyFinancialReportStaffModule,
 };

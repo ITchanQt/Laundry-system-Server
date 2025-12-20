@@ -274,9 +274,10 @@ class LaundryShops extends BaseModel {
         shop_id,
         item_name,
         item_description = "",
+        item_category,
         item_quantity,
         item_uPrice,
-        item_reoderLevel,
+        item_reorderLevel,
       } = inventoryData;
 
       const sql = `INSERT INTO shop_inventory
@@ -284,19 +285,21 @@ class LaundryShops extends BaseModel {
                     shop_id,
                     item_name,
                     item_description,
+                    item_category,
                     item_quantity,
                     item_uPrice,
                     item_reorderLevel)
-                  VALUES (?, ?, ?, ?, ?, ?, ?)`;
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
       return this.query(sql, [
         item_id,
         shop_id,
         item_name,
         item_description,
+        item_category,
         item_quantity,
         item_uPrice,
-        item_reoderLevel,
+        item_reorderLevel,
       ]);
     } catch (error) {
       throw new Error(`Failed to create shop inventory: ${error.message}`);
@@ -342,6 +345,7 @@ class LaundryShops extends BaseModel {
       const sql = `UPDATE shop_inventory
                    SET item_name = ?,
                        item_description = ?,
+                       item_category = ?,
                        item_quantity = ?,
                        item_uPrice = ?,
                        item_reorderLevel = ?,
@@ -351,9 +355,10 @@ class LaundryShops extends BaseModel {
       const params = [
         inventoryData.item_name,
         inventoryData.item_description || "",
+        inventoryData.item_category || "",
         inventoryData.item_quantity,
         inventoryData.item_uPrice,
-        inventoryData.item_reoderLevel,
+        inventoryData.item_reorderLevel,
         item_id,
       ];
 
@@ -385,6 +390,285 @@ class LaundryShops extends BaseModel {
       WHERE item_id = ?
   `;
     return await this.query(sql, [newQuantity, newReorder, item_id]);
+  }
+
+  static async selectAllDashboardDetails(shop_id) {
+    try {
+      const getDashboardDataQuery = `
+                                    SELECT
+                                    SUM(CASE WHEN status = 'Ready to pick up' THEN 1 ELSE 0 END) AS readyToPickUpCount,
+                                    SUM(CASE WHEN payment_status = 'PENDING' THEN 1 ELSE 0 END) AS pendingPaymentCount,
+                                    SUM(CASE WHEN status = 'On Service' THEN 1 ELSE 0 END) AS onServiceCount,
+                                    SUM(CASE WHEN status = 'On Service' AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1) THEN 1 ELSE 0 END) AS onServiceThisWeekCount,
+                                  
+                                    SUM(
+                                        CASE 
+                                            WHEN 
+                                                YEAR(created_at) = YEAR(CURDATE()) 
+                                                AND MONTH(created_at) = MONTH(CURDATE()) 
+                                                AND status = 'Laundry Done'      -- Condition 1
+                                                AND payment_status = 'PAID'      -- Condition 2
+                                            THEN 
+                                                total_amount
+                                            ELSE 
+                                                0
+                                        END
+                                    ) AS monthlyEarnings,
+                                    (
+                                        SELECT 
+                                            COUNT(*) 
+                                        FROM 
+                                            shop_inventory 
+                                        WHERE 
+                                            shop_inventory.shop_id = t1.shop_id 
+                                    ) AS totalInventoryItems
+                                FROM 
+                                    customer_transactions AS t1
+                                WHERE 
+                                    t1.shop_id = ?`;
+
+      const results = await this.query(getDashboardDataQuery, [shop_id]);
+
+      return results[0];
+    } catch (error) {
+      console.error("LaundryShops.selectAllDashboardDetails error: ", error);
+      throw error;
+    }
+  }
+
+  static async selectWeeklyTransactions(shop_id) {
+    try {
+      const sql = `
+            SELECT 
+            laundryId, 
+            shop_id, 
+            cus_id, 
+            cus_name, 
+            cus_address, 
+            cus_phoneNum, 
+            batch, 
+            kg, 
+            service, 
+            status,
+            total_amount
+            FROM customer_transactions 
+            WHERE YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)
+            AND status = 'On Service'
+            AND shop_id = ?
+            ORDER BY created_at DESC`;
+
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("Error fetching weekly transactions:", error);
+      throw error;
+    }
+  }
+
+  static async selectPendingServiceTrans(shop_id) {
+    try {
+      const sql = `SELECT * FROM customer_transactions
+                   WHERE status = 'On Service'
+                   AND shop_id = ?
+                   ORDER BY created_at ASC`;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("Error fetching On Service transactions:", error);
+      throw error;
+    }
+  }
+
+  static async selectPendingPaymentsTrans(shop_id) {
+    try {
+      const sql = `SELECT * FROM customer_transactions
+                  WHERE payment_status = "PENDING"
+                  AND shop_id = ?
+                  ORDER BY created_at ASC`;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error(
+        "Error fetching pending payment status transactions:",
+        error
+      );
+      throw error;
+    }
+  }
+
+  static async updatePaymentStatus(laundryId, payment_status) {
+    try {
+      const sql = `
+                  UPDATE customer_transactions
+                  SET payment_status = ?, updated_at = NOW()
+                  WHERE laundryId = ?
+                  `;
+      return await this.query(sql, [payment_status, laundryId]);
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      throw new Error(`Failed to update payment status: ${error.message}`);
+    }
+  }
+
+  static async selectReadyToPickUpTrans(shop_id) {
+    try {
+      const sql = `
+                  SELECT
+                    laundryId,
+                    shop_id,
+                    cus_id,
+                    cus_name,
+                    cus_address,
+                    cus_phoneNum,
+                    batch,
+                    kg,
+                    service,
+                    total_amount,
+                    status,
+                    payment_status
+                  FROM customer_transactions
+                  WHERE status = "Ready to pick up"
+                  AND shop_id = ?
+                  ORDER BY created_at ASC 
+                  `;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error(
+        "Error fetching ready to pick up service status transactions:",
+        error
+      );
+      throw error;
+    }
+  }
+
+  static async updateReadyToPickUpIfPaid(service_status, laundryId) {
+    try {
+      const sql = `
+                  UPDATE customer_transactions 
+                  SET status = ? 
+                  WHERE laundryId = ? AND payment_status = 'PAID'`;
+      return await this.query(sql, [service_status, laundryId]);
+    } catch (error) {
+      console.error("Error updating service status:", error);
+      throw new Error(`Failed to update service status: ${error.message}`);
+    }
+  }
+
+  static async selectCompletedTransaction(shop_id) {
+    try {
+      const sql = `
+                  SELECT
+                  laundryId,
+                  shop_id,
+                  cus_id,
+                  service,
+                  total_amount,
+                  status,
+                  updated_at
+                  FROM customer_transactions
+                  WHERE status = 'Laundry Done'
+                  AND payment_status = 'PAID'  
+                  AND shop_id = ?`;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error(
+        "Error fetching laundry done or completed service status transactions:",
+        error
+      );
+      throw error;
+    }
+  }
+
+  static async getMonthlyStats(shop_id) {
+    const sql = `
+                SELECT
+                  MONTH(updated_at) AS month_number,
+                  MONTHNAME(updated_at) AS month_name,
+                  COUNT(*) AS transaction_count,
+                  SUM(total_amount) AS total_amount
+                FROM customer_transactions
+                WHERE shop_id = ?
+                  AND status = 'Laundry Done'
+                  AND payment_status = 'PAID' 
+                  AND YEAR(updated_at) = YEAR(CURDATE())
+                GROUP BY MONTH(updated_at), MONTHNAME(updated_at)
+                ORDER BY month_number;
+              `;
+    return this.query(sql, [shop_id]);
+  }
+
+  /* =========================
+     Yearly total amount
+     ========================= */
+  static async getYearlyTotal(shop_id) {
+    const sql = `
+                SELECT
+                  IFNULL(SUM(total_amount), 0) AS yearly_total_amount
+                FROM customer_transactions
+                WHERE shop_id = ?
+                  AND status = 'Laundry Done'
+                  AND payment_status = 'PAID' 
+                  AND YEAR(updated_at) = YEAR(CURDATE());
+              `;
+    return this.query(sql, [shop_id]);
+  }
+
+  /* =========================
+     Average monthly amount
+     ========================= */
+  static async getAverageMonthly(shop_id) {
+    const sql = `
+                SELECT
+                  IFNULL(AVG(monthly_total), 0) AS average_monthly_amount
+                FROM (
+                  SELECT SUM(total_amount) AS monthly_total
+                  FROM customer_transactions
+                  WHERE shop_id = ?
+                    AND status = 'Laundry Done'
+                    AND payment_status = 'PAID' 
+                    AND YEAR(updated_at) = YEAR(CURDATE())
+                  GROUP BY MONTH(updated_at)
+                ) t;
+              `;
+    return this.query(sql, [shop_id]);
+  }
+
+  /* =========================
+     Total transaction count
+     ========================= */
+  static async getTotalTransactions(shop_id) {
+    const sql = `
+                SELECT
+                  COUNT(*) AS total_transactions
+                FROM customer_transactions
+                WHERE shop_id = ?
+                  AND status = 'Laundry Done'
+                  AND payment_status = 'PAID' 
+                  AND YEAR(updated_at) = YEAR(CURDATE());
+              `;
+    return this.query(sql, [shop_id]);
+  }
+
+  /* =========================
+     Highest month
+     ========================= */
+  static async getHighestMonth(shop_id) {
+    const sql = `
+                SELECT
+                  MONTHNAME(updated_at) AS month,
+                  SUM(total_amount) AS total_amount
+                FROM customer_transactions
+                WHERE shop_id = ?
+                  AND status = 'Laundry Done'
+                  AND payment_status = 'PAID' 
+                  AND YEAR(updated_at) = YEAR(CURDATE())
+                GROUP BY MONTH(updated_at), MONTHNAME(updated_at)
+                ORDER BY total_amount DESC
+                LIMIT 1;
+              `;
+    return this.query(sql, [shop_id]);
   }
 }
 
