@@ -350,12 +350,14 @@ class Customer extends BaseModel {
                    service,
                    status,
                    created_at FROM
-                   customer_transactions WHERE
-                   YEAR(created_at) = YEAR(NOW())
-                   AND MONTH(created_at) = MONTH(NOW()) 
-                   AND shop_id = ?
+                   customer_transactions 
+                   WHERE          -- YEAR(created_at) = YEAR(NOW())
+                                  -- AND MONTH(created_at) = MONTH(NOW()) 
+                                  -- AND 
+                   shop_id = ?
                    AND cus_id = ?
-                   AND status = 'Laundry Done'`;
+                   AND status = 'Laundry Done'
+                   AND payment_status = 'PAID'`;
 
       const results = await this.query(sql, [shop_id, cus_id]);
       return results;
@@ -363,36 +365,6 @@ class Customer extends BaseModel {
       console.error("Error finding customer record:", error);
       throw new Error(`Failed to find customer record: ${error.message}`);
     }
-  }
-
-  static async totalAmountForMonth(cus_id, shop_id) {
-    try {
-      const sql = `SELECT COALESCE(SUM(total_amount), 0) AS total
-                 FROM customer_transactions
-                 WHERE cus_id = ?
-                 AND shop_id = ?
-                 AND status = 'Laundry Done'
-                 AND MONTH(created_at) = MONTH(CURRENT_DATE())
-                 AND YEAR(created_at) = YEAR(CURRENT_DATE());`;
-      const result = await this.query(sql, [cus_id, shop_id]);
-      return result[0];
-    } catch (error) {
-      console.error("Error computing month total amount:", error);
-      throw new Error(`Failed to compute month total amount: ${error.message}`);
-    }
-  }
-
-  static async countReadyToPickUpOrders(cus_id, shop_id) {
-    try {
-      const sql = `SELECT
-                  COUNT(*) AS total_ready_orders
-                  FROM customer_transactions
-                  WHERE status = 'Ready to pick-up'
-                  AND cus_id = ?
-                  AND shop_id = ?`;
-      const result = await this.query(sql, [cus_id, shop_id]);
-      return result[0];
-    } catch (error) {}
   }
 
   static async updateStatus(laundryId, service_status) {
@@ -407,6 +379,31 @@ class Customer extends BaseModel {
     } catch (error) {
       console.error("Error updating status:", error);
       throw new Error(`Failed to update status: ${error.message}`);
+    }
+  }
+
+  static async getCustomerDashboardStats(shop_id, cus_id) {
+    try {
+      const sql = `
+                    SELECT 
+                      SUM(CASE WHEN status = 'Ready to pick up' THEN batch ELSE 0 END) AS readyToPickUpBatches,
+                      SUM(CASE WHEN payment_status = 'PENDING' THEN batch ELSE 0 END) AS pendingPaymentBatches,
+                      SUM(CASE WHEN status = 'On Service' AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1) THEN batch ELSE 0 END) AS onServiceThisWeekBatches,
+                      SUM(CASE WHEN status = 'On Service' THEN batch ELSE 0 END) AS onServiceTotalBatches,
+                      SUM(CASE WHEN YEAR(created_at) = YEAR(CURDATE()) 
+                               AND MONTH(created_at) = MONTH(CURDATE())
+                               AND status = 'Laundry Done'
+                               AND payment_status = 'PAID' THEN total_amount ELSE 0 END) AS totalPaidAmount
+                    FROM customer_transactions
+                    WHERE shop_id = ? AND cus_id = ?
+                  `;
+
+      const results = await this.query(sql, [shop_id, cus_id]);
+
+      return results[0];
+    } catch (error) {
+      console.error("Model Error (getCustomerDashboardStats):", error);
+      throw error;
     }
   }
 }
