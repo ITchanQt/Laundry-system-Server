@@ -9,17 +9,16 @@ const {
   getUserByUserIdShopIdRole,
   updateCustomerByUserIdShopIdRole,
   getCompletedOrdersOfTheMonthByShopId,
-  getMonthTotal,
-  getTotalCountReadyToPickUpOrders,
+  getCustomerStats,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
 
 // Apply API key validation to all routes
-router.use(validateApiKey);
+// router.use(validateApiKey);
 
 // Protected routes
-router.use(authenticate);
+// router.use(authenticate);
 
 // Customer management routes
 router.post("/register", registerCustomer);
@@ -40,7 +39,7 @@ router.get(
   "/get-customer-record/:shop_id/:cus_id",
   getCompletedOrdersOfTheMonthByShopId
 );
-router.get("/total-amount/:cus_id/:shop_id", getMonthTotal);
-router.get('/total-RTPU-count/:cus_id/:shop_id', getTotalCountReadyToPickUpOrders);
+
+router.get("/get-dashboard-count/:shop_id/:cus_id", getCustomerStats);
 
 module.exports = router;

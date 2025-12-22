@@ -249,59 +249,6 @@ const getCompletedOrdersOfTheMonthByShopId = async (req, res) => {
   }
 };
 
-const getMonthTotal = async (req, res) => {
-  try {
-    const { cus_id, shop_id } = req.params;
-    if (!cus_id || !shop_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Customer ID and Shop ID is required!",
-      });
-    }
-
-    const totalAmount = await Customer.totalAmountForMonth(cus_id, shop_id);
-    res.status(200).json({
-      success: true,
-      data: totalAmount.total,
-    });
-  } catch (error) {
-    console.error("customerController.getMonthTotal error: ", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
-  }
-};
-
-const getTotalCountReadyToPickUpOrders = async (req, res) => {
-  try {
-    const { cus_id, shop_id } = req.params;
-    if (!cus_id || !shop_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Customer ID and Shop ID is required!",
-      });
-    }
-
-    const totalCount = await Customer.countReadyToPickUpOrders(cus_id, shop_id);
-    res.status(200).json({
-      success: true,
-      data: totalCount.total_ready_orders,
-    });
-  } catch (error) {
-    console.error(
-      "customerController.getTotalCountReadyToPickUpOrders error: ",
-      error
-    );
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
-  }
-};
-
 const updateLaundryStatus = async (req, res) => {
   try {
     const { laundryId } = req.params;
@@ -331,6 +278,33 @@ const updateLaundryStatus = async (req, res) => {
   }
 };
 
+const getCustomerStats = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Both Shop ID and Customer ID are required.",
+      });
+    }
+
+    const stats = await Customer.getCustomerDashboardStats(shop_id, cus_id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Customer transaction stats retrieved.",
+      data: stats,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to load dashboard statistics.",
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -342,8 +316,7 @@ module.exports = {
   getUserByUserIdShopIdRole,
   updateCustomerByUserIdShopIdRole,
   getCompletedOrdersOfTheMonthByShopId,
-  getMonthTotal,
-  getTotalCountReadyToPickUpOrders,
-
   updateLaundryStatus,
+
+  getCustomerStats,
 };
