@@ -11,15 +11,17 @@ const {
   getCompletedOrdersOfTheMonthByShopId,
   getCustomerStats,
   getPendingServiceTrans,
+  getWeeklyTransactions,
+  getPendingPaymentsTransactions,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
 
 // Apply API key validation to all routes
-// router.use(validateApiKey);
+router.use(validateApiKey);
 
 // Protected routes
-// router.use(authenticate);
+router.use(authenticate);
 
 // Customer management routes
 router.post("/register", registerCustomer);
@@ -45,6 +47,18 @@ router.get(
 router.get("/get-dashboard-count/:shop_id/:cus_id", getCustomerStats);
 
 /* CUSTOMER MODULE PENDING LAUNDRY TABLE */
-router.get("/get-on-service-status-trans/:shop_id/:cus_id", getPendingServiceTrans);
+router.get(
+  "/get-on-service-status-trans/:shop_id/:cus_id",
+  getPendingServiceTrans
+);
+
+/* CUSTOMER MODULE ON PROCESS LAUNDRY TABLE */
+router.get("/get-weekly-trans/:shop_id/:cus_id", getWeeklyTransactions);
+
+/* CUSTOMER MODULE PENDING PAYMENTS LAUNDRY TABLE */
+router.get(
+  "/get-pending-payments-trans/:shop_id/:cus_id",
+  getPendingPaymentsTransactions
+);
 
 module.exports = router;
