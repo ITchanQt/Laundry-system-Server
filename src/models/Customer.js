@@ -453,6 +453,30 @@ class Customer extends BaseModel {
       throw error;
     }
   }
+
+  static async selectPendingPaymentsTransactions(shop_id, cus_id) {
+    try {
+      const sql = `
+                  SELECT 
+                  laundryId,
+                  shop_id,
+                  cus_name,
+                  service,
+                  total_amount,
+                  status,
+                  payment_status
+                  FROM customer_transactions
+                  WHERE payment_status = 'PENDING'
+                  AND shop_id = ?
+                  AND cus_id = ?
+                  ORDER BY created_at DESC`;
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error (selectPendingPaymentsTransactions):", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Customer;
