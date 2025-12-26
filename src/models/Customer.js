@@ -406,6 +406,29 @@ class Customer extends BaseModel {
       throw error;
     }
   }
+
+  static async selectPendingServiceTrans(shop_id, cus_id) {
+    try {
+      const sql = `SELECT 
+                        laundryId,
+                        shop_id,
+                        service,
+                        kg,
+                        batch,
+                        cus_address,
+                        status
+                        FROM customer_transactions
+                        WHERE status = 'On Service'
+                        AND shop_id = ?
+                        AND cus_id = ?
+                        ORDER BY created_at ASC`;
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error (selectPendingServiceTrans):", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Customer;

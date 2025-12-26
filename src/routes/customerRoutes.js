@@ -10,6 +10,7 @@ const {
   updateCustomerByUserIdShopIdRole,
   getCompletedOrdersOfTheMonthByShopId,
   getCustomerStats,
+  getPendingServiceTrans,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -40,6 +41,10 @@ router.get(
   getCompletedOrdersOfTheMonthByShopId
 );
 
+/* CUSTOMER MODULE DASHBOARD DETAILS COUNT */
 router.get("/get-dashboard-count/:shop_id/:cus_id", getCustomerStats);
+
+/* CUSTOMER MODULE PENDING LAUNDRY TABLE */
+router.get("/get-on-service-status-trans/:shop_id/:cus_id", getPendingServiceTrans);
 
 module.exports = router;
