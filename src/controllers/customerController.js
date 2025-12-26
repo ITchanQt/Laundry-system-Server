@@ -334,6 +334,31 @@ const getPendingServiceTrans = async (req, res) => {
   }
 };
 
+const getWeeklyTransactions = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop and Customer ID parameters is required!",
+      });
+    }
+
+    const transactions = await Customer.selectWeeklyTransactions(shop_id, cus_id);
+    res.status(200).json({
+      success: true,
+      message: "On Service weekly transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -349,4 +374,5 @@ module.exports = {
 
   getCustomerStats,
   getPendingServiceTrans,
+  getWeeklyTransactions
 };

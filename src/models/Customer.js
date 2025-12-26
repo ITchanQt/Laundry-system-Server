@@ -429,6 +429,30 @@ class Customer extends BaseModel {
       throw error;
     }
   }
+
+  static async selectWeeklyTransactions(shop_id, cus_id) {
+    try {
+      const sql = `
+                  SELECT 
+                  laundryId,
+                  shop_id,
+                  cus_name,
+                  service,
+                  kg,
+                  updated_at
+                  FROM customer_transactions
+                  WHERE YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)
+                  AND status = 'On Service'
+                  AND shop_id = ?
+                  AND cus_id = ?
+                  ORDER BY created_at DESC`;
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error (selectWeeklyTransactions):", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Customer;
