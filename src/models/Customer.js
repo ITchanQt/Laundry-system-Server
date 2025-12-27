@@ -502,6 +502,33 @@ class Customer extends BaseModel {
       throw error;
     }
   }
+
+  static async selectReadyForPickTransactions(shop_id, cus_id) {
+    try {
+      const sql = `SELECT
+                  laundryId,
+                  shop_id,
+                  cus_name,
+                  service,
+                  batch,
+                  kg,
+                  total_amount,
+                  status,
+                  updated_at,
+                  payment_status
+                  FROM customer_transactions
+                  WHERE status = 'Ready to pick up'
+                  AND shop_id = ?
+                  AND cus_id = ?
+                  ORDER BY created_at DESC`;
+
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error (selectReadyForPickTransactions):", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Customer;

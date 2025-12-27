@@ -14,6 +14,7 @@ const {
   getWeeklyTransactions,
   getPendingPaymentsTransactions,
   addPaymentProof,
+  getReadyForPickTransactions,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -68,6 +69,11 @@ router.put(
   "/add-proof-of-payment/:laundryId",
   upload.single("proof"),
   addPaymentProof
+);
+
+router.get(
+  "/get-ready-to-pick-up-trans/:shop_id/:cus_id",
+  getReadyForPickTransactions
 );
 
 module.exports = router;
