@@ -1,3 +1,4 @@
+const { supabase } = require("../config/supabase");
 const Customer = require("../models/Customer");
 
 const registerCustomer = async (req, res) => {
@@ -391,6 +392,64 @@ const getPendingPaymentsTransactions = async (req, res) => {
   }
 };
 
+const addPaymentProof = async (req, res) => {
+  try {
+    const laundryId = req.params.laundryId;
+    if (!laundryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Service ID is required",
+      });
+    }
+
+    const existingRec = await Customer.findCustomerTransById(laundryId);
+    if (!existingRec) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found",
+      });
+    }
+
+    let onlinePayment_proof = existingRec.onlinePayment_proof;
+
+    if (req.file) {
+      const fileName = `${existingRec.laundryId}-${Date.now()}-${
+        req.file.originalname
+      }`;
+
+      const { data, error } = await supabase.storage
+        .from("shop-images")
+        .upload(`proof-of-payment/${fileName}`, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) throw error;
+
+      const { data: publicData } = supabase.storage
+        .from("shop-images")
+        .getPublicUrl(`proof-of-payment/${fileName}`);
+
+      onlinePayment_proof = publicData.publicUrl;
+    }
+
+    const sendPayment = await Customer.sendPaymentProof(laundryId, {
+      onlinePayment_proof: onlinePayment_proof ?? null,
+    });
+
+    res.json({
+      success: true,
+      message: "Proof of payment sent",
+      data: sendPayment,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -408,4 +467,5 @@ module.exports = {
   getPendingServiceTrans,
   getWeeklyTransactions,
   getPendingPaymentsTransactions,
+  addPaymentProof,
 };
