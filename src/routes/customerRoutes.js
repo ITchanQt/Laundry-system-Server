@@ -20,10 +20,10 @@ const validateApiKey = require("../middlewares/apiKeyMiddleware");
 const { upload } = require("../middlewares/upload");
 
 // Apply API key validation to all routes
-// router.use(validateApiKey);
+router.use(validateApiKey);
 
 // Protected routes
-// router.use(authenticate);
+router.use(authenticate);
 
 // Customer management routes
 router.post("/register", registerCustomer);
