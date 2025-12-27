@@ -13,9 +13,11 @@ const {
   getPendingServiceTrans,
   getWeeklyTransactions,
   getPendingPaymentsTransactions,
+  addPaymentProof,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
+const { upload } = require("../middlewares/upload");
 
 // Apply API key validation to all routes
 router.use(validateApiKey);
@@ -59,6 +61,13 @@ router.get("/get-weekly-trans/:shop_id/:cus_id", getWeeklyTransactions);
 router.get(
   "/get-pending-payments-trans/:shop_id/:cus_id",
   getPendingPaymentsTransactions
+);
+
+/* CUSTOMER MODULE PROOF OF PAYMENTS UPLOAD */
+router.put(
+  "/add-proof-of-payment/:laundryId",
+  upload.single("proof"),
+  addPaymentProof
 );
 
 module.exports = router;

@@ -1,6 +1,12 @@
 const BaseModel = require("./BaseModel");
 
 class Customer extends BaseModel {
+  static async findCustomerTransById(id) {
+    const sql = `SELECT * FROM customer_transactions WHERE laundryId = ?`;
+    const result = await this.query(sql, [id]);
+    return result[0];
+  }
+
   static async findAll() {
     const sql = "SELECT * FROM customers";
     const results = await this.query(sql);
@@ -461,10 +467,12 @@ class Customer extends BaseModel {
                   laundryId,
                   shop_id,
                   cus_name,
+                  batch,
                   service,
                   total_amount,
                   status,
-                  payment_status
+                  payment_status,
+                  onlinePayment_proof
                   FROM customer_transactions
                   WHERE payment_status = 'PENDING'
                   AND shop_id = ?
@@ -474,6 +482,23 @@ class Customer extends BaseModel {
       return results;
     } catch (error) {
       console.error("Model Error (selectPendingPaymentsTransactions):", error);
+      throw error;
+    }
+  }
+
+  static async sendPaymentProof(laundryId, data) {
+    try {
+      const sql = `UPDATE customer_transactions
+                    SET onlinePayment_proof = ?
+                    WHERE laundryId = ?`;
+
+      const params = [data.onlinePayment_proof, laundryId];
+
+      await this.query(sql, params);
+
+      return { laundryId, ...data };
+    } catch (error) {
+      console.error("Model Error (sendPaymentProof):", error);
       throw error;
     }
   }
