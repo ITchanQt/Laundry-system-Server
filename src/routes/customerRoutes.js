@@ -15,6 +15,7 @@ const {
   getPendingPaymentsTransactions,
   addPaymentProof,
   getReadyForPickTransactions,
+  createRating,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -71,9 +72,13 @@ router.put(
   addPaymentProof
 );
 
+/* CUSTOMER MODULE READY TO PICK UP TABLE */
 router.get(
   "/get-ready-to-pick-up-trans/:shop_id/:cus_id",
   getReadyForPickTransactions
 );
+
+/* CUSTOMER MODULE SHOP AND PERSONEL RATINGS */
+router.post("/create-rating", createRating);
 
 module.exports = router;

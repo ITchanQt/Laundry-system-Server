@@ -478,6 +478,24 @@ const getReadyForPickTransactions = async (req, res) => {
   }
 };
 
+const createRating = async (req, res) => {
+  try {
+    const rating = await Customer.insertRatings(req.body);
+    
+    res.status(201).json({
+      success: true,
+      message: "Rating successfully created!",
+      data: rating,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -497,4 +515,5 @@ module.exports = {
   getPendingPaymentsTransactions,
   addPaymentProof,
   getReadyForPickTransactions,
+  createRating,
 };

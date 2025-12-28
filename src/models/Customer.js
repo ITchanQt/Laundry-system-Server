@@ -472,7 +472,8 @@ class Customer extends BaseModel {
                   total_amount,
                   status,
                   payment_status,
-                  onlinePayment_proof
+                  onlinePayment_proof,
+                  process_by
                   FROM customer_transactions
                   WHERE payment_status = 'PENDING'
                   AND shop_id = ?
@@ -526,6 +527,50 @@ class Customer extends BaseModel {
       return results;
     } catch (error) {
       console.error("Model Error (selectReadyForPickTransactions):", error);
+      throw error;
+    }
+  }
+
+  static async insertRatings(ratingsData) {
+    try {
+      const {
+        shop_id,
+        transaction_id,
+        cus_id,
+        cus_name,
+        personnel_rating,
+        personnel,
+        shop_rating,
+        comment
+      } = ratingsData;
+
+      const sql = `
+                  INSERT INTO
+                  ratings
+                  (shop_id,
+                  transaction_id,
+                  cus_id,
+                  cus_name,
+                  personnel_rating,
+                  personnel,
+                  shop_rating,
+                  comment)
+                  VALUES
+                  (?, ?, ?, ?, ?, ?, ?, ?)
+                  `;
+
+      return this.query(sql, [
+        shop_id,
+        transaction_id || null,
+        cus_id,
+        cus_name,
+        personnel_rating || null,
+        personnel || null,
+        shop_rating || null,
+        comment
+      ])
+    } catch (error) {
+      console.error("Model Error (insertRatings):", error);
       throw error;
     }
   }
