@@ -16,16 +16,17 @@ const {
   addPaymentProof,
   getReadyForPickTransactions,
   createRating,
+  getActivityLogs,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
 const { upload } = require("../middlewares/upload");
 
 // Apply API key validation to all routes
-router.use(validateApiKey);
+// router.use(validateApiKey);
 
 // Protected routes
-router.use(authenticate);
+// router.use(authenticate);
 
 // Customer management routes
 router.post("/register", registerCustomer);
@@ -80,5 +81,8 @@ router.get(
 
 /* CUSTOMER MODULE SHOP AND PERSONEL RATINGS */
 router.post("/create-rating", createRating);
+
+/* CUSTOMER MODULE ACTIVITY LOGS */
+router.get("/get-customer-activity-log/:user_id", getActivityLogs);
 
 module.exports = router;

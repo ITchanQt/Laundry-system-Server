@@ -496,6 +496,33 @@ const createRating = async (req, res) => {
   }
 };
 
+const getActivityLogs = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    if (!user_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required.",
+      });
+    }
+
+    const logs = await Customer.selectActivityLogs(user_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Activity logs fetched successfully!",
+      data: logs,
+    });
+  } catch (error) {
+    console.error("Controller Error (getActivityLogs):", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch activity log.",
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -516,4 +543,5 @@ module.exports = {
   addPaymentProof,
   getReadyForPickTransactions,
   createRating,
+  getActivityLogs,
 };
