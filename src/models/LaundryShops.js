@@ -291,7 +291,7 @@ class LaundryShops extends BaseModel {
                     item_reorderLevel)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
-      return this.query(sql, [
+      await this.query(sql, [
         item_id,
         shop_id,
         item_name,
@@ -301,6 +301,18 @@ class LaundryShops extends BaseModel {
         item_uPrice,
         item_reorderLevel,
       ]);
+
+      // For Activity log
+      const action = "Add Item";
+      const logQuery = `INSERT INTO
+                        activity_log (
+                        shop_id,
+                        activity_id,
+                        action )
+                        VALUE (
+                        ?, ?, ?
+                        )`;
+      await this.query(logQuery, [shop_id, item_id, action]);
     } catch (error) {
       throw new Error(`Failed to create shop inventory: ${error.message}`);
     }
@@ -333,24 +345,18 @@ class LaundryShops extends BaseModel {
 
   static async editShopInventoryById(item_id, inventoryData) {
     try {
-      if (!item_id) {
-        throw new Error("Item id is required");
-      }
+      if (!item_id) throw new Error("Item id is required");
 
       const itemExist = await this.findItemById(item_id);
-      if (!itemExist) {
-        throw new Error("Item not found");
-      }
+      if (!itemExist) throw new Error("Item not found");
 
-      const sql = `UPDATE shop_inventory
-                   SET item_name = ?,
-                       item_description = ?,
-                       item_category = ?,
-                       item_quantity = ?,
-                       item_uPrice = ?,
-                       item_reorderLevel = ?,
-                       date_updated = NOW()
-                   WHERE item_id = ?`;
+      const updateSql = `
+      UPDATE shop_inventory
+      SET item_name = ?, item_description = ?, item_category = ?, 
+          item_quantity = ?, item_uPrice = ?, item_reorderLevel = ?, 
+          date_updated = NOW()
+      WHERE item_id = ?
+    `;
 
       const params = [
         inventoryData.item_name,
@@ -362,13 +368,21 @@ class LaundryShops extends BaseModel {
         item_id,
       ];
 
-      console.log("Update params:", params);
-
-      const result = await this.query(sql, params);
+      const result = await this.query(updateSql, params);
 
       if (result.affectedRows === 0) {
         throw new Error("Failed to update item");
       }
+
+      const logSql = `
+      INSERT INTO activity_log (shop_id, activity_id, action)
+      SELECT shop_id, item_id, ?
+      FROM shop_inventory
+      WHERE item_id = ?
+    `;
+
+      const action = "Update Item";
+      await this.query(logSql, [action, item_id]);
 
       return await this.findItemById(item_id);
     } catch (error) {
@@ -503,7 +517,16 @@ class LaundryShops extends BaseModel {
                   SET payment_status = ?, updated_at = NOW()
                   WHERE laundryId = ?
                   `;
-      return await this.query(sql, [payment_status, laundryId]);
+      await this.query(sql, [payment_status, laundryId]);
+
+      const logSql = `
+      INSERT INTO activity_log (shop_id, user_id, activity_id, action)
+      SELECT shop_id, cus_id, laundryId, ?
+      FROM customer_transactions
+      WHERE laundryId = ?
+    `;
+      const action = "Online payment received";
+      return await this.query(logSql, [action, laundryId]);
     } catch (error) {
       console.error("Error updating payment status:", error);
       throw new Error(`Failed to update payment status: ${error.message}`);
@@ -669,6 +692,21 @@ class LaundryShops extends BaseModel {
                 LIMIT 1;
               `;
     return this.query(sql, [shop_id]);
+  }
+
+  static async selectActivityLogs(shop_id) {
+    try {
+      const sql = `SELECT *
+                   FROM activity_log
+                   WHERE shop_id = ?
+                   ORDER BY created_at DESC
+                   `;
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("Error fetching activity logs:", error);
+      throw error;
+    }
   }
 }
 

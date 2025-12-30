@@ -203,6 +203,24 @@ class Customer extends BaseModel {
         process_by,
       ]);
 
+      // For Activity log
+      const status = "On Process";
+      const logQuery = `INSERT INTO
+                        activity_log (
+                        shop_id,
+                        user_id,
+                        activity_id,
+                        action )
+                        VALUE (
+                        ?, ?, ?, ?
+                        )`;
+      await this.query(logQuery, [
+        shop_id,
+        customer.user_id,
+        newLaundryId,
+        status,
+      ]);
+
       // Return the generated ID
       return { newLaundryId };
     } catch (error) {
@@ -375,16 +393,24 @@ class Customer extends BaseModel {
 
   static async updateStatus(laundryId, service_status) {
     try {
-      const sql = `
-    UPDATE customer_transactions
-    SET status = ?, updated_at = NOW()
-    WHERE laundryId = ?
-  `;
+      const updateSql = `
+      UPDATE customer_transactions 
+      SET status = ?, updated_at = NOW() 
+      WHERE laundryId = ?
+    `;
+      await this.query(updateSql, [service_status, laundryId]);
 
-      return await this.query(sql, [service_status, laundryId]);
+      const logSql = `
+      INSERT INTO activity_log (shop_id, user_id, activity_id, action)
+      SELECT shop_id, cus_id, laundryId, ?
+      FROM customer_transactions
+      WHERE laundryId = ?
+    `;
+
+      return await this.query(logSql, [service_status, laundryId]);
     } catch (error) {
-      console.error("Error updating status:", error);
-      throw new Error(`Failed to update status: ${error.message}`);
+      console.error("Error in updateStatus and Log:", error);
+      throw new Error(`Failed to update and log status: ${error.message}`);
     }
   }
 
@@ -497,6 +523,15 @@ class Customer extends BaseModel {
 
       await this.query(sql, params);
 
+      const logSql = `
+      INSERT INTO activity_log (shop_id, user_id, activity_id, action)
+      SELECT shop_id, cus_id, laundryId, ?
+      FROM customer_transactions
+      WHERE laundryId = ?
+    `;
+      const action = "Online payment proof uploaded";
+      await this.query(logSql, [action, laundryId]);
+
       return { laundryId, ...data };
     } catch (error) {
       console.error("Model Error (sendPaymentProof):", error);
@@ -541,7 +576,7 @@ class Customer extends BaseModel {
         personnel_rating,
         personnel,
         shop_rating,
-        comment
+        comment,
       } = ratingsData;
 
       const sql = `
@@ -567,10 +602,25 @@ class Customer extends BaseModel {
         personnel_rating || null,
         personnel || null,
         shop_rating || null,
-        comment
-      ])
+        comment,
+      ]);
     } catch (error) {
       console.error("Model Error (insertRatings):", error);
+      throw error;
+    }
+  }
+
+  static async selectActivityLogs(user_id) {
+    try {
+      const sql = `SELECT *
+                   FROM activity_log
+                   WHERE user_id = ?
+                   ORDER BY created_at DESC
+                   `;
+      const results = await this.query(sql, [user_id]);
+      return results;
+    } catch (error) {
+       console.error("Model Error (selectActivityLogs):", error);
       throw error;
     }
   }
