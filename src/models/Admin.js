@@ -252,6 +252,55 @@ class Admin extends BaseModel {
       throw error;
     }
   }
+
+  static async selectSAdminDashboardStats(targetDate) {
+    try {
+      const sql = `
+      SELECT 
+        /* Today */
+        COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) AS total_count_today,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = CURDATE() THEN total_amount END), 0) AS total_revenue_today,
+
+        /* Selected date */
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) THEN num_items END), 0) AS active_garments,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) THEN total_amount END), 0) AS active_garment_value,
+        COUNT(CASE WHEN DATE(created_at) = DATE(?) THEN 1 END) AS active_orders_count,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) THEN total_amount END), 0) AS active_orders_value,
+
+        /* Status counts */
+        COUNT(CASE WHEN DATE(created_at) = DATE(?) AND status = 'On Service' THEN 1 END) AS count_on_service,
+        COUNT(CASE WHEN DATE(created_at) = DATE(?) AND status = 'Ready to pick up' THEN 1 END) AS count_ready,
+        COUNT(CASE WHEN DATE(created_at) = DATE(?) AND status = 'Laundry Done' THEN 1 END) AS count_done
+      FROM customer_transactions
+    `;
+
+      const params = Array(7).fill(targetDate);
+
+      const [rows] = await this.query(sql, params);
+      return rows;
+    } catch (error) {
+      console.error("Database Error:", error);
+      throw error;
+    }
+  }
+
+  static async selectSAdminWeeklyTransactionCount() {
+    try {
+      const sql = `
+      SELECT 
+        DATE_FORMAT(created_at, '%a') AS day, 
+        COUNT(*) AS value
+      FROM customer_transactions
+      WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+      GROUP BY day, DATE(created_at)
+      ORDER BY DATE(created_at) ASC
+    `;
+      return await this.query(sql);
+    } catch (error) {
+      console.error("Model Error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Admin;

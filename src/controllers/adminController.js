@@ -164,15 +164,53 @@ const getWeeklyChartData = async (req, res) => {
     const { shop_id } = req.params;
     const rawData = await Admin.selectWeeklyTransactionCount(shop_id);
 
-    const colors = [
-      "bg-red-700",
-      "bg-green-600",
-      "bg-blue-400",
-      "bg-teal-700",
-      "bg-green-400",
-      "bg-blue-300",
-      "bg-blue-800",
-    ];
+    const daysOfWeek = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      daysOfWeek.push(d.toLocaleDateString("en-US", { weekday: "short" }));
+    }
+
+    const chartData = daysOfWeek.map((dayName) => {
+      const dbMatch = rawData.find((item) => item.day === dayName);
+
+      return {
+        day: dayName,
+        value: dbMatch ? dbMatch.value : 0,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: chartData,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getSAdminInventorySummary = async (req, res) => {
+  try {
+    const targetDate = req.query.date || new Date().toISOString().split("T")[0];
+
+    const stats = await Admin.selectSAdminDashboardStats(targetDate);
+
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    console.error("SAdmin Dashboard Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getSAdminWeeklyChartData = async (req, res) => {
+  try {
+    const rawData = await Admin.selectSAdminWeeklyTransactionCount();
 
     const daysOfWeek = [];
     for (let i = 6; i >= 0; i--) {
@@ -181,13 +219,12 @@ const getWeeklyChartData = async (req, res) => {
       daysOfWeek.push(d.toLocaleDateString("en-US", { weekday: "short" }));
     }
 
-    const chartData = daysOfWeek.map((dayName, index) => {
+    const chartData = daysOfWeek.map((dayName) => {
       const dbMatch = rawData.find((item) => item.day === dayName);
 
       return {
         day: dayName,
         value: dbMatch ? dbMatch.value : 0,
-        color: colors[index % colors.length],
       };
     });
 
@@ -207,4 +244,6 @@ module.exports = {
   searchAdminsByEmail,
   getInventorySummary,
   getWeeklyChartData,
+  getSAdminInventorySummary,
+  getSAdminWeeklyChartData,
 };
