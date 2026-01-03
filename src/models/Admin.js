@@ -206,6 +206,52 @@ class Admin extends BaseModel {
       throw new Error(`Failed to search admins by email: ${error.message}`);
     }
   }
+
+  static async selectDashboardStats(shop_id, targetDate) {
+    try {
+      const sql = `
+      SELECT 
+        SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) AS total_count_today,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = CURDATE() THEN total_amount ELSE 0 END), 0) AS total_revenue_today,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) THEN num_items ELSE 0 END), 0) AS active_garments,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) THEN total_amount ELSE 0 END), 0) AS active_garment_value,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) THEN 1 ELSE 0 END), 0) AS active_orders_count,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) THEN total_amount ELSE 0 END), 0) AS active_orders_value,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) AND status = 'On Service' THEN 1 ELSE 0 END), 0) AS count_on_service,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) AND status = 'Ready to pick up' THEN 1 ELSE 0 END), 0) AS count_ready,
+        COALESCE(SUM(CASE WHEN DATE(created_at) = DATE(?) AND status = 'Laundry Done' THEN 1 ELSE 0 END), 0) AS count_done
+      FROM customer_transactions
+      WHERE shop_id = ?
+    `;
+
+      const params = Array(7).fill(targetDate).concat([shop_id]);
+      const results = await this.query(sql, params);
+
+      return results[0];
+    } catch (error) {
+      console.error("Database Error:", error);
+      throw error;
+    }
+  }
+
+  static async selectWeeklyTransactionCount(shop_id) {
+    try {
+      const sql = `
+      SELECT 
+        DATE_FORMAT(created_at, '%a') AS day, 
+        COUNT(*) AS value
+      FROM customer_transactions
+      WHERE shop_id = ? 
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+      GROUP BY day, DATE(created_at)
+      ORDER BY DATE(created_at) ASC
+    `;
+      return await this.query(sql, [shop_id]);
+    } catch (error) {
+      console.error("Model Error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Admin;

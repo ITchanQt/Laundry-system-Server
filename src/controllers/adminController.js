@@ -23,7 +23,9 @@ const registerAdmin = async (req, res) => {
     }
 
     const existingEmail = await Admin.findByEmail(req.body.email);
-    const existingUsername = await Admin.findByUsername(req.body.admin_username);
+    const existingUsername = await Admin.findByUsername(
+      req.body.admin_username
+    );
     const existingContactNum = await Admin.findByPhoneNum(
       req.body.admin_contactNum
     );
@@ -135,9 +137,74 @@ const searchAdminsByEmail = async (req, res) => {
   }
 };
 
+const getInventorySummary = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const targetDate = req.query.date || new Date().toISOString().split("T")[0];
+
+    if (!shop_id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Shop ID is required" });
+    }
+
+    const stats = await Admin.selectDashboardStats(shop_id, targetDate);
+
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getWeeklyChartData = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const rawData = await Admin.selectWeeklyTransactionCount(shop_id);
+
+    const colors = [
+      "bg-red-700",
+      "bg-green-600",
+      "bg-blue-400",
+      "bg-teal-700",
+      "bg-green-400",
+      "bg-blue-300",
+      "bg-blue-800",
+    ];
+
+    const daysOfWeek = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      daysOfWeek.push(d.toLocaleDateString("en-US", { weekday: "short" }));
+    }
+
+    const chartData = daysOfWeek.map((dayName, index) => {
+      const dbMatch = rawData.find((item) => item.day === dayName);
+
+      return {
+        day: dayName,
+        value: dbMatch ? dbMatch.value : 0,
+        color: colors[index % colors.length],
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: chartData,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   registerAdmin,
   getAllAdmins,
   findAdminByEmail,
   searchAdminsByEmail,
+  getInventorySummary,
+  getWeeklyChartData,
 };
