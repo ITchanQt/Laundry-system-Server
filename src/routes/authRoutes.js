@@ -12,6 +12,8 @@ const {
   searchAdminsByEmail,
   getInventorySummary,
   getWeeklyChartData,
+  getSAdminInventorySummary,
+  getSAdminWeeklyChartData,
 } = require("../controllers/adminController");
 const authenticate = require("../middlewares/authMiddleware");
 const {
@@ -286,6 +288,9 @@ router.get("/get-shop-activity-log/:shop_id", getActivityLogs);
 
 router.get("/dashboard/summary/:shop_id", getInventorySummary);
 router.get("/dashboard/chart/:shop_id", getWeeklyChartData);
+
+router.get("/sadmin/dashboard/summary", getSAdminInventorySummary);
+router.get("/sadmin/dashboard/chart", getSAdminWeeklyChartData);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
