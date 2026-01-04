@@ -1,3 +1,4 @@
+const { supabase } = require("../config/supabase");
 const Customer = require("../models/Customer");
 
 const registerCustomer = async (req, res) => {
@@ -249,59 +250,6 @@ const getCompletedOrdersOfTheMonthByShopId = async (req, res) => {
   }
 };
 
-const getMonthTotal = async (req, res) => {
-  try {
-    const { cus_id, shop_id } = req.params;
-    if (!cus_id || !shop_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Customer ID and Shop ID is required!",
-      });
-    }
-
-    const totalAmount = await Customer.totalAmountForMonth(cus_id, shop_id);
-    res.status(200).json({
-      success: true,
-      data: totalAmount.total,
-    });
-  } catch (error) {
-    console.error("customerController.getMonthTotal error: ", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
-  }
-};
-
-const getTotalCountReadyToPickUpOrders = async (req, res) => {
-  try {
-    const { cus_id, shop_id } = req.params;
-    if (!cus_id || !shop_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Customer ID and Shop ID is required!",
-      });
-    }
-
-    const totalCount = await Customer.countReadyToPickUpOrders(cus_id, shop_id);
-    res.status(200).json({
-      success: true,
-      data: totalCount.total_ready_orders,
-    });
-  } catch (error) {
-    console.error(
-      "customerController.getTotalCountReadyToPickUpOrders error: ",
-      error
-    );
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
-  }
-};
-
 const updateLaundryStatus = async (req, res) => {
   try {
     const { laundryId } = req.params;
@@ -331,6 +279,250 @@ const updateLaundryStatus = async (req, res) => {
   }
 };
 
+const getCustomerStats = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Both Shop ID and Customer ID are required.",
+      });
+    }
+
+    const stats = await Customer.getCustomerDashboardStats(shop_id, cus_id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Customer transaction stats retrieved.",
+      data: stats,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to load dashboard statistics.",
+    });
+  }
+};
+
+const getPendingServiceTrans = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop and Customer ID parameters is required!",
+      });
+    }
+
+    const transactions = await Customer.selectPendingServiceTrans(
+      shop_id,
+      cus_id
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "On Service transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getWeeklyTransactions = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop and Customer ID parameters is required!",
+      });
+    }
+
+    const transactions = await Customer.selectWeeklyTransactions(
+      shop_id,
+      cus_id
+    );
+    res.status(200).json({
+      success: true,
+      message: "On Service weekly transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getPendingPaymentsTransactions = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop and Customer ID parameters is required!",
+      });
+    }
+
+    const transactions = await Customer.selectPendingPaymentsTransactions(
+      shop_id,
+      cus_id
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Pending payments transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const addPaymentProof = async (req, res) => {
+  try {
+    const laundryId = req.params.laundryId;
+    if (!laundryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Service ID is required",
+      });
+    }
+
+    const existingRec = await Customer.findCustomerTransById(laundryId);
+    if (!existingRec) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found",
+      });
+    }
+
+    let onlinePayment_proof = existingRec.onlinePayment_proof;
+
+    if (req.file) {
+      const fileName = `${existingRec.laundryId}-${Date.now()}-${
+        req.file.originalname
+      }`;
+
+      const { data, error } = await supabase.storage
+        .from("shop-images")
+        .upload(`proof-of-payment/${fileName}`, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) throw error;
+
+      const { data: publicData } = supabase.storage
+        .from("shop-images")
+        .getPublicUrl(`proof-of-payment/${fileName}`);
+
+      onlinePayment_proof = publicData.publicUrl;
+    }
+
+    const sendPayment = await Customer.sendPaymentProof(laundryId, {
+      onlinePayment_proof: onlinePayment_proof ?? null,
+    });
+
+    res.json({
+      success: true,
+      message: "Proof of payment sent",
+      data: sendPayment,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getReadyForPickTransactions = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop and Customer ID parameters is required!",
+      });
+    }
+
+    const transactions = await Customer.selectReadyForPickTransactions(
+      shop_id,
+      cus_id
+    );
+    res.status(200).json({
+      success: true,
+      message: "Read to pick up transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const createRating = async (req, res) => {
+  try {
+    const rating = await Customer.insertRatings(req.body);
+    
+    res.status(201).json({
+      success: true,
+      message: "Rating successfully created!",
+      data: rating,
+    });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
+const getActivityLogs = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    if (!user_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required.",
+      });
+    }
+
+    const logs = await Customer.selectActivityLogs(user_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Activity logs fetched successfully!",
+      data: logs,
+    });
+  } catch (error) {
+    console.error("Controller Error (getActivityLogs):", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch activity log.",
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -342,8 +534,14 @@ module.exports = {
   getUserByUserIdShopIdRole,
   updateCustomerByUserIdShopIdRole,
   getCompletedOrdersOfTheMonthByShopId,
-  getMonthTotal,
-  getTotalCountReadyToPickUpOrders,
-
   updateLaundryStatus,
+
+  getCustomerStats,
+  getPendingServiceTrans,
+  getWeeklyTransactions,
+  getPendingPaymentsTransactions,
+  addPaymentProof,
+  getReadyForPickTransactions,
+  createRating,
+  getActivityLogs,
 };

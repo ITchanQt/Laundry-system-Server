@@ -513,6 +513,33 @@ const getYearlyFinancialReportStaffModule = async (req, res) => {
   }
 };
 
+const getActivityLogs = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required.",
+      });
+    }
+
+    const logs = await LaundryShops.selectActivityLogs(shop_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Activity logs fetched successfully!",
+      data: logs,
+    });
+  } catch (error) {
+    console.error("Controller Error (getActivityLogs):", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch activity log.",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -531,4 +558,5 @@ module.exports = {
   updateReadyToPickUpIfPaidTrans,
   getCompletedTransaction,
   getYearlyFinancialReportStaffModule,
+  getActivityLogs,
 };

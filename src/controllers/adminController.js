@@ -23,7 +23,9 @@ const registerAdmin = async (req, res) => {
     }
 
     const existingEmail = await Admin.findByEmail(req.body.email);
-    const existingUsername = await Admin.findByUsername(req.body.admin_username);
+    const existingUsername = await Admin.findByUsername(
+      req.body.admin_username
+    );
     const existingContactNum = await Admin.findByPhoneNum(
       req.body.admin_contactNum
     );
@@ -135,9 +137,113 @@ const searchAdminsByEmail = async (req, res) => {
   }
 };
 
+const getInventorySummary = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const targetDate = req.query.date || new Date().toISOString().split("T")[0];
+
+    if (!shop_id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Shop ID is required" });
+    }
+
+    const stats = await Admin.selectDashboardStats(shop_id, targetDate);
+
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getWeeklyChartData = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const rawData = await Admin.selectWeeklyTransactionCount(shop_id);
+
+    const daysOfWeek = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      daysOfWeek.push(d.toLocaleDateString("en-US", { weekday: "short" }));
+    }
+
+    const chartData = daysOfWeek.map((dayName) => {
+      const dbMatch = rawData.find((item) => item.day === dayName);
+
+      return {
+        day: dayName,
+        value: dbMatch ? dbMatch.value : 0,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: chartData,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getSAdminInventorySummary = async (req, res) => {
+  try {
+    const targetDate = req.query.date || new Date().toISOString().split("T")[0];
+
+    const stats = await Admin.selectSAdminDashboardStats(targetDate);
+
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    console.error("SAdmin Dashboard Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getSAdminWeeklyChartData = async (req, res) => {
+  try {
+    const rawData = await Admin.selectSAdminWeeklyTransactionCount();
+
+    const daysOfWeek = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      daysOfWeek.push(d.toLocaleDateString("en-US", { weekday: "short" }));
+    }
+
+    const chartData = daysOfWeek.map((dayName) => {
+      const dbMatch = rawData.find((item) => item.day === dayName);
+
+      return {
+        day: dayName,
+        value: dbMatch ? dbMatch.value : 0,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: chartData,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   registerAdmin,
   getAllAdmins,
   findAdminByEmail,
   searchAdminsByEmail,
+  getInventorySummary,
+  getWeeklyChartData,
+  getSAdminInventorySummary,
+  getSAdminWeeklyChartData,
 };

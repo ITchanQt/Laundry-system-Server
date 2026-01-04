@@ -9,17 +9,24 @@ const {
   getUserByUserIdShopIdRole,
   updateCustomerByUserIdShopIdRole,
   getCompletedOrdersOfTheMonthByShopId,
-  getMonthTotal,
-  getTotalCountReadyToPickUpOrders,
+  getCustomerStats,
+  getPendingServiceTrans,
+  getWeeklyTransactions,
+  getPendingPaymentsTransactions,
+  addPaymentProof,
+  getReadyForPickTransactions,
+  createRating,
+  getActivityLogs,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
+const { upload } = require("../middlewares/upload");
 
 // Apply API key validation to all routes
-router.use(validateApiKey);
+// router.use(validateApiKey);
 
 // Protected routes
-router.use(authenticate);
+// router.use(authenticate);
 
 // Customer management routes
 router.post("/register", registerCustomer);
@@ -40,7 +47,42 @@ router.get(
   "/get-customer-record/:shop_id/:cus_id",
   getCompletedOrdersOfTheMonthByShopId
 );
-router.get("/total-amount/:cus_id/:shop_id", getMonthTotal);
-router.get('/total-RTPU-count/:cus_id/:shop_id', getTotalCountReadyToPickUpOrders);
+
+/* CUSTOMER MODULE DASHBOARD DETAILS COUNT */
+router.get("/get-dashboard-count/:shop_id/:cus_id", getCustomerStats);
+
+/* CUSTOMER MODULE PENDING LAUNDRY TABLE */
+router.get(
+  "/get-on-service-status-trans/:shop_id/:cus_id",
+  getPendingServiceTrans
+);
+
+/* CUSTOMER MODULE ON PROCESS LAUNDRY TABLE */
+router.get("/get-weekly-trans/:shop_id/:cus_id", getWeeklyTransactions);
+
+/* CUSTOMER MODULE PENDING PAYMENTS LAUNDRY TABLE */
+router.get(
+  "/get-pending-payments-trans/:shop_id/:cus_id",
+  getPendingPaymentsTransactions
+);
+
+/* CUSTOMER MODULE PROOF OF PAYMENTS UPLOAD */
+router.put(
+  "/add-proof-of-payment/:laundryId",
+  upload.single("proof"),
+  addPaymentProof
+);
+
+/* CUSTOMER MODULE READY TO PICK UP TABLE */
+router.get(
+  "/get-ready-to-pick-up-trans/:shop_id/:cus_id",
+  getReadyForPickTransactions
+);
+
+/* CUSTOMER MODULE SHOP AND PERSONEL RATINGS */
+router.post("/create-rating", createRating);
+
+/* CUSTOMER MODULE ACTIVITY LOGS */
+router.get("/get-customer-activity-log/:user_id", getActivityLogs);
 
 module.exports = router;

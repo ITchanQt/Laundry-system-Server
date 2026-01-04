@@ -1,6 +1,12 @@
 const BaseModel = require("./BaseModel");
 
 class Customer extends BaseModel {
+  static async findCustomerTransById(id) {
+    const sql = `SELECT * FROM customer_transactions WHERE laundryId = ?`;
+    const result = await this.query(sql, [id]);
+    return result[0];
+  }
+
   static async findAll() {
     const sql = "SELECT * FROM customers";
     const results = await this.query(sql);
@@ -197,6 +203,24 @@ class Customer extends BaseModel {
         process_by,
       ]);
 
+      // For Activity log
+      const status = "On Process";
+      const logQuery = `INSERT INTO
+                        activity_log (
+                        shop_id,
+                        user_id,
+                        activity_id,
+                        action )
+                        VALUE (
+                        ?, ?, ?, ?
+                        )`;
+      await this.query(logQuery, [
+        shop_id,
+        customer.user_id,
+        newLaundryId,
+        status,
+      ]);
+
       // Return the generated ID
       return { newLaundryId };
     } catch (error) {
@@ -350,12 +374,14 @@ class Customer extends BaseModel {
                    service,
                    status,
                    created_at FROM
-                   customer_transactions WHERE
-                   YEAR(created_at) = YEAR(NOW())
-                   AND MONTH(created_at) = MONTH(NOW()) 
-                   AND shop_id = ?
+                   customer_transactions 
+                   WHERE          -- YEAR(created_at) = YEAR(NOW())
+                                  -- AND MONTH(created_at) = MONTH(NOW()) 
+                                  -- AND 
+                   shop_id = ?
                    AND cus_id = ?
-                   AND status = 'Laundry Done'`;
+                   AND status = 'Laundry Done'
+                   AND payment_status = 'PAID'`;
 
       const results = await this.query(sql, [shop_id, cus_id]);
       return results;
@@ -365,48 +391,237 @@ class Customer extends BaseModel {
     }
   }
 
-  static async totalAmountForMonth(cus_id, shop_id) {
+  static async updateStatus(laundryId, service_status) {
     try {
-      const sql = `SELECT COALESCE(SUM(total_amount), 0) AS total
-                 FROM customer_transactions
-                 WHERE cus_id = ?
-                 AND shop_id = ?
-                 AND status = 'Laundry Done'
-                 AND MONTH(created_at) = MONTH(CURRENT_DATE())
-                 AND YEAR(created_at) = YEAR(CURRENT_DATE());`;
-      const result = await this.query(sql, [cus_id, shop_id]);
-      return result[0];
+      const updateSql = `
+      UPDATE customer_transactions 
+      SET status = ?, updated_at = NOW() 
+      WHERE laundryId = ?
+    `;
+      await this.query(updateSql, [service_status, laundryId]);
+
+      const logSql = `
+      INSERT INTO activity_log (shop_id, user_id, activity_id, action)
+      SELECT shop_id, cus_id, laundryId, ?
+      FROM customer_transactions
+      WHERE laundryId = ?
+    `;
+
+      return await this.query(logSql, [service_status, laundryId]);
     } catch (error) {
-      console.error("Error computing month total amount:", error);
-      throw new Error(`Failed to compute month total amount: ${error.message}`);
+      console.error("Error in updateStatus and Log:", error);
+      throw new Error(`Failed to update and log status: ${error.message}`);
     }
   }
 
-  static async countReadyToPickUpOrders(cus_id, shop_id) {
-    try {
-      const sql = `SELECT
-                  COUNT(*) AS total_ready_orders
-                  FROM customer_transactions
-                  WHERE status = 'Ready to pick-up'
-                  AND cus_id = ?
-                  AND shop_id = ?`;
-      const result = await this.query(sql, [cus_id, shop_id]);
-      return result[0];
-    } catch (error) {}
-  }
-
-  static async updateStatus(laundryId, service_status) {
+  static async getCustomerDashboardStats(shop_id, cus_id) {
     try {
       const sql = `
-    UPDATE customer_transactions
-    SET status = ?, updated_at = NOW()
-    WHERE laundryId = ?
-  `;
+                    SELECT 
+                      SUM(CASE WHEN status = 'Ready to pick up' THEN batch ELSE 0 END) AS readyToPickUpBatches,
+                      SUM(CASE WHEN payment_status = 'PENDING' THEN batch ELSE 0 END) AS pendingPaymentBatches,
+                      SUM(CASE WHEN status = 'On Service' AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1) THEN batch ELSE 0 END) AS onServiceThisWeekBatches,
+                      SUM(CASE WHEN status = 'On Service' THEN batch ELSE 0 END) AS onServiceTotalBatches,
+                      SUM(CASE WHEN YEAR(created_at) = YEAR(CURDATE()) 
+                               AND MONTH(created_at) = MONTH(CURDATE())
+                               AND status = 'Laundry Done'
+                               AND payment_status = 'PAID' THEN total_amount ELSE 0 END) AS totalPaidAmount
+                    FROM customer_transactions
+                    WHERE shop_id = ? AND cus_id = ?
+                  `;
 
-      return await this.query(sql, [service_status, laundryId]);
+      const results = await this.query(sql, [shop_id, cus_id]);
+
+      return results[0];
     } catch (error) {
-      console.error("Error updating status:", error);
-      throw new Error(`Failed to update status: ${error.message}`);
+      console.error("Model Error (getCustomerDashboardStats):", error);
+      throw error;
+    }
+  }
+
+  static async selectPendingServiceTrans(shop_id, cus_id) {
+    try {
+      const sql = `SELECT 
+                        laundryId,
+                        shop_id,
+                        service,
+                        kg,
+                        batch,
+                        cus_address,
+                        status
+                        FROM customer_transactions
+                        WHERE status = 'On Service'
+                        AND shop_id = ?
+                        AND cus_id = ?
+                        ORDER BY created_at ASC`;
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error (selectPendingServiceTrans):", error);
+      throw error;
+    }
+  }
+
+  static async selectWeeklyTransactions(shop_id, cus_id) {
+    try {
+      const sql = `
+                  SELECT 
+                  laundryId,
+                  shop_id,
+                  cus_name,
+                  service,
+                  kg,
+                  updated_at
+                  FROM customer_transactions
+                  WHERE YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)
+                  AND status = 'On Service'
+                  AND shop_id = ?
+                  AND cus_id = ?
+                  ORDER BY created_at DESC`;
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error (selectWeeklyTransactions):", error);
+      throw error;
+    }
+  }
+
+  static async selectPendingPaymentsTransactions(shop_id, cus_id) {
+    try {
+      const sql = `
+                  SELECT 
+                  laundryId,
+                  shop_id,
+                  cus_name,
+                  batch,
+                  service,
+                  total_amount,
+                  status,
+                  payment_status,
+                  onlinePayment_proof,
+                  process_by
+                  FROM customer_transactions
+                  WHERE payment_status = 'PENDING'
+                  AND shop_id = ?
+                  AND cus_id = ?
+                  ORDER BY created_at DESC`;
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error (selectPendingPaymentsTransactions):", error);
+      throw error;
+    }
+  }
+
+  static async sendPaymentProof(laundryId, data) {
+    try {
+      const sql = `UPDATE customer_transactions
+                    SET onlinePayment_proof = ?
+                    WHERE laundryId = ?`;
+
+      const params = [data.onlinePayment_proof, laundryId];
+
+      await this.query(sql, params);
+
+      const logSql = `
+      INSERT INTO activity_log (shop_id, user_id, activity_id, action)
+      SELECT shop_id, cus_id, laundryId, ?
+      FROM customer_transactions
+      WHERE laundryId = ?
+    `;
+      const action = "Online payment proof uploaded";
+      await this.query(logSql, [action, laundryId]);
+
+      return { laundryId, ...data };
+    } catch (error) {
+      console.error("Model Error (sendPaymentProof):", error);
+      throw error;
+    }
+  }
+
+  static async selectReadyForPickTransactions(shop_id, cus_id) {
+    try {
+      const sql = `SELECT
+                  laundryId,
+                  shop_id,
+                  cus_name,
+                  service,
+                  batch,
+                  kg,
+                  total_amount,
+                  status,
+                  updated_at,
+                  payment_status
+                  FROM customer_transactions
+                  WHERE status = 'Ready to pick up'
+                  AND shop_id = ?
+                  AND cus_id = ?
+                  ORDER BY created_at DESC`;
+
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error (selectReadyForPickTransactions):", error);
+      throw error;
+    }
+  }
+
+  static async insertRatings(ratingsData) {
+    try {
+      const {
+        shop_id,
+        transaction_id,
+        cus_id,
+        cus_name,
+        personnel_rating,
+        personnel,
+        shop_rating,
+        comment,
+      } = ratingsData;
+
+      const sql = `
+                  INSERT INTO
+                  ratings
+                  (shop_id,
+                  transaction_id,
+                  cus_id,
+                  cus_name,
+                  personnel_rating,
+                  personnel,
+                  shop_rating,
+                  comment)
+                  VALUES
+                  (?, ?, ?, ?, ?, ?, ?, ?)
+                  `;
+
+      return this.query(sql, [
+        shop_id,
+        transaction_id || null,
+        cus_id,
+        cus_name,
+        personnel_rating || null,
+        personnel || null,
+        shop_rating || null,
+        comment,
+      ]);
+    } catch (error) {
+      console.error("Model Error (insertRatings):", error);
+      throw error;
+    }
+  }
+
+  static async selectActivityLogs(user_id) {
+    try {
+      const sql = `SELECT *
+                   FROM activity_log
+                   WHERE user_id = ?
+                   ORDER BY created_at DESC
+                   `;
+      const results = await this.query(sql, [user_id]);
+      return results;
+    } catch (error) {
+       console.error("Model Error (selectActivityLogs):", error);
+      throw error;
     }
   }
 }
