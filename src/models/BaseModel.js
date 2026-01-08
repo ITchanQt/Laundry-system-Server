@@ -1,13 +1,23 @@
 const pool = require('../config/db');
 
 class BaseModel {
-    static async query(sql, params) {
+    static async query(sql, params = []) {
+        let connection;
         try {
-            const [results] = await pool.execute(sql, params);
-            return results;
+            connection = await pool.getConnection();
+            const [results] = await connection.query(sql, params);
+            return results || [];
         } catch (error) {
-            console.error('Database query error:', error);
+            console.error('Database query error:', {
+                sql,
+                params,
+                error: error.message
+            });
             throw error;
+        } finally {
+            if (connection) {
+                connection.release();
+            }
         }
     }
 }

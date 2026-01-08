@@ -9,6 +9,11 @@ const publicRoutes = require("./src/routes/publicRoutes");
 const authenticate = require("./src/middlewares/authMiddleware");
 const customerRoutes = require("./src/routes/customerRoutes");
 
+const salesRoutes = require('./src/routes/super-admin-reports-routes/salesRoutes');
+const inventoryRoutes = require('./src/routes/super-admin-reports-routes/inventoryRoutes');
+const transactionRoutes = require('./src/routes/super-admin-reports-routes/transactionRoutes');
+const dashboardRoutes = require('./src/routes/super-admin-reports-routes/dashboardRoutes');
+
 const app = express();
 
 const allowedOrigins = [
@@ -47,6 +52,11 @@ app.use("/api/public", publicRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use("/api/customers", customerRoutes);
+
+app.use('/api/sales', salesRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 //Protected Routes
 app.use("/api/protected", authenticate, (req, res) => {
