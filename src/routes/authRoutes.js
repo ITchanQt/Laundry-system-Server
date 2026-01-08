@@ -14,6 +14,7 @@ const {
   getWeeklyChartData,
   getSAdminInventorySummary,
   getSAdminWeeklyChartData,
+  getSAReportDashborardCardsData,
 } = require("../controllers/adminController");
 const authenticate = require("../middlewares/authMiddleware");
 const {
@@ -78,10 +79,10 @@ const { sendOtp, verifyOtp } = require("../controllers/otpController");
 const { updateLaundryStatus } = require("../controllers/customerController");
 
 // Apply API key validation to all routes
-router.use(validateApiKey);
+// router.use(validateApiKey);
 
 // Protected routes that need authentication
-router.use(authenticate); // Apply authentication middleware to all routes below
+// router.use(authenticate); // Apply authentication middleware to all routes below
 
 router.post("/register-user", registerUser);
 router.post("/login", loginUser);

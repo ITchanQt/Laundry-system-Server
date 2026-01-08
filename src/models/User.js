@@ -228,7 +228,7 @@ class User extends BaseModel {
   }
 
   static async getAllUsers() {
-    const query = "SELECT * from users";
+    const query = "SELECT * FROM users";
     const results = await this.query(query);
     return results;
   }
@@ -294,7 +294,7 @@ class User extends BaseModel {
   static async searchUserByIdOrNameWithCustomerRole(shop_id) {
     try {
       const sql = `SELECT * FROM users
-                         WHERE role = 'Customer'
+                         WHERE role = 'CUSTOMER'
                          AND shop_id = ?`;
       const results = await this.query(sql, [shop_id]);
       return results;
@@ -306,7 +306,7 @@ class User extends BaseModel {
   static async findUserByIdAndShopId(shop_id, user_id) {
     try {
       const sql = `SELECT * FROM users
-                         WHERE role = 'Customer'
+                         WHERE role = 'CUSTOMER'
                          AND shop_id = ?
                          AND user_id = ?`;
       const results = await this.query(sql, [shop_id, user_id]);
