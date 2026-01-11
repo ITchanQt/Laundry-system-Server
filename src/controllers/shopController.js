@@ -2,27 +2,38 @@ const LaundryShops = require("../models/LaundryShops");
 
 const registerLaundryShop = async (req, res) => {
   try {
-    const { admin_id, owner_emailAdd, owner_contactNum, shop_name } = req.body;
+    const {
+      admin_id,
+      owner_emailAdd,
+      owner_contactNum,
+      shop_name,
+      confirmDuplicate,
+    } = req.body;
 
-    const adminExist = await LaundryShops.findByEmail(owner_emailAdd);
-    if (!adminExist) {
-      return res.status(400).json({
-        success: false,
-        message: "Email doesn't exist!",
-      });
+    const adminRecord = await LaundryShops.findByEmail(owner_emailAdd);
+    if (!adminRecord) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email doesn't exist!" });
     }
 
-    // Check if the shop already exists
     const existingShop = await LaundryShops.findByName(
       shop_name,
       owner_emailAdd,
       owner_contactNum
     );
-
     if (existingShop) {
-      return res.status(400).json({
+      return res
+        .status(400)
+        .json({ success: false, message: "Shop already exists" });
+    }
+
+    if (adminRecord.shop_id !== null && !confirmDuplicate) {
+      return res.status(409).json({
         success: false,
-        message: "Shop already exists",
+        requiresConfirmation: true,
+        message:
+          "This admin is already managed by a shop. Do you want to create a duplicate account for this new branch?",
       });
     }
 
@@ -36,10 +47,7 @@ const registerLaundryShop = async (req, res) => {
     });
   } catch (error) {
     console.error("Register laundry shop error:", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    return res.status(500).json({ success: false, error: error.message });
   }
 };
 
