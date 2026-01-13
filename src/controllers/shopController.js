@@ -382,6 +382,36 @@ const updateTransPaymentStatus = async (req, res) => {
   }
 };
 
+const updateTransPaymentStatusCash = async (req, res) => {
+  try {
+    const { laundryId } = req.params;
+    const { payment_status } = req.body;
+
+    if (!laundryId || !payment_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Laundry ID and status are required.",
+      });
+    }
+
+    const result = await LaundryShops.updatePaymentStatusCash(
+      laundryId,
+      payment_status
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Payment status successfully updated.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error updating service status transactions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
 const getReadyToPickUpTrans = async (req, res) => {
   try {
     const { shop_id } = req.params;
@@ -562,6 +592,7 @@ module.exports = {
   getPendingServiceTrans,
   getPendingPaymentStatusTrans,
   updateTransPaymentStatus,
+  updateTransPaymentStatusCash,
   getReadyToPickUpTrans,
   updateReadyToPickUpIfPaidTrans,
   getCompletedTransaction,

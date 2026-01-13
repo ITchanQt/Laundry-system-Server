@@ -43,6 +43,7 @@ const {
   getCompletedTransaction,
   getYearlyFinancialReportStaffModule,
   getActivityLogs,
+  updateTransPaymentStatusCash,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -270,6 +271,7 @@ router.get(
   getPendingPaymentStatusTrans
 );
 router.put("/update-payment-status/:laundryId", updateTransPaymentStatus);
+router.put("/update-payment-status-cash/:laundryId", updateTransPaymentStatusCash);
 
 //-----------STAFF READY TO PICK UP SERVICE STATUS TRANSACTION
 router.get("/get-ready-to-pick-up-trans/:shop_id", getReadyToPickUpTrans);
