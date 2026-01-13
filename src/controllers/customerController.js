@@ -481,7 +481,7 @@ const getReadyForPickTransactions = async (req, res) => {
 const createRating = async (req, res) => {
   try {
     const rating = await Customer.insertRatings(req.body);
-    
+
     res.status(201).json({
       success: true,
       message: "Rating successfully created!",
@@ -523,6 +523,36 @@ const getActivityLogs = async (req, res) => {
   }
 };
 
+const getCompletedOrdersOfForCustomerReport = async (req, res) => {
+  try {
+    const { shop_id, cus_id } = req.params;
+    if (!shop_id || !cus_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID and User ID is required!",
+      });
+    }
+
+    const customerRecords =
+      await Customer.findCompletedOrdersOfForCustomerReport(shop_id, cus_id);
+    res.status(200).json({
+      success: true,
+      message: "Customer records successfully get!",
+      data: customerRecords,
+    });
+  } catch (error) {
+    console.error(
+      "customerController.findCompletedOrdersOfForCustomerReport error: ",
+      error
+    );
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerCustomer,
   getCustomerById,
@@ -544,4 +574,5 @@ module.exports = {
   getReadyForPickTransactions,
   createRating,
   getActivityLogs,
+  getCompletedOrdersOfForCustomerReport,
 };

@@ -55,7 +55,7 @@ const forgotPasswordAdmin = async (req, res) => {
       message: "If the email exists, a reset link will be sent",
     });
   } catch (error) {
-    console.error("forgotPassword error:", err);
+    console.error("forgotPassword error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -101,7 +101,7 @@ const forgotPasswordStaff = async (req, res) => {
       message: "If the email exists, a reset link will be sent",
     });
   } catch (error) {
-    console.error("forgotPassword error:", err);
+    console.error("forgotPassword error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -146,7 +146,7 @@ const forgotPasswordCustomer = async (req, res) => {
       message: "If the email exists, a reset link will be sent",
     });
   } catch (error) {
-    console.error("forgotPassword error:", err);
+    console.error("forgotPassword error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
