@@ -39,12 +39,75 @@ class LaundryShops extends BaseModel {
     }
   }
 
+  static async generateAdminId() {
+    try {
+      // Get the highest admin ID
+      const sql = ` SELECT user_id 
+                    FROM users 
+                    ORDER BY CAST(SUBSTRING(user_id, 6) AS UNSIGNED) DESC 
+                    LIMIT 1`;
+
+      const results = await this.query(sql);
+
+      let nextNumber = 1;
+      if (results && results.length > 0) {
+        const lastId = results[0].user_id;
+        const lastNumber = parseInt(lastId.split("-")[1]);
+        nextNumber = lastNumber + 1;
+      }
+
+      // Format: LMSU-00001
+      return `LMSA-${String(nextNumber).padStart(5, "0")}`;
+    } catch (error) {
+      throw new Error(`Failed to generate admin ID: ${error.message}`);
+    }
+  }
+
   static async create(shopData) {
     try {
-      const shop_id = await this.generateShopId();
+      let { admin_id } = shopData;
+      const new_shop_id = await this.generateShopId();
 
+      // 1. CHECK IF ADMIN ALREADY HAS A SHOP ASSIGNED
+      const checkAdminSql = `SELECT * FROM users WHERE user_id = ?`;
+      const adminRows = await this.query(checkAdminSql, [admin_id]);
+
+      if (adminRows.length > 0 && adminRows[0].shop_id !== null) {
+        // ADMIN ALREADY HAS A SHOP -> CLONE THE USER
+        const existingAdmin = adminRows[0];
+        const new_admin_user_id = await this.generateAdminId(); // Assuming this helper exists in your User model
+
+        const cloneAdminSql = `
+        INSERT INTO users 
+        (user_id, shop_id, username, email, password, user_fName, user_mName, user_lName, user_address, contactNum, role, status, registered_by) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        await this.query(cloneAdminSql, [
+          new_admin_user_id,
+          new_shop_id, // Assign the NEW shop_id here
+          existingAdmin.username,
+          existingAdmin.email,
+          existingAdmin.password, // Copying the hashed password directly
+          existingAdmin.user_fName,
+          existingAdmin.user_mName,
+          existingAdmin.user_lName,
+          existingAdmin.user_address,
+          existingAdmin.contactNum,
+          existingAdmin.role,
+          existingAdmin.status,
+          existingAdmin.registered_by,
+        ]);
+
+        // Update the admin_id reference so the laundry_shop table uses the NEW cloned user
+        admin_id = new_admin_user_id;
+      } else {
+        // ADMIN IS FRESH (NULL shop_id) -> JUST UPDATE EXISTING ROW
+        const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
+        await this.query(updateAdminSql, [new_shop_id, admin_id]);
+      }
+
+      // 2. INSERT LAUNDRY SHOP
       const {
-        admin_id,
         owner_fName,
         owner_mName,
         owner_lName,
@@ -56,7 +119,6 @@ class LaundryShops extends BaseModel {
         shop_type,
       } = shopData;
 
-      // Insert laundry shop
       const insertShopSql = `
       INSERT INTO laundry_shops 
       (shop_id, admin_id, admin_fName, admin_mName, admin_lName, admin_emailAdd, admin_contactNum, shop_address, shop_name, slug, shop_type)
@@ -64,7 +126,7 @@ class LaundryShops extends BaseModel {
     `;
 
       await this.query(insertShopSql, [
-        shop_id,
+        new_shop_id,
         admin_id,
         owner_fName,
         owner_mName,
@@ -77,28 +139,30 @@ class LaundryShops extends BaseModel {
         shop_type,
       ]);
 
-      const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
-      await this.query(updateAdminSql, [shop_id, admin_id]);
-
+      // 3. INSERT SERVICES
       const serviceList = shop_type
         .split(",")
         .map((s) => s.trim())
         .filter((s) => s.length > 0);
 
-      const insertServiceSQL = `
-      INSERT INTO shop_services
-      (shop_id, service_name, is_displayed)
-      VALUES (?, ?, ?)
-    `;
+      // ADD THIS: Clear any accidental duplicates for this specific shop_id
+      await this.query(`DELETE FROM shop_services WHERE shop_id = ?`, [
+        new_shop_id,
+      ]);
 
-      for (const service of serviceList) {
-        await this.query(insertServiceSQL, [shop_id, service, "true"]);
+      const insertServiceSQL = `INSERT INTO shop_services (shop_id, service_name, is_displayed) VALUES (?, ?, ?)`;
+
+      // Use a Set here too, just in case the string sent from frontend is still messy
+      const uniqueServices = [...new Set(serviceList)];
+
+      for (const service of uniqueServices) {
+        await this.query(insertServiceSQL, [new_shop_id, service, "true"]);
       }
 
-      return { success: true, shop_id, admin_id };
+      return { success: true, shop_id: new_shop_id, admin_id };
     } catch (error) {
       console.error("Error creating laundry shop:", error);
-      throw new Error(`Failed to create laundry shop: ${error.message}`);
+      throw error;
     }
   }
 

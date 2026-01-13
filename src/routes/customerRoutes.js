@@ -17,6 +17,7 @@ const {
   getReadyForPickTransactions,
   createRating,
   getActivityLogs,
+  getCompletedOrdersOfForCustomerReport,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -25,7 +26,7 @@ const { upload } = require("../middlewares/upload");
 // Apply API key validation to all routes
 router.use(validateApiKey);
 
-// Protected routes
+// // Protected routes
 router.use(authenticate);
 
 // Customer management routes
@@ -48,6 +49,10 @@ router.get(
   getCompletedOrdersOfTheMonthByShopId
 );
 
+router.get(
+  "/get-customer-transact/:shop_id/:cus_id",
+  getCompletedOrdersOfForCustomerReport
+);
 /* CUSTOMER MODULE DASHBOARD DETAILS COUNT */
 router.get("/get-dashboard-count/:shop_id/:cus_id", getCustomerStats);
 

@@ -234,62 +234,73 @@ class User extends BaseModel {
   }
 
   static async editUserByID(userId, updateData) {
-    try {
-      if (!userId) {
-        throw new Error("User ID is required for update");
-      }
-
-      const user = await this.findByUserId(userId);
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      const updatedData = {
-        user_fName: updateData.user_fName || user.user_fName,
-        user_mName: updateData.user_mName || user.user_mName,
-        user_lName: updateData.user_lName || user.user_lName,
-        username: updateData.username || user.username,
-        email: updateData.email || user.email,
-        user_address: updateData.user_address || user.user_address,
-        contactNum: updateData.contactNum || user.contactNum,
-        role: updateData.role || user.role,
-        status: updateData.status || user.status,
-      };
-
-      const query = `UPDATE users
-                SET user_fName = ?,
-                    user_mName = ?,
-                    user_lName = ?,
-                    username = ?,
-                    email = ?,
-                    user_address = ?,
-                    contactNum = ?,
-                    role = ?,
-                    status = ?
-                WHERE user_id = ?`;
-
-      const result = await this.query(query, [
-        updatedData.user_fName,
-        updatedData.user_mName,
-        updatedData.user_lName,
-        updatedData.username,
-        updatedData.email,
-        updatedData.user_address,
-        updatedData.contactNum,
-        updatedData.role,
-        updatedData.status,
-        userId,
-      ]);
-
-      if (result.affectedRows === 0) {
-        throw new Error("Failed to update user");
-      }
-
-      return this.findByUserId(userId);
-    } catch (error) {
-      throw new Error(`Failed to update user: ${error.message}`);
+  try {
+    if (!userId) {
+      throw new Error("User ID is required for update");
     }
+
+    const user = await this.findByUserId(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
+    const originalEmail = user.email;
+    const userRole = user.role;
+
+    const updatedData = {
+      user_fName: updateData.user_fName || user.user_fName,
+      user_mName: updateData.user_mName || user.user_mName,
+      user_lName: updateData.user_lName || user.user_lName,
+      username: updateData.username || user.username,
+      email: updateData.email || user.email,
+      user_address: updateData.user_address || user.user_address,
+      contactNum: updateData.contactNum || user.contactNum,
+      role: updateData.role || user.role,
+      status: updateData.status || user.status,
+    };
+
+    let sql;
+    let identifier;
+
+    if (userRole === 'ADMIN') {
+      sql = `
+        UPDATE users 
+        SET user_fName = ?, user_mName = ?, user_lName = ?, username = ?, 
+            email = ?, user_address = ?, contactNum = ?, role = ?, status = ?
+        WHERE email = ? AND role = 'ADMIN'`;
+      identifier = originalEmail;
+    } else {
+      sql = `
+        UPDATE users 
+        SET user_fName = ?, user_mName = ?, user_lName = ?, username = ?, 
+            email = ?, user_address = ?, contactNum = ?, role = ?, status = ?
+        WHERE user_id = ?`;
+      identifier = userId;
+    }
+
+    const result = await this.query(sql, [
+      updatedData.user_fName,
+      updatedData.user_mName,
+      updatedData.user_lName,
+      updatedData.username,
+      updatedData.email,
+      updatedData.user_address,
+      updatedData.contactNum,
+      updatedData.role,
+      updatedData.status,
+      identifier
+    ]);
+
+    if (result.affectedRows === 0) {
+      throw new Error("No changes were made");
+    }
+
+    return this.findByUserId(userId);
+  } catch (error) {
+    console.error("Update error:", error);
+    throw new Error(`Failed to update user: ${error.message}`);
   }
+}
 
   static async searchUserByIdOrNameWithCustomerRole(shop_id) {
     try {

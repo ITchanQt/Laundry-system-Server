@@ -55,7 +55,7 @@ async function sendResetEmail(toEmail, resetUrl) {
       <tr>
         <td style="border-top: 1px solid #eee; padding-top: 25px; font-size: 13px; color: #888;">
           <p style="margin-bottom: 8px;">Thank you,</p>
-          <p style="font-weight: bold; color: #555;">Laundry Management System Team</p>
+          <p style="font-weight: bold; color: #555;">Wise Wash Inteligence Laundry Management System Team</p>
         </td>
       </tr>
 
@@ -69,7 +69,7 @@ async function sendResetEmail(toEmail, resetUrl) {
   `;
 
   return transporter.sendMail({
-    from: `"Laundry Management System" <${process.env.GMAIL_USER}>`,
+    from: `"Wise Wash Inteligence Laundry Management System" <${process.env.GMAIL_USER}>`,
     to: toEmail,
     subject: "Reset Your Password",
     html,
@@ -138,7 +138,7 @@ async function sendOtpEmail(toEmail, otpCode) {
       <tr>
         <td style="border-top: 1px solid #eee; padding-top: 25px; font-size: 13px; color: #888;">
           <p style="margin-bottom: 8px;">Thank you,</p>
-          <p style="font-weight: bold; color: #555;">Laundry Management System Team</p>
+          <p style="font-weight: bold; color: #555;">Wise Wash Inteligence Laundry Management System Team</p>
         </td>
       </tr>
 
@@ -151,7 +151,7 @@ async function sendOtpEmail(toEmail, otpCode) {
   `;
 
   await OTPtransporter.sendMail({
-    from: `"Laundry Management System" <${process.env.GMAIL_USER}>`,
+    from: `"Wise Wash Inteligence Laundry Management System" <${process.env.GMAIL_USER}>`,
     to: toEmail,
     subject: "Your Verification Code",
     html,

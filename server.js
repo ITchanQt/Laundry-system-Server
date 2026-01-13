@@ -13,6 +13,8 @@ const salesRoutes = require('./src/routes/super-admin-reports-routes/salesRoutes
 const inventoryRoutes = require('./src/routes/super-admin-reports-routes/inventoryRoutes');
 const transactionRoutes = require('./src/routes/super-admin-reports-routes/transactionRoutes');
 const dashboardRoutes = require('./src/routes/super-admin-reports-routes/dashboardRoutes');
+const shopRoutes = require('./src/routes/super-admin-reports-routes/shopRoutes');
+const filteredReportsRoutes = require('./src/routes/super-admin-reports-routes/filteredReportRoutes');
 
 const app = express();
 
@@ -57,6 +59,8 @@ app.use('/api/sales', salesRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/shops', shopRoutes);
+app.use('/api/reports', filteredReportsRoutes);
 
 //Protected Routes
 app.use("/api/protected", authenticate, (req, res) => {

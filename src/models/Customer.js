@@ -375,13 +375,11 @@ class Customer extends BaseModel {
                    status,
                    created_at FROM
                    customer_transactions 
-                   WHERE          -- YEAR(created_at) = YEAR(NOW())
-                                  -- AND MONTH(created_at) = MONTH(NOW()) 
-                                  -- AND 
-                   shop_id = ?
-                   AND cus_id = ?
-                   AND status = 'Laundry Done'
-                   AND payment_status = 'PAID'`;
+                   WHERE  MONTH(created_at) = MONTH(NOW()) 
+                    AND shop_id = ?
+                    AND cus_id = ?
+                    AND status = 'Laundry Done'
+                    AND payment_status = 'PAID'`;
 
       const results = await this.query(sql, [shop_id, cus_id]);
       return results;
@@ -622,6 +620,28 @@ class Customer extends BaseModel {
     } catch (error) {
        console.error("Model Error (selectActivityLogs):", error);
       throw error;
+    }
+  }
+
+  static async findCompletedOrdersOfForCustomerReport(shop_id, cus_id) {
+    try {
+      const sql = `SELECT 
+                   laundryId,
+                   total_amount,
+                   service,
+                   status,
+                   created_at FROM
+                   customer_transactions 
+                   WHERE shop_id = ?
+                    AND cus_id = ?
+                    AND status = 'Laundry Done'
+                    AND payment_status = 'PAID'`;
+
+      const results = await this.query(sql, [shop_id, cus_id]);
+      return results;
+    } catch (error) {
+      console.error("Error finding customer record:", error);
+      throw new Error(`Failed to find customer record: ${error.message}`);
     }
   }
 }
