@@ -597,6 +597,29 @@ class LaundryShops extends BaseModel {
     }
   }
 
+  static async updatePaymentStatusCash(laundryId, payment_status) {
+    try {
+      const sql = `
+                  UPDATE customer_transactions
+                  SET payment_status = ?, updated_at = NOW()
+                  WHERE laundryId = ?
+                  `;
+      await this.query(sql, [payment_status, laundryId]);
+
+      const logSql = `
+      INSERT INTO activity_log (shop_id, user_id, activity_id, action)
+      SELECT shop_id, cus_id, laundryId, ?
+      FROM customer_transactions
+      WHERE laundryId = ?
+    `;
+      const action = "Cash payment received";
+      return await this.query(logSql, [action, laundryId]);
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      throw new Error(`Failed to update payment status: ${error.message}`);
+    }
+  }
+
   static async selectReadyToPickUpTrans(shop_id) {
     try {
       const sql = `
