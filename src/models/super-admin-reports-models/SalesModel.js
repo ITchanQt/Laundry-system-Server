@@ -1,6 +1,6 @@
-const pool = require('../../config/db');
+const BaseModel = require('../BaseModel');
 
-class SalesModel {
+class SalesModel extends BaseModel {
   static async getSalesData(startDate, endDate) {
     const query = `
       SELECT 
@@ -15,7 +15,7 @@ class SalesModel {
       ORDER BY date DESC, service
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate]);
+    const rows = await this.query(query, [startDate, endDate]);
     return rows;
   }
 
@@ -30,7 +30,7 @@ class SalesModel {
       WHERE DATE(created_at) BETWEEN ? AND ?
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate]);
+    const rows = await this.query(query, [startDate, endDate]);
     return rows[0];
   }
 
@@ -46,7 +46,7 @@ class SalesModel {
       ORDER BY totalSales DESC
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate]);
+    const rows = await this.query(query, [startDate, endDate]);
     return rows;
   }
 
@@ -62,7 +62,7 @@ class SalesModel {
       ORDER BY totalSales DESC
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate]);
+    const rows = await this.query(query, [startDate, endDate]);
     return rows;
   }
 }

@@ -1,6 +1,6 @@
-const pool = require("../../config/db");
+const BaseModel = require('../BaseModel');
 
-class FilteredSalesModel {
+class FilteredSalesModel extends BaseModel {
   static async getSalesByShop(shopId, startDate, endDate) {
     const query = `
       SELECT 
@@ -15,7 +15,7 @@ class FilteredSalesModel {
       ORDER BY date DESC, service
     `;
 
-    const [rows] = await pool.execute(query, [shopId, startDate, endDate]);
+    const rows = await this.query(query, [shopId, startDate, endDate]);
     return rows;
   }
 
@@ -31,7 +31,7 @@ class FilteredSalesModel {
         AND DATE(created_at) BETWEEN ? AND ?
     `;
 
-    const [rows] = await pool.execute(query, [shopId, startDate, endDate]);
+    const rows = await this.query(query, [shopId, startDate, endDate]);
     return rows[0];
   }
 
@@ -48,7 +48,7 @@ class FilteredSalesModel {
       ORDER BY date ASC
     `;
 
-    const [rows] = await pool.execute(query, [shopId, startDate, endDate]);
+    const rows = await this.query(query, [shopId, startDate, endDate]);
     return rows;
   }
 
@@ -66,7 +66,7 @@ class FilteredSalesModel {
       ORDER BY revenue DESC
     `;
 
-    const [rows] = await pool.execute(query, [shopId, startDate, endDate]);
+    const rows = await this.query(query, [shopId, startDate, endDate]);
     return rows;
   }
 
@@ -85,7 +85,7 @@ class FilteredSalesModel {
       LIMIT ?
     `;
 
-    const [rows] = await pool.execute(query, [
+    const rows = await this.query(query, [
       shopId,
       startDate,
       endDate,

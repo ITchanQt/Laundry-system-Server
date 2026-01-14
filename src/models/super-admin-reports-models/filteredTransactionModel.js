@@ -1,6 +1,6 @@
-const pool = require("../../config/db");
+const BaseModel = require('../BaseModel');
 
-class FilteredTransactionModel {
+class FilteredTransactionModel extends BaseModel {
   static async getTransactionsByShop(shopId, startDate, endDate, limit = 50) {
     const query = `
       SELECT 
@@ -18,7 +18,7 @@ class FilteredTransactionModel {
       LIMIT ?
     `;
 
-    const [rows] = await pool.execute(query, [
+    const rows = await this.query(query, [
       shopId,
       startDate,
       endDate,
@@ -40,7 +40,7 @@ class FilteredTransactionModel {
       ORDER BY created_at DESC
     `;
 
-    const [rows] = await pool.execute(query, [shopId]);
+    const rows = await this.query(query, [shopId]);
     return rows;
   }
 
@@ -52,7 +52,7 @@ class FilteredTransactionModel {
         AND payment_status = 'PENDING'
     `;
 
-    const [rows] = await pool.execute(query, [shopId]);
+    const rows = await this.query(query, [shopId]);
     return rows[0];
   }
 
@@ -72,7 +72,7 @@ class FilteredTransactionModel {
         AND DATE(created_at) BETWEEN ? AND ?
     `;
 
-    const [rows] = await pool.execute(query, [shopId, startDate, endDate]);
+    const rows = await this.query(query, [shopId, startDate, endDate]);
     return rows[0];
   }
 }

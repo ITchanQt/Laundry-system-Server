@@ -1,6 +1,6 @@
-const pool = require('../../config/db');
+const BaseModel = require('../BaseModel');
 
-class InventoryModel {
+class InventoryModel extends BaseModel {
   static async getAllInventory() {
     const query = `
       SELECT 
@@ -17,7 +17,7 @@ class InventoryModel {
       ORDER BY shop_id, item_name
     `;
     
-    const [rows] = await pool.execute(query);
+    const rows = await this.query(query);
     return rows;
   }
 
@@ -34,7 +34,7 @@ class InventoryModel {
       ORDER BY (item_quantity - item_reorderLevel) ASC
     `;
     
-    const [rows] = await pool.execute(query);
+    const rows = await this.query(query);
     return rows;
   }
 
@@ -45,7 +45,7 @@ class InventoryModel {
       WHERE item_quantity <= item_reorderLevel
     `;
     
-    const [rows] = await pool.execute(query);
+    const rows = await this.query(query);
     return rows[0];
   }
 
@@ -61,7 +61,7 @@ class InventoryModel {
       ORDER BY shop_id
     `;
     
-    const [rows] = await pool.execute(query);
+    const rows = await this.query(query);
     return rows;
   }
 
@@ -77,7 +77,7 @@ class InventoryModel {
       ORDER BY totalValue DESC
     `;
     
-    const [rows] = await pool.execute(query);
+    const rows = await this.query(query);
     return rows;
   }
 }
