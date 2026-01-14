@@ -193,27 +193,12 @@ const editItemById = async (req, res) => {
 
 const updateMultipleInventoryItems = async (req, res) => {
   try {
-    const { items } = req.body;
+    const { items, user_id } = req.body;
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Items array is required.",
-      });
-    }
-
-    for (const item of items) {
-      if (
-        !item.item_id ||
-        item.item_quantity === undefined ||
-        item.item_reorderLevel === undefined
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Each item must include item_id, item_quantity, and item_reorderLevel.",
-        });
-      }
+    if (!items || !Array.isArray(items)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid items." });
     }
 
     for (const item of items) {
@@ -222,32 +207,33 @@ const updateMultipleInventoryItems = async (req, res) => {
       );
 
       if (!existingItem) {
-        console.warn(`Item ${item.item_id} not found. Skipping.`);
+        console.warn(`Item ${item.item_id} not found.`);
         continue;
       }
 
+      const oldQty = Number(existingItem.item_quantity);
+      const newQty = Number(item.item_quantity || item.qty);
+      const qtyChange = newQty - oldQty;
+
       const existingReorder = parseInt(existingItem.item_reorderLevel) || 0;
       const incomingReorder = parseInt(item.item_reorderLevel) || 0;
-
       const newReorderLevel = existingReorder + incomingReorder;
 
-      await LaundryShops.updateStockAndReorderLevel(
+      await LaundryShops.updateStockAndLogHistory(
         item.item_id,
-        item.item_quantity,
-        newReorderLevel
+        user_id,
+        newQty,
+        newReorderLevel,
+        qtyChange
       );
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Inventory successfully updated.",
-    });
+    return res
+      .status(200)
+      .json({ success: true, message: "Inventory updated." });
   } catch (error) {
-    console.error("Error updating items:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error.",
-    });
+    console.error("Update Error:", error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -578,6 +564,32 @@ const getActivityLogs = async (req, res) => {
   }
 };
 
+const getItemHistoryByItemId = async (req, res) => {
+  try {
+    const {item_id} = req.params;
+    if (!item_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Item ID is required.",
+      });
+    }
+
+    const items = await LaundryShops.selectItemHistoryByItemId(item_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Items history fetched successfully",
+      data: items,
+    });
+  } catch (error) {
+    console.error("Controller Error (getItemHistoryByItemId):", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch items history.",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -598,4 +610,5 @@ module.exports = {
   getCompletedTransaction,
   getYearlyFinancialReportStaffModule,
   getActivityLogs,
+  getItemHistoryByItemId,
 };

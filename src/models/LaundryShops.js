@@ -336,6 +336,7 @@ class LaundryShops extends BaseModel {
       const item_id = await this.generateItemId();
       const {
         shop_id,
+        user_id,
         item_name,
         item_description = "",
         item_category,
@@ -345,15 +346,8 @@ class LaundryShops extends BaseModel {
       } = inventoryData;
 
       const sql = `INSERT INTO shop_inventory
-                   (item_id,
-                    shop_id,
-                    item_name,
-                    item_description,
-                    item_category,
-                    item_quantity,
-                    item_uPrice,
-                    item_reorderLevel)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+                 (item_id, shop_id, item_name, item_description, item_category, item_quantity, item_uPrice, item_reorderLevel)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
       await this.query(sql, [
         item_id,
@@ -366,16 +360,20 @@ class LaundryShops extends BaseModel {
         item_reorderLevel,
       ]);
 
-      // For Activity log
+      const historySql = `INSERT INTO inventory_history 
+                        (item_id, user_id, action_type, quantity_change, new_stock) 
+                        VALUES (?, ?, ?, ?, ?)`;
+
+      await this.query(historySql, [
+        item_id,
+        user_id,
+        "ADD",
+        item_quantity,
+        item_quantity,
+      ]);
+
       const action = "Add Item";
-      const logQuery = `INSERT INTO
-                        activity_log (
-                        shop_id,
-                        activity_id,
-                        action )
-                        VALUE (
-                        ?, ?, ?
-                        )`;
+      const logQuery = `INSERT INTO activity_log (shop_id, activity_id, action) VALUES (?, ?, ?)`;
       await this.query(logQuery, [shop_id, item_id, action]);
     } catch (error) {
       throw new Error(`Failed to create shop inventory: ${error.message}`);
@@ -414,6 +412,10 @@ class LaundryShops extends BaseModel {
       const itemExist = await this.findItemById(item_id);
       if (!itemExist) throw new Error("Item not found");
 
+      const oldQuantity = itemExist.item_quantity;
+      const newQuantity = inventoryData.item_quantity;
+      const quantityChange = newQuantity - oldQuantity;
+
       const updateSql = `
       UPDATE shop_inventory
       SET item_name = ?, item_description = ?, item_category = ?, 
@@ -426,27 +428,38 @@ class LaundryShops extends BaseModel {
         inventoryData.item_name,
         inventoryData.item_description || "",
         inventoryData.item_category || "",
-        inventoryData.item_quantity,
+        newQuantity,
         inventoryData.item_uPrice,
         inventoryData.item_reorderLevel,
         item_id,
       ];
 
       const result = await this.query(updateSql, params);
+      if (result.affectedRows === 0) throw new Error("Failed to update item");
 
-      if (result.affectedRows === 0) {
-        throw new Error("Failed to update item");
-      }
+      const historySql = `
+      INSERT INTO inventory_history 
+      (item_id, user_id, action_type, quantity_change, new_stock) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
+      let actionType = "EDIT";
+      if (quantityChange > 0) actionType = "RESTOCK";
+      if (quantityChange < 0) actionType = "SUBTRACT";
+
+      await this.query(historySql, [
+        item_id,
+        inventoryData.user_id,
+        actionType,
+        quantityChange,
+        newQuantity,
+      ]);
 
       const logSql = `
       INSERT INTO activity_log (shop_id, activity_id, action)
       SELECT shop_id, item_id, ?
-      FROM shop_inventory
-      WHERE item_id = ?
+      FROM shop_inventory WHERE item_id = ?
     `;
-
-      const action = "Update Item";
-      await this.query(logSql, [action, item_id]);
+      await this.query(logSql, ["Update Item", item_id]);
 
       return await this.findItemById(item_id);
     } catch (error) {
@@ -468,6 +481,41 @@ class LaundryShops extends BaseModel {
       WHERE item_id = ?
   `;
     return await this.query(sql, [newQuantity, newReorder, item_id]);
+  }
+
+  static async updateStockAndLogHistory(
+    item_id,
+    user_id,
+    newQuantity,
+    newReorder,
+    quantityChange
+  ) {
+    try {
+      const updateSql = `
+      UPDATE shop_inventory 
+      SET item_quantity = ?, item_reorderLevel = ?, date_updated = NOW()
+      WHERE item_id = ?
+    `;
+      await this.query(updateSql, [newQuantity, newReorder, item_id]);
+
+      const historySql = `
+      INSERT INTO inventory_history 
+      (item_id, user_id, action_type, quantity_change, new_stock) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+      const actionType = quantityChange < 0 ? "SUBTRACT" : "RESTOCK";
+
+      await this.query(historySql, [
+        item_id,
+        user_id,
+        actionType,
+        quantityChange,
+        newQuantity,
+      ]);
+    } catch (error) {
+      throw new Error(`History log failed: ${error.message}`);
+    }
   }
 
   static async selectAllDashboardDetails(shop_id) {
@@ -794,6 +842,18 @@ class LaundryShops extends BaseModel {
       console.error("Error fetching activity logs:", error);
       throw error;
     }
+  }
+
+  static async selectItemHistoryByItemId(item_id) {
+    const sql = `SELECT 
+                  ih.*, 
+                  u.role AS user_role
+                  FROM inventory_history ih
+                  JOIN users u ON ih.user_id = u.user_id
+                  WHERE ih.item_id = ?
+                  ORDER BY ih.created_at DESC`;
+    const results = await this.query(sql, [item_id]);
+    return results;
   }
 }
 
