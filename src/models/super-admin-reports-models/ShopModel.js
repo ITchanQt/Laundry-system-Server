@@ -1,6 +1,6 @@
-const pool = require("../../config/db");
+const BaseModel = require('../BaseModel');
 
-class ShopModel {
+class ShopModel extends BaseModel {
   static async getAllShops() {
     const query = `
       SELECT 
@@ -17,7 +17,7 @@ class ShopModel {
       ORDER BY shop_name
     `;
 
-    const [rows] = await pool.execute(query);
+    const rows = await this.query(query);
     return rows;
   }
 
@@ -41,7 +41,7 @@ class ShopModel {
       WHERE shop_id = ?
     `;
 
-    const [rows] = await pool.execute(query, [shopId]);
+    const rows = await this.query(query, [shopId]);
     return rows[0];
   }
 
@@ -56,7 +56,7 @@ class ShopModel {
       WHERE shop_id = ?
     `;
 
-    const [rows] = await pool.execute(query, [shopId]);
+    const rows = await this.query(query, [shopId]);
     return rows[0];
   }
 }

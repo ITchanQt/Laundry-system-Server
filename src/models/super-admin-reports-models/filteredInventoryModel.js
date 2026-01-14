@@ -1,6 +1,6 @@
-const pool = require("../../config/db");
+const BaseModel = require('../BaseModel');
 
-class FilteredInventoryModel {
+class FilteredInventoryModel extends BaseModel {
   static async getInventoryByShop(shopId) {
     const query = `
       SELECT 
@@ -17,7 +17,7 @@ class FilteredInventoryModel {
       ORDER BY item_name
     `;
 
-    const [rows] = await pool.execute(query, [shopId]);
+    const rows = await this.query(query, [shopId]);
     return rows;
   }
 
@@ -34,7 +34,7 @@ class FilteredInventoryModel {
       ORDER BY (item_quantity - item_reorderLevel) ASC
     `;
 
-    const [rows] = await pool.execute(query, [shopId]);
+    const rows = await this.query(query, [shopId]);
     return rows;
   }
 
@@ -46,7 +46,7 @@ class FilteredInventoryModel {
         AND item_quantity <= item_reorderLevel
     `;
 
-    const [rows] = await pool.execute(query, [shopId]);
+    const rows = await this.query(query, [shopId]);
     return rows[0];
   }
 
@@ -61,7 +61,7 @@ class FilteredInventoryModel {
       WHERE shop_id = ?
     `;
 
-    const [rows] = await pool.execute(query, [shopId]);
+    const rows = await this.query(query, [shopId]);
     return rows[0];
   }
 }
