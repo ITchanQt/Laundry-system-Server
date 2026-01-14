@@ -1,6 +1,6 @@
-const pool = require('../../config/db');
+const BaseModel = require('../BaseModel');
 
-class TransactionModel {
+class TransactionModel extends BaseModel {
   static async getAllTransactions(startDate, endDate, limit = 50) {
     const query = `
       SELECT 
@@ -18,7 +18,7 @@ class TransactionModel {
       LIMIT ?
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate, parseInt(limit)]);
+    const rows = await this.query(query, [startDate, endDate, parseInt(limit)]);
     return rows;
   }
 
@@ -54,7 +54,7 @@ class TransactionModel {
       WHERE laundryId = ?
     `;
     
-    const [rows] = await pool.execute(query, [transactionId]);
+    const rows = await this.query(query, [transactionId]);
     return rows[0];
   }
 
@@ -71,7 +71,7 @@ class TransactionModel {
       ORDER BY created_at DESC
     `;
     
-    const [rows] = await pool.execute(query);
+    const rows = await this.query(query);
     return rows;
   }
 
@@ -82,7 +82,7 @@ class TransactionModel {
       WHERE payment_status = 'PENDING'
     `;
     
-    const [rows] = await pool.execute(query);
+    const rows = await this.query(query);
     return rows[0];
   }
 
@@ -100,7 +100,7 @@ class TransactionModel {
       ORDER BY created_at DESC
     `;
     
-    const [rows] = await pool.execute(query, [status]);
+    const rows = await this.query(query, [status]);
     return rows;
   }
 
@@ -116,7 +116,7 @@ class TransactionModel {
       WHERE DATE(created_at) BETWEEN ? AND ?
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate]);
+    const rows = await this.query(query, [startDate, endDate]);
     return rows[0];
   }
 }

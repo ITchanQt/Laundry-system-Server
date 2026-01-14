@@ -1,6 +1,6 @@
-const pool = require('../../config/db');
+const BaseModel = require('../BaseModel');
 
-class DashboardModel {
+class DashboardModel extends BaseModel {
   static async getSummary(startDate, endDate) {
     const salesQuery = `
       SELECT 
@@ -22,9 +22,9 @@ class DashboardModel {
       WHERE payment_status = 'PENDING'
     `;
     
-    const [salesRows] = await pool.execute(salesQuery, [startDate, endDate]);
-    const [inventoryRows] = await pool.execute(inventoryQuery);
-    const [paymentRows] = await pool.execute(paymentsQuery);
+    const salesRows = await this.query(salesQuery, [startDate, endDate]);
+    const inventoryRows = await this.query(inventoryQuery);
+    const paymentRows = await this.query(paymentsQuery);
     
     return {
       totalSales: parseFloat(salesRows[0].total || 0),
@@ -48,7 +48,7 @@ class DashboardModel {
       ORDER BY totalRevenue DESC
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate]);
+    const rows = await this.query(query, [startDate, endDate]);
     return rows;
   }
 
@@ -64,7 +64,7 @@ class DashboardModel {
       ORDER BY date ASC
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate]);
+    const rows = await this.query(query, [startDate, endDate]);
     return rows;
   }
 
@@ -82,7 +82,7 @@ class DashboardModel {
       LIMIT ?
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate, parseInt(limit)]);
+    const rows = await this.query(query, [startDate, endDate, parseInt(limit)]);
     return rows;
   }
 
@@ -98,7 +98,7 @@ class DashboardModel {
       ORDER BY revenue DESC
     `;
     
-    const [rows] = await pool.execute(query, [startDate, endDate]);
+    const rows = await this.query(query, [startDate, endDate]);
     return rows;
   }
 }

@@ -1,6 +1,6 @@
-const pool = require('../../config/db');
+const BaseModel = require('../BaseModel');
 
-class RatingsModel {
+class RatingsModel extends BaseModel {
   // Get all ratings for a shop (shop ratings only)
   static async getShopRatings(shopId, startDate, endDate) {
     const query = `
@@ -21,7 +21,7 @@ class RatingsModel {
     `;
     
     const params = startDate && endDate ? [shopId, startDate, endDate] : [shopId];
-    const [rows] = await pool.execute(query, params);
+    const rows = await this.query(query, params);
     return rows;
   }
 
@@ -47,7 +47,7 @@ class RatingsModel {
     `;
     
     const params = startDate && endDate ? [shopId, startDate, endDate] : [shopId];
-    const [rows] = await pool.execute(query, params);
+    const rows = await this.query(query, params);
     return rows;
   }
 
@@ -71,7 +71,7 @@ class RatingsModel {
     `;
     
     const params = startDate && endDate ? [shopId, startDate, endDate] : [shopId];
-    const [rows] = await pool.execute(query, params);
+    const rows = await this.query(query, params);
     return rows[0];
   }
 
@@ -95,7 +95,7 @@ class RatingsModel {
     `;
     
     const params = startDate && endDate ? [shopId, startDate, endDate] : [shopId];
-    const [rows] = await pool.execute(query, params);
+    const rows = await this.query(query, params);
     return rows[0];
   }
 
@@ -118,7 +118,7 @@ class RatingsModel {
     `;
     
     const params = startDate && endDate ? [shopId, startDate, endDate] : [shopId];
-    const [rows] = await pool.execute(query, params);
+    const rows = await this.query(query, params);
     return rows;
   }
 
@@ -144,7 +144,7 @@ class RatingsModel {
       LIMIT ?
     `;
     
-    const [rows] = await pool.execute(query, [shopId, parseInt(limit)]);
+    const rows = await this.query(query, [shopId, parseInt(limit)]);
     return rows;
   }
 
@@ -169,7 +169,7 @@ class RatingsModel {
     `;
     
     const params = startDate && endDate ? [shopId, startDate, endDate] : [shopId];
-    const [rows] = await pool.execute(query, params);
+    const rows = await this.query(query, params);
     return rows;
   }
 }
