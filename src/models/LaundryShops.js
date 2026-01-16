@@ -242,7 +242,7 @@ class LaundryShops extends BaseModel {
         data.owner_contactNum,
         data.shop_address,
         data.shop_name,
-        data.shop_status || "active",
+        data.shop_status || "Active",
         data.shop_type,
         shop_id,
       ];

@@ -124,6 +124,19 @@ class Admin extends BaseModel {
     }
   }
 
+  static async isShopActive(shop_id) {
+    const sql =
+      "SELECT shop_status FROM laundry_shops WHERE shop_id = ? LIMIT 1";
+    const results = await this.query(sql, [shop_id]);
+
+    if (results.length === 0) return { exists: false, active: false };
+
+    return {
+      exists: true,
+      active: results[0].shop_status === "Active",
+    };
+  }
+
   static async findByEmailOrUsername(shop_id, emailOrUsername) {
     const sql =
       "SELECT * FROM users WHERE role = 'ADMIN' AND shop_id = ? AND (email = ? OR username = ?)";
@@ -145,6 +158,19 @@ class Admin extends BaseModel {
         };
       }
 
+      const shopStatus = await this.isShopActive(shop_id);
+
+      if (!shopStatus.exists) {
+        return { error: "This shop does not exist in our system." };
+      }
+
+      if (!shopStatus.active) {
+        return {
+          error:
+            "This shop's access has been deactivated. Please contact support.",
+        };
+      }
+
       const admin = await this.findByEmailOrUsername(shop_id, emailOrUsername);
       console.log("Found admin:", admin ? "Yes" : "No");
 
@@ -152,11 +178,26 @@ class Admin extends BaseModel {
         return { error: "Invalid credentials" };
       }
 
+      if (admin.status === "PENDING") {
+        return {
+          error:
+            "Your account is pending approval. Please contact the super admin.",
+        };
+      }
+
+      if (admin.status === "INACTIVE") {
+        return { error: "Your account has been deactivated. Access denied." };
+      }
+
       const match = await bcrypt.compare(password, admin.password);
       console.log("Password match:", match ? "Yes" : "No");
 
       if (!match) {
         return { error: "Invalid credentials" };
+      }
+
+      if (admin.status !== "ACTIVE") {
+        return { error: "Account is not active." };
       }
 
       const token = jwt.sign(
@@ -167,7 +208,7 @@ class Admin extends BaseModel {
           shop_id: admin.shop_id,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" } // <- THIS controls expiration
+        { expiresIn: "1h" }
       );
 
       return {
