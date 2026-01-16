@@ -109,6 +109,19 @@ class User extends BaseModel {
     return results[0];
   }
 
+  static async isShopActive(shop_id) {
+    const sql =
+      "SELECT shop_status FROM laundry_shops WHERE shop_id = ? LIMIT 1";
+    const results = await this.query(sql, [shop_id]);
+
+    if (results.length === 0) return { exists: false, active: false };
+
+    return {
+      exists: true,
+      active: results[0].shop_status === "Active",
+    };
+  }
+
   static async loginCustomer(shop_id, emailOrUsername, password) {
     try {
       console.log("Login attempt with:", { emailOrUsername, password });
@@ -119,6 +132,19 @@ class User extends BaseModel {
         };
       }
 
+      const shopStatus = await this.isShopActive(shop_id);
+
+      if (!shopStatus.exists) {
+        return { error: "This shop does not exist in our system." };
+      }
+
+      if (!shopStatus.active) {
+        return {
+          error:
+            "This shop's access has been deactivated. Please contact support.",
+        };
+      }
+
       const user = await this.findByEmailOrUsername(shop_id, emailOrUsername);
       console.log("Found user:", user ? "Yes" : "No");
 
@@ -126,11 +152,26 @@ class User extends BaseModel {
         return { error: "Invalid credentials" };
       }
 
+      if (user.status === "PENDING") {
+        return {
+          error:
+            "Your account is pending approval. Please contact the super admin or admin.",
+        };
+      }
+
+      if (user.status === "INACTIVE") {
+        return { error: "Your account has been deactivated. Access denied." };
+      }
+
       const match = await bcrypt.compare(password, user.password);
       console.log("Password match:", match ? "Yes" : "No");
 
       if (!match) {
         return { error: "Invalid credentials" };
+      }
+
+      if (user.status !== "ACTIVE") {
+        return { error: "Account is not active." };
       }
 
       const token = jwt.sign(
@@ -182,6 +223,19 @@ class User extends BaseModel {
         };
       }
 
+      const shopStatus = await this.isShopActive(shop_id);
+
+      if (!shopStatus.exists) {
+        return { error: "This shop does not exist in our system." };
+      }
+
+      if (!shopStatus.active) {
+        return {
+          error:
+            "This shop's access has been deactivated. Please contact support.",
+        };
+      }
+
       const user = await this.findByEmailOrUsernameStaffRole(
         shop_id,
         emailOrUsername
@@ -192,11 +246,26 @@ class User extends BaseModel {
         return { error: "Invalid credentials" };
       }
 
+      if (user.status === "PENDING") {
+        return {
+          error:
+            "Your account is pending approval. Please contact the super admin.",
+        };
+      }
+
+      if (user.status === "INACTIVE") {
+        return { error: "Your account has been deactivated. Access denied." };
+      }
+
       const match = await bcrypt.compare(password, user.password);
       console.log("Password match:", match ? "Yes" : "No");
 
       if (!match) {
         return { error: "Invalid credentials" };
+      }
+
+      if (user.status !== "ACTIVE") {
+        return { error: "Account is not active." };
       }
 
       const token = jwt.sign(
@@ -234,73 +303,73 @@ class User extends BaseModel {
   }
 
   static async editUserByID(userId, updateData) {
-  try {
-    if (!userId) {
-      throw new Error("User ID is required for update");
-    }
+    try {
+      if (!userId) {
+        throw new Error("User ID is required for update");
+      }
 
-    const user = await this.findByUserId(userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
-    
-    const originalEmail = user.email;
-    const userRole = user.role;
+      const user = await this.findByUserId(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
 
-    const updatedData = {
-      user_fName: updateData.user_fName || user.user_fName,
-      user_mName: updateData.user_mName || user.user_mName,
-      user_lName: updateData.user_lName || user.user_lName,
-      username: updateData.username || user.username,
-      email: updateData.email || user.email,
-      user_address: updateData.user_address || user.user_address,
-      contactNum: updateData.contactNum || user.contactNum,
-      role: updateData.role || user.role,
-      status: updateData.status || user.status,
-    };
+      const originalEmail = user.email;
+      const userRole = user.role;
 
-    let sql;
-    let identifier;
+      const updatedData = {
+        user_fName: updateData.user_fName || user.user_fName,
+        user_mName: updateData.user_mName || user.user_mName,
+        user_lName: updateData.user_lName || user.user_lName,
+        username: updateData.username || user.username,
+        email: updateData.email || user.email,
+        user_address: updateData.user_address || user.user_address,
+        contactNum: updateData.contactNum || user.contactNum,
+        role: updateData.role || user.role,
+        status: updateData.status || user.status,
+      };
 
-    if (userRole === 'ADMIN') {
-      sql = `
+      let sql;
+      let identifier;
+
+      if (userRole === "ADMIN") {
+        sql = `
         UPDATE users 
         SET user_fName = ?, user_mName = ?, user_lName = ?, username = ?, 
             email = ?, user_address = ?, contactNum = ?, role = ?, status = ?
         WHERE email = ? AND role = 'ADMIN'`;
-      identifier = originalEmail;
-    } else {
-      sql = `
+        identifier = originalEmail;
+      } else {
+        sql = `
         UPDATE users 
         SET user_fName = ?, user_mName = ?, user_lName = ?, username = ?, 
             email = ?, user_address = ?, contactNum = ?, role = ?, status = ?
         WHERE user_id = ?`;
-      identifier = userId;
+        identifier = userId;
+      }
+
+      const result = await this.query(sql, [
+        updatedData.user_fName,
+        updatedData.user_mName,
+        updatedData.user_lName,
+        updatedData.username,
+        updatedData.email,
+        updatedData.user_address,
+        updatedData.contactNum,
+        updatedData.role,
+        updatedData.status,
+        identifier,
+      ]);
+
+      if (result.affectedRows === 0) {
+        throw new Error("No changes were made");
+      }
+
+      return this.findByUserId(userId);
+    } catch (error) {
+      console.error("Update error:", error);
+      throw new Error(`Failed to update user: ${error.message}`);
     }
-
-    const result = await this.query(sql, [
-      updatedData.user_fName,
-      updatedData.user_mName,
-      updatedData.user_lName,
-      updatedData.username,
-      updatedData.email,
-      updatedData.user_address,
-      updatedData.contactNum,
-      updatedData.role,
-      updatedData.status,
-      identifier
-    ]);
-
-    if (result.affectedRows === 0) {
-      throw new Error("No changes were made");
-    }
-
-    return this.findByUserId(userId);
-  } catch (error) {
-    console.error("Update error:", error);
-    throw new Error(`Failed to update user: ${error.message}`);
   }
-}
 
   static async searchUserByIdOrNameWithCustomerRole(shop_id) {
     try {
@@ -340,21 +409,14 @@ class User extends BaseModel {
     }
   }
 
-  static async editCustomerByUserIdShopId(
-    user_id,
-    shop_id,
-    updateData
-  ) {
+  static async editCustomerByUserIdShopId(user_id, shop_id, updateData) {
     try {
       if (!user_id || !shop_id) {
         throw new Error("Staff ID, shop ID and Staff role is required");
       }
 
       // First check if staff exists
-      const staff = await this.selectUserByIdShopIdRole(
-        user_id,
-        shop_id,
-      );
+      const staff = await this.selectUserByIdShopIdRole(user_id, shop_id);
       if (!staff) {
         throw new Error("Customer not found");
       }
