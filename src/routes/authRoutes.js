@@ -45,6 +45,7 @@ const {
   getActivityLogs,
   updateTransPaymentStatusCash,
   getItemHistoryByItemId,
+  getShopAnalytics,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -298,6 +299,8 @@ router.get("/sadmin/dashboard/chart", getSAdminWeeklyChartData);
 
 //-----------ADMIN ITEMS HISTORY DATA
 router.get("/items-history/:item_id", getItemHistoryByItemId);
+
+router.get("/shop/:shop_id/overview", getShopAnalytics);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);
