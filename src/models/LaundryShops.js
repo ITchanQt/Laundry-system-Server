@@ -1,3 +1,4 @@
+const { formatHourRange, getDayPeriod } = require("../utils/formatHourRange");
 const BaseModel = require("./BaseModel");
 
 class LaundryShops extends BaseModel {
@@ -854,6 +855,114 @@ class LaundryShops extends BaseModel {
                   ORDER BY ih.created_at DESC`;
     const results = await this.query(sql, [item_id]);
     return results;
+  }
+
+  // 1) Average transaction process per staff
+  static async selectAverageTransactionsPerStaff(shop_id) {
+    const query = `
+    SELECT 
+      process_by AS staff_id,
+      COUNT(*) AS total_transactions
+    FROM customer_transactions
+    WHERE shop_id = ? 
+      AND process_by IS NOT NULL 
+      AND process_by != ''
+    GROUP BY process_by
+  `;
+
+    const rows = await this.query(query, [shop_id]);
+
+    if (!rows.length) {
+      return {
+        staff_count: 0,
+        total_transactions: 0,
+        average_transactions_per_staff: 0,
+        breakdown: [],
+      };
+    }
+
+    const totalTransactions = rows.reduce(
+      (sum, r) => sum + Number(r.total_transactions),
+      0
+    );
+
+    const staffCount = rows.length;
+    const average = totalTransactions / staffCount;
+
+    return {
+      staff_count: staffCount,
+      total_transactions: totalTransactions,
+      average_transactions_per_staff: Number(average.toFixed(2)),
+      breakdown: rows,
+    };
+  }
+
+  // 2) Most active staff
+  static async selectMostActiveStaff(shop_id) {
+    const query = `
+    SELECT ct.process_by AS staff_id,
+           COUNT(*) AS transaction_count
+    FROM customer_transactions ct
+    WHERE ct.shop_id = ?
+      AND ct.process_by IS NOT NULL 
+      AND ct.process_by != ''
+    GROUP BY ct.process_by
+    ORDER BY transaction_count DESC
+    LIMIT 1
+  `;
+
+    const rows = await this.query(query, [shop_id]);
+
+    if (!rows.length) return null;
+
+    const staffId = rows[0].staff_id;
+
+    const userQuery = `
+    SELECT user_id, user_fName, user_lName
+    FROM users
+    WHERE user_id = ?
+    LIMIT 1
+  `;
+
+    const userRows = await this.query(userQuery, [staffId]);
+
+    return {
+      staff_id: staffId,
+      transaction_count: rows[0].transaction_count,
+      user: userRows.length ? userRows[0] : null,
+    };
+  }
+
+  // 3) Peak system hour usage
+  static async selectPeakSystemHour(shop_id) {
+    const query = `
+    SELECT 
+      HOUR(created_at) AS hour_slot,
+      COUNT(*) AS transaction_count
+    FROM customer_transactions
+    WHERE shop_id = ?
+      AND created_at IS NOT NULL
+    GROUP BY hour_slot
+    ORDER BY transaction_count DESC
+    LIMIT 1
+  `;
+
+    const rows = await this.query(query, [shop_id]);
+
+    if (!rows.length) return null;
+
+    const hour = rows[0].hour_slot;
+    const count = rows[0].transaction_count;
+
+    const formatted = formatHourRange(hour);
+
+    return {
+      peak_hour: hour,
+      peak_hour_label: formatted.label,
+      peak_hour_range: formatted.range,
+      day_period: getDayPeriod(hour),
+      transaction_count: count,
+    };
   }
 }
 

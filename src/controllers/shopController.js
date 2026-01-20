@@ -566,7 +566,7 @@ const getActivityLogs = async (req, res) => {
 
 const getItemHistoryByItemId = async (req, res) => {
   try {
-    const {item_id} = req.params;
+    const { item_id } = req.params;
     if (!item_id) {
       return res.status(400).json({
         success: false,
@@ -586,6 +586,40 @@ const getItemHistoryByItemId = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch items history.",
+    });
+  }
+};
+
+const getShopAnalytics = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "shop_id parameter is required",
+      });
+    }
+
+    const avgProcessPerStaff =
+      await LaundryShops.selectAverageTransactionsPerStaff(shop_id);
+    const mostActiveStaff = await LaundryShops.selectMostActiveStaff(shop_id);
+    const peakHourUsage = await LaundryShops.selectPeakSystemHour(shop_id);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        average_transactions_per_staff: avgProcessPerStaff,
+        most_active_staff: mostActiveStaff,
+        peak_system_hour: peakHourUsage,
+      },
+    });
+  } catch (error) {
+    console.error("Analytics Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
     });
   }
 };
@@ -611,4 +645,5 @@ module.exports = {
   getYearlyFinancialReportStaffModule,
   getActivityLogs,
   getItemHistoryByItemId,
+  getShopAnalytics
 };
