@@ -16,21 +16,20 @@ class DashboardModel extends BaseModel {
       WHERE item_quantity <= item_reorderLevel
     `;
     
-    const paymentsQuery = `
+    const totalBranch = `
       SELECT COUNT(*) as count 
-      FROM customer_transactions 
-      WHERE payment_status = 'PENDING'
+      FROM laundry_shops
     `;
     
     const salesRows = await this.query(salesQuery, [startDate, endDate]);
     const inventoryRows = await this.query(inventoryQuery);
-    const paymentRows = await this.query(paymentsQuery);
+    const branchRows = await this.query(totalBranch);
     
     return {
       totalSales: parseFloat(salesRows[0].total || 0),
       totalOrders: salesRows[0].count || 0,
       lowStockItems: inventoryRows[0].count || 0,
-      pendingPayments: paymentRows[0].count || 0
+      totalBranches: branchRows[0].count || 0
     };
   }
 
