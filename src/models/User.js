@@ -114,11 +114,11 @@ class User extends BaseModel {
       "SELECT shop_status FROM laundry_shops WHERE shop_id = ? LIMIT 1";
     const results = await this.query(sql, [shop_id]);
 
-    if (results.length === 0) return { exists: false, active: false };
+    if (results.length === 0) return { exists: false, status: null };
 
     return {
       exists: true,
-      active: results[0].shop_status === "Active",
+      status: results[0].shop_status,
     };
   }
 
@@ -183,7 +183,7 @@ class User extends BaseModel {
           shop_id: user.shop_id,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "1h" },
       );
 
       return {
@@ -238,7 +238,7 @@ class User extends BaseModel {
 
       const user = await this.findByEmailOrUsernameStaffRole(
         shop_id,
-        emailOrUsername
+        emailOrUsername,
       );
       console.log("Found user:", user ? "Yes" : "No");
 
@@ -277,7 +277,7 @@ class User extends BaseModel {
           shop_id: user.shop_id,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "1h" },
       );
 
       return {
@@ -313,9 +313,6 @@ class User extends BaseModel {
         throw new Error("User not found");
       }
 
-      const originalEmail = user.email;
-      const userRole = user.role;
-
       const updatedData = {
         user_fName: updateData.user_fName || user.user_fName,
         user_mName: updateData.user_mName || user.user_mName,
@@ -328,26 +325,19 @@ class User extends BaseModel {
         status: updateData.status || user.status,
       };
 
-      let sql;
-      let identifier;
+      const query = `UPDATE users
+                SET user_fName = ?,
+                    user_mName = ?,
+                    user_lName = ?,
+                    username = ?,
+                    email = ?,
+                    user_address = ?,
+                    contactNum = ?,
+                    role = ?,
+                    status = ?
+                WHERE user_id = ?`;
 
-      if (userRole === "ADMIN") {
-        sql = `
-        UPDATE users 
-        SET user_fName = ?, user_mName = ?, user_lName = ?, username = ?, 
-            email = ?, user_address = ?, contactNum = ?, role = ?, status = ?
-        WHERE email = ? AND role = 'ADMIN'`;
-        identifier = originalEmail;
-      } else {
-        sql = `
-        UPDATE users 
-        SET user_fName = ?, user_mName = ?, user_lName = ?, username = ?, 
-            email = ?, user_address = ?, contactNum = ?, role = ?, status = ?
-        WHERE user_id = ?`;
-        identifier = userId;
-      }
-
-      const result = await this.query(sql, [
+      const result = await this.query(query, [
         updatedData.user_fName,
         updatedData.user_mName,
         updatedData.user_lName,
@@ -357,16 +347,15 @@ class User extends BaseModel {
         updatedData.contactNum,
         updatedData.role,
         updatedData.status,
-        identifier,
+        userId,
       ]);
 
       if (result.affectedRows === 0) {
-        throw new Error("No changes were made");
+        throw new Error("Failed to update user");
       }
 
       return this.findByUserId(userId);
     } catch (error) {
-      console.error("Update error:", error);
       throw new Error(`Failed to update user: ${error.message}`);
     }
   }

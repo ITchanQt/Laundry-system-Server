@@ -142,17 +142,17 @@ router.post(
       next(); // Continue to controller if no upload errors
     });
   },
-  addShopService
+  addShopService,
 );
 router.get("/get-all-services/:shop_id", getAllServicesByShopId);
 router.put(
   "/update-service/:service_id",
   upload.single("image"),
-  updateShopService
+  updateShopService,
 );
 router.put(
   "/update-services-display-settings/:shop_id",
-  updateServicesDisplaySettings
+  updateServicesDisplaySettings,
 );
 
 //-----SHOP PRICES MANAGEMENT API's-------//
@@ -182,17 +182,17 @@ router.post(
       next(); // Continue to controller if no upload errors
     });
   },
-  addShopPrices
+  addShopPrices,
 );
 router.get("/get-all-prices/:shop_id", getAllPricesByShopId);
 router.put(
   "/update-price/:pricing_id",
   upload.single("image"),
-  updateShopPrice
+  updateShopPrice,
 );
 router.put(
   "/update-prices-display-settings/:shop_id",
-  updatePricesDisplaySettings
+  updatePricesDisplaySettings,
 );
 
 //-----SHOP PAYMENT METHODS MANAGEMENT API's-------//
@@ -223,16 +223,16 @@ router.post(
       next(); // Continue to controller if no upload errors
     });
   },
-  addPaymentMethod
+  addPaymentMethod,
 );
 router.put(
   "/update-payment-method/:pm_id",
   upload.single("image"),
-  updateShopPaymentMethod
+  updateShopPaymentMethod,
 );
 router.put(
   "/update-mp-display-settings/:shop_id",
-  updatePaymentMethodDisplaySettings
+  updatePaymentMethodDisplaySettings,
 );
 
 //-----SMS NOTIFICATION-------//
@@ -270,16 +270,19 @@ router.get("/get-all-on-service-trans/:shop_id", getPendingServiceTrans);
 // -----------STAFF PENDING PAYMENT STATUS TRANSACTION
 router.get(
   "/get-pending-payment-status-trans/:shop_id",
-  getPendingPaymentStatusTrans
+  getPendingPaymentStatusTrans,
 );
 router.put("/update-payment-status/:laundryId", updateTransPaymentStatus);
-router.put("/update-payment-status-cash/:laundryId", updateTransPaymentStatusCash);
+router.put(
+  "/update-payment-status-cash/:laundryId",
+  updateTransPaymentStatusCash,
+);
 
 //-----------STAFF READY TO PICK UP SERVICE STATUS TRANSACTION
 router.get("/get-ready-to-pick-up-trans/:shop_id", getReadyToPickUpTrans);
 router.put(
   "/update-ready-to-pick-up-trans/:laundryId",
-  updateReadyToPickUpIfPaidTrans
+  updateReadyToPickUpIfPaidTrans,
 );
 
 //-----------STAFF LAUNDRY DONE OR COMPLETED SERVICE STATUS TRANSACTION

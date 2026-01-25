@@ -6,7 +6,7 @@ const {
   loginAdmin,
   loginStaff,
 } = require("../controllers/authController");
-const { registerAdmin } = require("../controllers/adminController");
+const { registerAdmin, searchAdminsByEmail } = require("../controllers/adminController");
 const {
   registerLaundryShop,
   editShop,
@@ -38,6 +38,7 @@ router.post("/register-laundry-shop", registerLaundryShop);
 router.put("/edit-shop/:shop_id", editShop);
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
+router.get("/admin/search", searchAdminsByEmail);
 
 router.get("/shop-name-slug", getShopNameAndSlug);
 router.get("/shop-slug/:slug", getShopBySlug);
