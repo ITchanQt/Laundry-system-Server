@@ -10,6 +10,7 @@ const { registerAdmin, searchAdminsByEmail } = require("../controllers/adminCont
 const {
   registerLaundryShop,
   editShop,
+  uploadBusinessDocs,
 } = require("../controllers/shopController");
 const {
   getShopAbout,
@@ -27,6 +28,8 @@ const {
 } = require("../controllers/auth/authController");
 const { verifyOtp, sendOtp } = require("../controllers/otpController");
 const { verifySuperAdmin, dashboard, superAdminLogin } = require("../controllers/superAdminController");
+const { upload } = require("../middlewares/upload");
+const multer = require("multer");
 
 // Public routes that don't need authentication
 router.post("/register", registerUser);
@@ -39,6 +42,13 @@ router.put("/edit-shop/:shop_id", editShop);
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
 router.get("/admin/search", searchAdminsByEmail);
+
+//________ROUTES FOR UPLOADING BUSINESS DOCS______________
+router.post(
+  "/upload-business-docs",
+  upload.array("business_documents", 10),
+  uploadBusinessDocs
+);
 
 router.get("/shop-name-slug", getShopNameAndSlug);
 router.get("/shop-slug/:slug", getShopBySlug);

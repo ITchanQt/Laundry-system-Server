@@ -107,7 +107,6 @@ class LaundryShops extends BaseModel {
       const updateAdminSql = `UPDATE users SET shop_id = ? WHERE user_id = ?`;
       await this.query(updateAdminSql, [shop_id, admin_id]);
 
-      // 3. INSERT SERVICES
       const serviceList = shop_type
         .split(",")
         .map((s) => s.trim())
@@ -129,6 +128,32 @@ class LaundryShops extends BaseModel {
     } catch (error) {
       console.error("Error creating laundry shop:", error);
       throw new Error(`Failed to create laundry shop: ${error.message}`);
+    }
+  }
+
+  static async createBatch(docsArray) {
+    try {
+      if (!Array.isArray(docsArray) || docsArray.length === 0) {
+        throw new Error("Documents array cannot be empty");
+      }
+
+      const values = docsArray.map(() => "(?, ?, ?, NOW())").join(",");
+      const params = [];
+
+      docsArray.forEach((doc) => {
+        params.push(doc.shop_id, doc.docs_name, doc.docs_img);
+      });
+
+      const sql = `
+        INSERT INTO business_docs (shop_id, docs_type, docs_img, created_at)
+        VALUES ${values}
+      `;
+
+      const result = await this.query(sql, params);
+      return result;
+    } catch (error) {
+      console.error("Model Error in createBatch:", error);
+      throw error;
     }
   }
 

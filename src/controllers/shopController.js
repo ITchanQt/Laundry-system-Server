@@ -1,4 +1,5 @@
 const LaundryShops = require("../models/LaundryShops");
+const { supabase } = require("../config/supabase");
 
 const registerLaundryShop = async (req, res) => {
   try {
@@ -16,7 +17,7 @@ const registerLaundryShop = async (req, res) => {
     const existingShop = await LaundryShops.findByName(
       shop_name,
       owner_emailAdd,
-      owner_contactNum
+      owner_contactNum,
     );
 
     if (existingShop) {
@@ -38,6 +39,102 @@ const registerLaundryShop = async (req, res) => {
     console.error("Register laundry shop error:", error);
     return res.status(500).json({
       success: false,
+      error: error.message,
+    });
+  }
+};
+
+const uploadBusinessDocs = async (req, res) => {
+  try {
+    const { shop_id, docs_types } = req.body;
+    const files = req.files;
+    
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required",
+      });
+    }
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least one document",
+      });
+    }
+
+    let docTypes = [];
+    try {
+      docTypes = Array.isArray(docs_types)
+        ? docs_types
+        : JSON.parse(docs_types || "[]");
+    } catch (e) {
+      docTypes = Array.isArray(docs_types) ? docs_types : [];
+    }
+
+    if (files.length !== docTypes.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Number of files and document types must match",
+      });
+    }
+
+    const uploadedDocs = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const docsName = docTypes[i];
+
+      if (!docsName || typeof docsName !== "string") {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid document type for file ${i + 1}`,
+        });
+      }
+
+      const fileExt = file.originalname.split(".").pop();
+      const cleanFileName = file.originalname.replace(/[^a-zA-Z0-9.]/g, "_");
+      const timestamp = Date.now();
+      const filePath = `${shop_id}/${timestamp}-${i}-${cleanFileName}`;
+
+      const { data, error } = await supabase.storage
+        .from("shop-images")
+        .upload(`business_proofs/${filePath}`, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false,
+        });
+
+      if (error) {
+        console.error("Supabase upload error:", error);
+        throw new Error(`Failed to upload file: ${file.originalname}`);
+      }
+
+      const { data: publicData } = supabase.storage
+        .from("shop-images")
+        .getPublicUrl(`business_proofs/${filePath}`);
+
+      const publicUrl = publicData.publicUrl;
+
+      uploadedDocs.push({
+        shop_id,
+        docs_name: docsName,
+        docs_img: publicUrl,
+      });
+    }
+
+    const result = await LaundryShops.createBatch(uploadedDocs);
+
+    res.status(201).json({
+      success: true,
+      message: "Documents uploaded successfully!",
+      data: uploadedDocs,
+      insertedCount: uploadedDocs.length,
+    });
+  } catch (error) {
+    console.error("Document Upload Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during upload",
       error: error.message,
     });
   }
@@ -96,7 +193,7 @@ const addShopInventory = async (req, res) => {
 
     const existingItem = await LaundryShops.findByItemNameAndShopId(
       item_name,
-      shop_id
+      shop_id,
     );
     if (existingItem && existingItem.length > 0) {
       return res.status(400).json({
@@ -157,7 +254,7 @@ const editItemById = async (req, res) => {
     const duplicates = await LaundryShops.findDuplicateByNameAndShopId(
       item_name,
       shop_id,
-      item_id
+      item_id,
     );
 
     if (duplicates && duplicates.length > 0) {
@@ -168,7 +265,7 @@ const editItemById = async (req, res) => {
     }
     const updatedItem = await LaundryShops.editShopInventoryById(
       item_id,
-      req.body
+      req.body,
     );
     res.status(200).json({
       success: true,
@@ -195,7 +292,7 @@ const updateMultipleInventoryItems = async (req, res) => {
 
     for (const item of items) {
       const existingItem = await LaundryShops.getInventoryItemById(
-        item.item_id
+        item.item_id,
       );
 
       if (!existingItem) {
@@ -216,7 +313,7 @@ const updateMultipleInventoryItems = async (req, res) => {
         user_id,
         newQty,
         newReorderLevel,
-        qtyChange
+        qtyChange,
       );
     }
 
@@ -344,7 +441,7 @@ const updateTransPaymentStatus = async (req, res) => {
 
     const result = await LaundryShops.updatePaymentStatus(
       laundryId,
-      payment_status
+      payment_status,
     );
     return res.status(200).json({
       success: true,
@@ -374,7 +471,7 @@ const updateTransPaymentStatusCash = async (req, res) => {
 
     const result = await LaundryShops.updatePaymentStatusCash(
       laundryId,
-      payment_status
+      payment_status,
     );
     return res.status(200).json({
       success: true,
@@ -409,7 +506,7 @@ const getReadyToPickUpTrans = async (req, res) => {
   } catch (error) {
     console.error(
       "Error fetching ready to pick up service status transactions:",
-      error
+      error,
     );
     return res.status(500).json({
       success: false,
@@ -432,7 +529,7 @@ const updateReadyToPickUpIfPaidTrans = async (req, res) => {
 
     const result = await LaundryShops.updateReadyToPickUpIfPaid(
       service_status,
-      laundryId
+      laundryId,
     );
 
     if (result.affectedRows === 0) {
@@ -476,7 +573,7 @@ const getCompletedTransaction = async (req, res) => {
   } catch (error) {
     console.error(
       "Error fetching Laundry Done or completed service status transactions:",
-      error
+      error,
     );
     return res.status(500).json({
       success: false,
@@ -619,6 +716,7 @@ const getShopAnalytics = async (req, res) => {
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
+  uploadBusinessDocs,
   getAllShops,
   editShop,
   addShopInventory,
@@ -637,5 +735,5 @@ module.exports = {
   getYearlyFinancialReportStaffModule,
   getActivityLogs,
   getItemHistoryByItemId,
-  getShopAnalytics
+  getShopAnalytics,
 };
