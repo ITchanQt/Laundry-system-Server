@@ -49,36 +49,14 @@ class ForgotAndResetPassword extends BaseModel {
     return result[0];
   }
 
-  static async findByUserId(userId) {
-    const sql = "SELECT * FROM users WHERE user_id = ?";
-    const results = await this.query(sql, [userId]);
-    return results[0];
-  }
-
   static async updatePassword(admin_id, password) {
-    try {
-      const user = await this.findByUserId(admin_id);
-      if (!user) {
-        throw new Error("Admin not found");
-      }
-
-      const sql = `
-      UPDATE users 
-      SET password = ?, reset_token = NULL, reset_token_expires = NULL 
-      WHERE email = ?
-    `;
-
-      const result = await this.query(sql, [password, user.email]);
-
-      if (result.affectedRows === 0) {
-        throw new Error("Failed to update password");
-      }
-
-      return result;
-    } catch (error) {
-      console.error("Update password error:", error);
-      throw new Error(`Failed to update password: ${error.message}`);
-    }
+    const sql = `
+    UPDATE users 
+    SET password = ?, reset_token = NULL, reset_token_expires = NULL 
+    WHERE user_id = ?
+  `;
+    const result = await this.query(sql, [password, admin_id]);
+    return result;
   }
 }
 

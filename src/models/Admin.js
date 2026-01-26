@@ -115,7 +115,7 @@ class Admin extends BaseModel {
       // Debug log
       console.log(
         "Creating admin with params:",
-        params.map((p) => (p === null ? "NULL" : p))
+        params.map((p) => (p === null ? "NULL" : p)),
       );
 
       return await this.query(sql, params);
@@ -129,11 +129,11 @@ class Admin extends BaseModel {
       "SELECT shop_status FROM laundry_shops WHERE shop_id = ? LIMIT 1";
     const results = await this.query(sql, [shop_id]);
 
-    if (results.length === 0) return { exists: false, active: false };
+    if (results.length === 0) return { exists: false, status: null };
 
     return {
       exists: true,
-      active: results[0].shop_status === "Active",
+      status: results[0].shop_status,
     };
   }
 
@@ -158,13 +158,20 @@ class Admin extends BaseModel {
         };
       }
 
-      const shopStatus = await this.isShopActive(shop_id);
+      const shopCheck = await this.isShopActive(shop_id);
 
-      if (!shopStatus.exists) {
+      if (!shopCheck.exists) {
         return { error: "This shop does not exist in our system." };
       }
 
-      if (!shopStatus.active) {
+      if (shopCheck.status === "Pending") {
+        return {
+          error:
+            "Your shop registration is still pending approval. Our team is currently reviewing your business documents.",
+        };
+      }
+
+      if (shopCheck.status !== "Active") {
         return {
           error:
             "This shop's access has been deactivated. Please contact support.",
@@ -208,7 +215,7 @@ class Admin extends BaseModel {
           shop_id: admin.shop_id,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "1h" },
       );
 
       return {
