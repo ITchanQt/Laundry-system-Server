@@ -6,7 +6,10 @@ const {
   loginAdmin,
   loginStaff,
 } = require("../controllers/authController");
-const { registerAdmin, searchAdminsByEmail } = require("../controllers/adminController");
+const {
+  registerAdmin,
+  searchAdminsByEmail,
+} = require("../controllers/adminController");
 const {
   registerLaundryShop,
   editShop,
@@ -27,7 +30,11 @@ const {
   forgotPasswordStaff,
 } = require("../controllers/auth/authController");
 const { verifyOtp, sendOtp } = require("../controllers/otpController");
-const { verifySuperAdmin, dashboard, superAdminLogin } = require("../controllers/superAdminController");
+const {
+  verifySuperAdmin,
+  dashboard,
+  superAdminLogin,
+} = require("../controllers/superAdminController");
 const { upload } = require("../middlewares/upload");
 const multer = require("multer");
 
@@ -47,7 +54,7 @@ router.get("/admin/search", searchAdminsByEmail);
 router.post(
   "/upload-business-docs",
   upload.array("business_documents", 10),
-  uploadBusinessDocs
+  uploadBusinessDocs,
 );
 
 router.get("/shop-name-slug", getShopNameAndSlug);
@@ -66,6 +73,6 @@ router.post("/reset-password", resetPassword);
 
 //-----SUPER ADMIN LOGIN(Google OAuth) API's-------//
 router.get("/dashboard", verifySuperAdmin, dashboard);
-router.post('/super-admin/login', superAdminLogin);
+router.post("/super-admin/login", superAdminLogin);
 
 module.exports = router;

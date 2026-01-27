@@ -157,6 +157,36 @@ class LaundryShops extends BaseModel {
     }
   }
 
+  static async findBusDocsByShopId(shop_id) {
+    try {
+      const sql = `
+        SELECT * FROM business_docs 
+        WHERE shop_id = ? 
+        ORDER BY created_at DESC
+      `;
+
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("Model Error in findBusDocsByShopId:", error);
+      throw error;
+    }
+  }
+
+  static async setShopStatus(shop_id, shop_status) {
+    try {
+      const sql = `
+                  UPDATE laundry_shops
+                  SET shop_status = ?
+                  WHERE shop_id = ?`;
+      const result = await this.query(sql, [shop_status, shop_id]);
+      return result;
+    } catch (error) {
+      console.error("Model Error in setShopStatus:", error);
+      throw error;
+    }
+  }
+
   static async getAllShops() {
     try {
       const shopSql = "SELECT * FROM laundry_shops";

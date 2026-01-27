@@ -48,7 +48,7 @@ const uploadBusinessDocs = async (req, res) => {
   try {
     const { shop_id, docs_types } = req.body;
     const files = req.files;
-    
+
     if (!shop_id) {
       return res.status(400).json({
         success: false,
@@ -135,6 +135,63 @@ const uploadBusinessDocs = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Internal server error during upload",
+      error: error.message,
+    });
+  }
+};
+
+const getBusinessDocsByShop = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required",
+      });
+    }
+
+    const docs = await LaundryShops.findBusDocsByShopId(shop_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Business documents fetched successfully",
+      data: docs,
+      count: docs.length,
+    });
+  } catch (error) {
+    console.error("Error fetching business documents:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch business documents",
+      error: error.message,
+    });
+  }
+};
+
+const updateShopStatus = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { shop_status } = req.body;
+
+    if (!shop_id || !shop_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID and shop status are required.",
+      });
+    }
+
+    const result = await LaundryShops.setShopStatus(shop_id, shop_status);
+    return res.status(200).json({
+      success: true,
+      message: "Shop status successfully updated.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error updating shop status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update shop status",
       error: error.message,
     });
   }
@@ -717,6 +774,8 @@ const getShopAnalytics = async (req, res) => {
 module.exports = {
   registerLaundryShop,
   uploadBusinessDocs,
+  getBusinessDocsByShop,
+  updateShopStatus,
   getAllShops,
   editShop,
   addShopInventory,
