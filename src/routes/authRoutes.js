@@ -46,6 +46,8 @@ const {
   updateTransPaymentStatusCash,
   getItemHistoryByItemId,
   getShopAnalytics,
+  getBusinessDocsByShop,
+  updateShopStatus,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -103,6 +105,10 @@ router.get("/users/search/:shop_id", getUsersByIdOrNameWithCustomerRole);
 router.get("/users/search/:shop_id/:user_id", getUserByIdAndShopId);
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
+
+//-----SHOP DOCS VIEWING AND UPDATE STATUS API's-------//
+router.get("/business-docs/:shop_id", getBusinessDocsByShop);
+router.put("/update-shop-stat/:shop_id", updateShopStatus);
 
 //-----SHOP INVENTORY API's-------//
 router.post("/add-shop-inventory", addShopInventory);
