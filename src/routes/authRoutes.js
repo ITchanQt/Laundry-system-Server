@@ -48,6 +48,7 @@ const {
   getShopAnalytics,
   getBusinessDocsByShop,
   updateShopStatus,
+  registerLaundryShopBranch,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -95,7 +96,7 @@ router.post("/logout", logoutUser);
 router.post("/register-admin", registerAdmin);
 router.get("/laundry-shops", getAllShops);
 router.get("/users", getAllUsers);
-router.post("/register-laundry-shop", registerLaundryShop);
+router.post("/register-laundry-shop-branch", registerLaundryShopBranch);
 router.put("/edit-shop/:shop_id", editShop);
 router.get("/admins", getAllAdmins);
 router.put("/edit-user/:userId", editUser);
