@@ -122,7 +122,7 @@ const uploadBusinessDocs = async (req, res) => {
       });
     }
 
-    const result = await LaundryShops.createBatch(uploadedDocs);
+    const result = await LaundryShops.createBusDocs(uploadedDocs);
 
     res.status(201).json({
       success: true,
@@ -135,6 +135,62 @@ const uploadBusinessDocs = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Internal server error during upload",
+      error: error.message,
+    });
+  }
+};
+
+const registerLaundryShopBranch = async (req, res) => {
+  try {
+    const {
+      parent_shopId,
+      admin_id,
+      owner_emailAdd,
+      owner_contactNum,
+      shop_name,
+    } = req.body;
+
+    const adminExist = await LaundryShops.findByEmail(owner_emailAdd);
+    if (!adminExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Email doesn't exist!",
+      });
+    }
+
+    if (!parent_shopId) {
+      return res.status(400).json({
+        success: false,
+        message: "Main branch shop ID is required!",
+      });
+    }
+
+    // Check if the shop already exists
+    const existingShop = await LaundryShops.findByName(
+      shop_name,
+      owner_emailAdd,
+      owner_contactNum,
+    );
+
+    if (existingShop) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop already exists",
+      });
+    }
+
+    const result = await LaundryShops.createBranch(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Laundry shop registered successfully",
+      shop_id: result.shop_id,
+      admin_id: result.admin_id,
+    });
+  } catch (error) {
+    console.error("Register laundry shop error:", error);
+    return res.status(500).json({
+      success: false,
       error: error.message,
     });
   }
@@ -774,6 +830,7 @@ const getShopAnalytics = async (req, res) => {
 module.exports = {
   registerLaundryShop,
   uploadBusinessDocs,
+  registerLaundryShopBranch,
   getBusinessDocsByShop,
   updateShopStatus,
   getAllShops,

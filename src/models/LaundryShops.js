@@ -131,7 +131,7 @@ class LaundryShops extends BaseModel {
     }
   }
 
-  static async createBatch(docsArray) {
+  static async createBusDocs(docsArray) {
     try {
       if (!Array.isArray(docsArray) || docsArray.length === 0) {
         throw new Error("Documents array cannot be empty");
@@ -152,7 +152,7 @@ class LaundryShops extends BaseModel {
       const result = await this.query(sql, params);
       return result;
     } catch (error) {
-      console.error("Model Error in createBatch:", error);
+      console.error("Model Error in createBusDocs:", error);
       throw error;
     }
   }
@@ -170,6 +170,71 @@ class LaundryShops extends BaseModel {
     } catch (error) {
       console.error("Model Error in findBusDocsByShopId:", error);
       throw error;
+    }
+  }
+
+  static async createBranch(shopData) {
+    try {
+      const shop_id = await this.generateShopId();
+
+      const {
+        parent_shopId,
+        admin_id,
+        owner_fName,
+        owner_mName,
+        owner_lName,
+        owner_emailAdd,
+        owner_contactNum,
+        shop_address,
+        shop_name,
+        slug,
+        shop_status = "Pending",
+        shop_type,
+      } = shopData;
+
+      const insertShopSql = `
+      INSERT INTO laundry_shops 
+      (shop_id, parent_shop_id, admin_id, admin_fName, admin_mName, admin_lName, admin_emailAdd, admin_contactNum, shop_address, shop_name, slug, shop_status, shop_type)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+      await this.query(insertShopSql, [
+        shop_id,
+        parent_shopId,
+        admin_id,
+        owner_fName,
+        owner_mName,
+        owner_lName,
+        owner_emailAdd,
+        owner_contactNum,
+        shop_address,
+        shop_name,
+        slug,
+        shop_status,
+        shop_type,
+      ]);
+
+      const serviceList = shop_type
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+
+      await this.query(`DELETE FROM shop_services WHERE shop_id = ?`, [
+        shop_id,
+      ]);
+
+      const insertServiceSQL = `INSERT INTO shop_services (shop_id, service_name, is_displayed) VALUES (?, ?, ?)`;
+
+      const uniqueServices = [...new Set(serviceList)];
+
+      for (const service of uniqueServices) {
+        await this.query(insertServiceSQL, [shop_id, service, "true"]);
+      }
+
+      return { success: true, shop_id, admin_id };
+    } catch (error) {
+      console.error("Error creating shop branch:", error);
+      throw new Error(`Failed to create shop branch: ${error.message}`);
     }
   }
 

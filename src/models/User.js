@@ -302,6 +302,21 @@ class User extends BaseModel {
     return results;
   }
 
+  static async findUsersByShopScope(shop_id) {
+    const sql = `
+                SELECT u.*
+                FROM users u
+                JOIN laundry_shops s ON s.shop_id = ?
+                WHERE (
+                    u.shop_id = s.shop_id
+                    OR (u.shop_id = s.parent_shop_id AND u.role = 'ADMIN')
+                )
+                `;
+
+    const results = await this.query(sql, [shop_id]);
+    return results;
+  }
+
   static async editUserByID(userId, updateData) {
     try {
       if (!userId) {

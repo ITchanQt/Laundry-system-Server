@@ -124,6 +124,16 @@ class Admin extends BaseModel {
     }
   }
 
+  static async resolveShopScope(shop_id) {
+    const sql = `
+    SELECT shop_id, parent_shop_id
+    FROM laundry_shops
+    WHERE shop_id = ?
+  `;
+    const results = await this.query(sql, [shop_id]);
+    return results[0] || null;
+  }
+
   static async isShopActive(shop_id) {
     const sql =
       "SELECT shop_status FROM laundry_shops WHERE shop_id = ? LIMIT 1";
@@ -138,20 +148,27 @@ class Admin extends BaseModel {
   }
 
   static async findByEmailOrUsername(shop_id, emailOrUsername) {
-    const sql =
-      "SELECT * FROM users WHERE role = 'ADMIN' AND shop_id = ? AND (email = ? OR username = ?)";
+    const sql = `
+    SELECT u.*
+    FROM users u
+    JOIN laundry_shops s ON s.shop_id = ?
+    WHERE u.role = 'ADMIN'
+      AND (u.shop_id = s.shop_id OR u.shop_id = s.parent_shop_id)
+      AND (u.email = ? OR u.username = ?)
+    LIMIT 1
+  `;
+
     const results = await this.query(sql, [
       shop_id,
       emailOrUsername,
       emailOrUsername,
     ]);
-    return results[0];
+
+    return results[0] || null;
   }
 
   static async login(shop_id, emailOrUsername, password) {
     try {
-      console.log("Login attempt with:", { emailOrUsername, password });
-
       if (!shop_id) {
         return {
           error: "Invalid shop. Please login from the correct shop URL.",
@@ -178,8 +195,15 @@ class Admin extends BaseModel {
         };
       }
 
-      const admin = await this.findByEmailOrUsername(shop_id, emailOrUsername);
-      console.log("Found admin:", admin ? "Yes" : "No");
+      const shopScope = await this.resolveShopScope(shop_id);
+      if (!shopScope) {
+        return { error: "Invalid shop." };
+      }
+
+      const admin = await this.findByEmailOrUsername(
+        shopScope.shop_id,
+        emailOrUsername,
+      );
 
       if (!admin) {
         return { error: "Invalid credentials" };
@@ -212,7 +236,8 @@ class Admin extends BaseModel {
           id: admin.user_id,
           username: admin.username,
           role: "admin",
-          shop_id: admin.shop_id,
+          shop_id: shopScope.shop_id,
+          owner_shop_id: admin.shop_id,
         },
         process.env.JWT_SECRET,
         { expiresIn: "1h" },
@@ -222,9 +247,10 @@ class Admin extends BaseModel {
         token,
         admin: {
           id: admin.user_id,
-          username: admin.admin_username,
+          username: admin.username,
           email: admin.email,
-          shop_id: admin.shop_id,
+          shop_id: shopScope.shop_id,
+          owner_shop_id: admin.shop_id,
         },
       };
     } catch (error) {
