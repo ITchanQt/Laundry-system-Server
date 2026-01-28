@@ -24,6 +24,7 @@ const {
   getUserByIdAndShopId,
   getUserByUserIdShopIdRole,
   updateStaffByUserIdShopId,
+  getUsersByShopScope,
 } = require("../controllers/userController");
 const {
   getAllShops,
@@ -96,6 +97,7 @@ router.post("/logout", logoutUser);
 router.post("/register-admin", registerAdmin);
 router.get("/laundry-shops", getAllShops);
 router.get("/users", getAllUsers);
+router.get("/users-by-shop-scope/:shop_id", getUsersByShopScope);
 router.post("/register-laundry-shop-branch", registerLaundryShopBranch);
 router.put("/edit-shop/:shop_id", editShop);
 router.get("/admins", getAllAdmins);
