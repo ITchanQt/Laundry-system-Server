@@ -94,6 +94,66 @@ class User extends BaseModel {
     }
   }
 
+  static async createWalkInCustomer(cus_data) {
+    try {
+      const user_id = await this.generateUserId();
+
+      const {
+        shop_id,
+        user_fName,
+        user_lName,
+        user_address = null,
+        contactNum,
+        role = "CUSTOMER",
+        username = "WALK IN",
+        email = "WALK IN",
+        status = "ACTIVE",
+        registered_by,
+      } = cus_data;
+
+      const sql = `INSERT INTO users 
+                    (
+                    user_id, 
+                    shop_id, 
+                    user_fName, 
+                    user_lName, 
+                    user_address, 
+                    contactNum, 
+                    role, 
+                    username, 
+                    email, 
+                    status, 
+                    registered_by
+                    )
+                    VALUES 
+                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+      await this.query(sql, [
+        user_id,
+        shop_id,
+        user_fName,
+        user_lName,
+        user_address,
+        contactNum,
+        role,
+        username,
+        email,
+        status,
+        registered_by,
+      ]);
+
+      return {
+        user_id,
+        user_fName,
+        user_lName,
+        user_address,
+        contactNum,
+      };
+    } catch (error) {
+      throw new Error(`Failed to create walk in customer: ${error.message}`);
+    }
+  }
+
   static async verifyPassword(plainPassword, hashedPassword) {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
@@ -131,14 +191,25 @@ class User extends BaseModel {
           error: "Invalid shop. Please login from the correct shop URL.",
         };
       }
+      
+      if(emailOrUsername === 'WALK IN' || password === "NULL" || password === " ") {
+        return { error: "Error login" };
+      }
 
-      const shopStatus = await this.isShopActive(shop_id);
+      const shopCheck = await this.isShopActive(shop_id);
 
-      if (!shopStatus.exists) {
+      if (!shopCheck.exists) {
         return { error: "This shop does not exist in our system." };
       }
 
-      if (!shopStatus.active) {
+      if (shopCheck.status === "Pending") {
+        return {
+          error:
+            "Your shop registration is still pending approval. Our team is currently reviewing your business documents.",
+        };
+      }
+
+      if (shopCheck.status !== "Active") {
         return {
           error:
             "This shop's access has been deactivated. Please contact support.",
@@ -223,13 +294,20 @@ class User extends BaseModel {
         };
       }
 
-      const shopStatus = await this.isShopActive(shop_id);
+      const shopCheck = await this.isShopActive(shop_id);
 
-      if (!shopStatus.exists) {
+      if (!shopCheck.exists) {
         return { error: "This shop does not exist in our system." };
       }
 
-      if (!shopStatus.active) {
+      if (shopCheck.status === "Pending") {
+        return {
+          error:
+            "Your shop registration is still pending approval. Our team is currently reviewing your business documents.",
+        };
+      }
+
+      if (shopCheck.status !== "Active") {
         return {
           error:
             "This shop's access has been deactivated. Please contact support.",
@@ -297,7 +375,7 @@ class User extends BaseModel {
   }
 
   static async getAllUsers() {
-    const query = "SELECT * FROM users";
+    const query = "SELECT * FROM users ORDER BY date_registered DESC";
     const results = await this.query(query);
     return results;
   }
@@ -311,6 +389,7 @@ class User extends BaseModel {
                     u.shop_id = s.shop_id
                     OR (u.shop_id = s.parent_shop_id AND u.role = 'ADMIN')
                 )
+                ORDER BY u.date_registered DESC
                 `;
 
     const results = await this.query(sql, [shop_id]);
