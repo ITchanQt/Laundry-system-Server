@@ -18,6 +18,7 @@ const {
   createRating,
   getActivityLogs,
   getCompletedOrdersOfForCustomerReport,
+  registerWalkInCustomer,
 } = require("../controllers/customerController");
 const authenticate = require("../middlewares/authMiddleware");
 const validateApiKey = require("../middlewares/apiKeyMiddleware");
@@ -34,6 +35,7 @@ router.post("/register", registerCustomer);
 router.get("/:customerId", getCustomerById);
 router.get("/", getAllCustomers);
 router.put("/:customerId", editCustomer);
+router.post("/register-walk-in-cus", registerWalkInCustomer);
 
 // Laundry record routes
 router.post("/laundry-record", createLaundryRecord);

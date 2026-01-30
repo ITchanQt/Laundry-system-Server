@@ -682,7 +682,7 @@ class LaundryShops extends BaseModel {
       const sql = `SELECT * FROM customer_transactions
                    WHERE status = 'On Service'
                    AND shop_id = ?
-                   ORDER BY created_at ASC`;
+                   ORDER BY created_at DESC`;
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -696,7 +696,7 @@ class LaundryShops extends BaseModel {
       const sql = `SELECT * FROM customer_transactions
                   WHERE payment_status = "PENDING"
                   AND shop_id = ?
-                  ORDER BY created_at ASC`;
+                  ORDER BY created_at DESC`;
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -773,7 +773,7 @@ class LaundryShops extends BaseModel {
                   FROM customer_transactions
                   WHERE status = "Ready to pick up"
                   AND shop_id = ?
-                  ORDER BY created_at ASC 
+                  ORDER BY created_at DESC 
                   `;
       const results = await this.query(sql, [shop_id]);
       return results;

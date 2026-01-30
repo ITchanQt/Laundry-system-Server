@@ -1,5 +1,6 @@
 const { supabase } = require("../config/supabase");
 const Customer = require("../models/Customer");
+const User = require("../models/User");
 
 const registerCustomer = async (req, res) => {
   try {
@@ -23,6 +24,32 @@ const registerCustomer = async (req, res) => {
     });
   } catch (error) {
     console.error("Customer registration error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+const registerWalkInCustomer = async (req, res) => {
+  try {
+    const { shop_id } = req.body;
+
+    if (!shop_id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Shop ID is required" });
+    }
+
+    const walk_in_cus = await User.createWalkInCustomer(req.body);
+    res.status(201).json({
+      success: true,
+      message: "walk in customer registered successfully",
+      data: walk_in_cus,
+    });
+
+  } catch (error) {
+    console.error("Register walk in customer error:", error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -102,7 +129,7 @@ const editCustomer = async (req, res) => {
 
     const updatedCustomer = await Customer.editCustomerbyId(
       customerId,
-      req.body
+      req.body,
     );
     res.status(200).json({
       success: true,
@@ -140,7 +167,7 @@ const getUserByUserIdShopIdRole = async (req, res) => {
     const customer = await Customer.selectUserByIdShopIdRole(
       user_id,
       shop_id,
-      role
+      role,
     );
 
     if (!customer) {
@@ -159,7 +186,7 @@ const getUserByUserIdShopIdRole = async (req, res) => {
   } catch (error) {
     console.error(
       "customerController.getUserByUserIdShopIdRole error: ",
-      error
+      error,
     );
     res.status(500).json({
       success: false,
@@ -192,7 +219,7 @@ const updateCustomerByUserIdShopIdRole = async (req, res) => {
       user_id,
       shop_id,
       role,
-      req.body
+      req.body,
     );
 
     if (!updatedCustomerData) {
@@ -210,7 +237,7 @@ const updateCustomerByUserIdShopIdRole = async (req, res) => {
   } catch (error) {
     console.error(
       "customerController.updateCustomerByUserIdShopIdRole error: ",
-      error
+      error,
     );
     res.status(500).json({
       success: false,
@@ -240,7 +267,7 @@ const getCompletedOrdersOfTheMonthByShopId = async (req, res) => {
   } catch (error) {
     console.error(
       "customerController.getCompletedOrdersOfTheMonthByShopId error: ",
-      error
+      error,
     );
     res.status(500).json({
       success: false,
@@ -318,7 +345,7 @@ const getPendingServiceTrans = async (req, res) => {
 
     const transactions = await Customer.selectPendingServiceTrans(
       shop_id,
-      cus_id
+      cus_id,
     );
 
     res.status(200).json({
@@ -347,7 +374,7 @@ const getWeeklyTransactions = async (req, res) => {
 
     const transactions = await Customer.selectWeeklyTransactions(
       shop_id,
-      cus_id
+      cus_id,
     );
     res.status(200).json({
       success: true,
@@ -375,7 +402,7 @@ const getPendingPaymentsTransactions = async (req, res) => {
 
     const transactions = await Customer.selectPendingPaymentsTransactions(
       shop_id,
-      cus_id
+      cus_id,
     );
 
     res.status(200).json({
@@ -462,7 +489,7 @@ const getReadyForPickTransactions = async (req, res) => {
 
     const transactions = await Customer.selectReadyForPickTransactions(
       shop_id,
-      cus_id
+      cus_id,
     );
     res.status(200).json({
       success: true,
@@ -543,7 +570,7 @@ const getCompletedOrdersOfForCustomerReport = async (req, res) => {
   } catch (error) {
     console.error(
       "customerController.findCompletedOrdersOfForCustomerReport error: ",
-      error
+      error,
     );
     res.status(500).json({
       success: false,
@@ -555,6 +582,7 @@ const getCompletedOrdersOfForCustomerReport = async (req, res) => {
 
 module.exports = {
   registerCustomer,
+  registerWalkInCustomer,
   getCustomerById,
   getAllCustomers,
   createLaundryRecord,
