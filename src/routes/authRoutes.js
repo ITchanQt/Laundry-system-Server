@@ -50,6 +50,8 @@ const {
   getBusinessDocsByShop,
   updateShopStatus,
   registerLaundryShopBranch,
+  getScopeShops,
+  getShopInventoryHistory,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -313,6 +315,9 @@ router.get("/sadmin/dashboard/chart", getSAdminWeeklyChartData);
 router.get("/items-history/:item_id", getItemHistoryByItemId);
 
 router.get("/shop/:shop_id/overview", getShopAnalytics);
+
+router.get("/scope/:shop_id", getScopeShops);
+router.get("/item-history-log/:shop_id", getShopInventoryHistory);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

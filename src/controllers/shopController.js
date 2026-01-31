@@ -826,6 +826,58 @@ const getShopAnalytics = async (req, res) => {
   }
 };
 
+const getScopeShops = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "shop_id is required",
+      });
+    }
+
+    const shops = await LaundryShops.findScopeShops(shop_id);
+
+    return res.status(200).json({
+      success: true,
+      data: shops,
+    });
+  } catch (error) {
+    console.error("getScopeShops error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch shop scope",
+    });
+  }
+};
+
+const getShopInventoryHistory = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop Id is required",
+      });
+    }
+
+    const history = await LaundryShops.findItemHistoryByShopId(shop_id);
+
+    return res.json({
+      success: true,
+      data: history,
+    });
+  } catch (error) {
+    console.error("Inventory history error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch inventory history",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -852,4 +904,6 @@ module.exports = {
   getActivityLogs,
   getItemHistoryByItemId,
   getShopAnalytics,
+  getScopeShops,
+  getShopInventoryHistory
 };

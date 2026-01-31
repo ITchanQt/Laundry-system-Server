@@ -124,6 +124,21 @@ class LaundryShops extends BaseModel {
         await this.query(insertServiceSQL, [shop_id, service, "true"]);
       }
 
+      const insertPricingSQL = `
+        INSERT INTO shop_pricing 
+        (shop_id, categories, price, pricing_label, description, is_displayed) 
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      await this.query(insertPricingSQL, [
+        shop_id,
+        "Clothes",
+        140.0,
+        "per load(7kg)",
+        "Shirts, shorts, pants, jeans, etc.",
+        "true",
+      ]);
+
       return { success: true, shop_id, admin_id };
     } catch (error) {
       console.error("Error creating laundry shop:", error);
@@ -224,12 +239,26 @@ class LaundryShops extends BaseModel {
       ]);
 
       const insertServiceSQL = `INSERT INTO shop_services (shop_id, service_name, is_displayed) VALUES (?, ?, ?)`;
-
       const uniqueServices = [...new Set(serviceList)];
 
       for (const service of uniqueServices) {
         await this.query(insertServiceSQL, [shop_id, service, "true"]);
       }
+
+      const insertPricingSQL = `
+        INSERT INTO shop_pricing 
+        (shop_id, categories, price, pricing_label, description, is_displayed) 
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      await this.query(insertPricingSQL, [
+        shop_id,
+        "Clothes",
+        140.0,
+        "per load(7kg)",
+        "Shirts, shorts, pants, jeans, etc.",
+        "true",
+      ]);
 
       return { success: true, shop_id, admin_id };
     } catch (error) {
@@ -1048,6 +1077,69 @@ class LaundryShops extends BaseModel {
       day_period: getDayPeriod(hour),
       transaction_count: count,
     };
+  }
+  static async findScopeShops(shopId) {
+    try {
+      const rootSql = `
+      SELECT 
+        CASE
+          WHEN parent_shop_id IS NULL THEN shop_id
+          ELSE parent_shop_id
+        END AS root_shop_id
+      FROM laundry_shops
+      WHERE shop_id = ?
+    `;
+
+      const [root] = await this.query(rootSql, [shopId]);
+
+      if (!root?.root_shop_id) {
+        throw new Error("Invalid shop scope");
+      }
+
+      const rootShopId = root.root_shop_id;
+
+      const scopeSql = `
+      SELECT shop_id, shop_name
+      FROM laundry_shops
+      WHERE shop_id = ?
+         OR parent_shop_id = ?
+      ORDER BY shop_name ASC
+    `;
+
+      return await this.query(scopeSql, [rootShopId, rootShopId]);
+    } catch (error) {
+      console.error("LaundryShop.findScopeShops error:", error);
+      throw error;
+    }
+  }
+
+  static async findItemHistoryByShopId(shop_id) {
+    try {
+      const sql = `
+      SELECT
+        ih.id,
+        ih.item_id,
+        ih.user_id,
+        u.role AS user_role,
+        ih.action_type,
+        ih.quantity_change,
+        ih.new_stock,
+        ih.created_at
+      FROM inventory_history ih
+      INNER JOIN shop_inventory si
+        ON ih.item_id = si.item_id
+      INNER JOIN users u
+        ON ih.user_id = u.user_id
+      WHERE si.shop_id = ?
+      ORDER BY ih.created_at DESC
+    `;
+
+      const result = await this.query(sql, [shop_id]);
+      return result;
+    } catch (error) {
+      console.error("LaundryShop.findItemHistoryByShopId error:", error);
+      throw error;
+    }
   }
 }
 
