@@ -852,6 +852,32 @@ const getScopeShops = async (req, res) => {
   }
 };
 
+const getShopInventoryHistory = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop Id is required",
+      });
+    }
+
+    const history = await LaundryShops.findItemHistoryByShopId(shop_id);
+
+    return res.json({
+      success: true,
+      data: history,
+    });
+  } catch (error) {
+    console.error("Inventory history error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch inventory history",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -879,4 +905,5 @@ module.exports = {
   getItemHistoryByItemId,
   getShopAnalytics,
   getScopeShops,
+  getShopInventoryHistory
 };
