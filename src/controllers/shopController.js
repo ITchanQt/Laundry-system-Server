@@ -1,39 +1,29 @@
 const LaundryShops = require("../models/LaundryShops");
+const { supabase } = require("../config/supabase");
 
 const registerLaundryShop = async (req, res) => {
   try {
-    const {
-      admin_id,
-      owner_emailAdd,
-      owner_contactNum,
-      shop_name,
-      confirmDuplicate,
-    } = req.body;
+    const { admin_id, owner_emailAdd, owner_contactNum, shop_name } = req.body;
 
-    const adminRecord = await LaundryShops.findByEmail(owner_emailAdd);
-    if (!adminRecord) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email doesn't exist!" });
+    const adminExist = await LaundryShops.findByEmail(owner_emailAdd);
+    if (!adminExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Email doesn't exist!",
+      });
     }
 
+    // Check if the shop already exists
     const existingShop = await LaundryShops.findByName(
       shop_name,
       owner_emailAdd,
-      owner_contactNum
+      owner_contactNum,
     );
-    if (existingShop) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Shop already exists" });
-    }
 
-    if (adminRecord.shop_id !== null && !confirmDuplicate) {
-      return res.status(409).json({
+    if (existingShop) {
+      return res.status(400).json({
         success: false,
-        requiresConfirmation: true,
-        message:
-          "This admin is already managed by a shop. Do you want to create a duplicate account for this new branch?",
+        message: "Shop already exists",
       });
     }
 
@@ -47,7 +37,219 @@ const registerLaundryShop = async (req, res) => {
     });
   } catch (error) {
     console.error("Register laundry shop error:", error);
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+const uploadBusinessDocs = async (req, res) => {
+  try {
+    const { shop_id, docs_types } = req.body;
+    const files = req.files;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required",
+      });
+    }
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least one document",
+      });
+    }
+
+    let docTypes = [];
+    try {
+      docTypes = Array.isArray(docs_types)
+        ? docs_types
+        : JSON.parse(docs_types || "[]");
+    } catch (e) {
+      docTypes = Array.isArray(docs_types) ? docs_types : [];
+    }
+
+    if (files.length !== docTypes.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Number of files and document types must match",
+      });
+    }
+
+    const uploadedDocs = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const docsName = docTypes[i];
+
+      if (!docsName || typeof docsName !== "string") {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid document type for file ${i + 1}`,
+        });
+      }
+
+      const fileExt = file.originalname.split(".").pop();
+      const cleanFileName = file.originalname.replace(/[^a-zA-Z0-9.]/g, "_");
+      const timestamp = Date.now();
+      const filePath = `${shop_id}/${timestamp}-${i}-${cleanFileName}`;
+
+      const { data, error } = await supabase.storage
+        .from("shop-images")
+        .upload(`business_proofs/${filePath}`, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false,
+        });
+
+      if (error) {
+        console.error("Supabase upload error:", error);
+        throw new Error(`Failed to upload file: ${file.originalname}`);
+      }
+
+      const { data: publicData } = supabase.storage
+        .from("shop-images")
+        .getPublicUrl(`business_proofs/${filePath}`);
+
+      const publicUrl = publicData.publicUrl;
+
+      uploadedDocs.push({
+        shop_id,
+        docs_name: docsName,
+        docs_img: publicUrl,
+      });
+    }
+
+    const result = await LaundryShops.createBusDocs(uploadedDocs);
+
+    res.status(201).json({
+      success: true,
+      message: "Documents uploaded successfully!",
+      data: uploadedDocs,
+      insertedCount: uploadedDocs.length,
+    });
+  } catch (error) {
+    console.error("Document Upload Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during upload",
+      error: error.message,
+    });
+  }
+};
+
+const registerLaundryShopBranch = async (req, res) => {
+  try {
+    const {
+      parent_shopId,
+      admin_id,
+      owner_emailAdd,
+      owner_contactNum,
+      shop_name,
+    } = req.body;
+
+    const adminExist = await LaundryShops.findByEmail(owner_emailAdd);
+    if (!adminExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Email doesn't exist!",
+      });
+    }
+
+    if (!parent_shopId) {
+      return res.status(400).json({
+        success: false,
+        message: "Main branch shop ID is required!",
+      });
+    }
+
+    // Check if the shop already exists
+    const existingShop = await LaundryShops.findByName(
+      shop_name,
+      owner_emailAdd,
+      owner_contactNum,
+    );
+
+    if (existingShop) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop already exists",
+      });
+    }
+
+    const result = await LaundryShops.createBranch(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Laundry shop registered successfully",
+      shop_id: result.shop_id,
+      admin_id: result.admin_id,
+    });
+  } catch (error) {
+    console.error("Register laundry shop error:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+const getBusinessDocsByShop = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required",
+      });
+    }
+
+    const docs = await LaundryShops.findBusDocsByShopId(shop_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Business documents fetched successfully",
+      data: docs,
+      count: docs.length,
+    });
+  } catch (error) {
+    console.error("Error fetching business documents:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch business documents",
+      error: error.message,
+    });
+  }
+};
+
+const updateShopStatus = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    const { shop_status } = req.body;
+
+    if (!shop_id || !shop_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID and shop status are required.",
+      });
+    }
+
+    const result = await LaundryShops.setShopStatus(shop_id, shop_status);
+    return res.status(200).json({
+      success: true,
+      message: "Shop status successfully updated.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error updating shop status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update shop status",
+      error: error.message,
+    });
   }
 };
 
@@ -104,7 +306,7 @@ const addShopInventory = async (req, res) => {
 
     const existingItem = await LaundryShops.findByItemNameAndShopId(
       item_name,
-      shop_id
+      shop_id,
     );
     if (existingItem && existingItem.length > 0) {
       return res.status(400).json({
@@ -165,7 +367,7 @@ const editItemById = async (req, res) => {
     const duplicates = await LaundryShops.findDuplicateByNameAndShopId(
       item_name,
       shop_id,
-      item_id
+      item_id,
     );
 
     if (duplicates && duplicates.length > 0) {
@@ -176,7 +378,7 @@ const editItemById = async (req, res) => {
     }
     const updatedItem = await LaundryShops.editShopInventoryById(
       item_id,
-      req.body
+      req.body,
     );
     res.status(200).json({
       success: true,
@@ -203,7 +405,7 @@ const updateMultipleInventoryItems = async (req, res) => {
 
     for (const item of items) {
       const existingItem = await LaundryShops.getInventoryItemById(
-        item.item_id
+        item.item_id,
       );
 
       if (!existingItem) {
@@ -224,7 +426,7 @@ const updateMultipleInventoryItems = async (req, res) => {
         user_id,
         newQty,
         newReorderLevel,
-        qtyChange
+        qtyChange,
       );
     }
 
@@ -352,7 +554,7 @@ const updateTransPaymentStatus = async (req, res) => {
 
     const result = await LaundryShops.updatePaymentStatus(
       laundryId,
-      payment_status
+      payment_status,
     );
     return res.status(200).json({
       success: true,
@@ -382,7 +584,7 @@ const updateTransPaymentStatusCash = async (req, res) => {
 
     const result = await LaundryShops.updatePaymentStatusCash(
       laundryId,
-      payment_status
+      payment_status,
     );
     return res.status(200).json({
       success: true,
@@ -417,7 +619,7 @@ const getReadyToPickUpTrans = async (req, res) => {
   } catch (error) {
     console.error(
       "Error fetching ready to pick up service status transactions:",
-      error
+      error,
     );
     return res.status(500).json({
       success: false,
@@ -440,7 +642,7 @@ const updateReadyToPickUpIfPaidTrans = async (req, res) => {
 
     const result = await LaundryShops.updateReadyToPickUpIfPaid(
       service_status,
-      laundryId
+      laundryId,
     );
 
     if (result.affectedRows === 0) {
@@ -484,7 +686,7 @@ const getCompletedTransaction = async (req, res) => {
   } catch (error) {
     console.error(
       "Error fetching Laundry Done or completed service status transactions:",
-      error
+      error,
     );
     return res.status(500).json({
       success: false,
@@ -624,9 +826,65 @@ const getShopAnalytics = async (req, res) => {
   }
 };
 
+const getScopeShops = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "shop_id is required",
+      });
+    }
+
+    const shops = await LaundryShops.findScopeShops(shop_id);
+
+    return res.status(200).json({
+      success: true,
+      data: shops,
+    });
+  } catch (error) {
+    console.error("getScopeShops error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch shop scope",
+    });
+  }
+};
+
+const getShopInventoryHistory = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop Id is required",
+      });
+    }
+
+    const history = await LaundryShops.findItemHistoryByShopId(shop_id);
+
+    return res.json({
+      success: true,
+      data: history,
+    });
+  } catch (error) {
+    console.error("Inventory history error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch inventory history",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
+  uploadBusinessDocs,
+  registerLaundryShopBranch,
+  getBusinessDocsByShop,
+  updateShopStatus,
   getAllShops,
   editShop,
   addShopInventory,
@@ -645,5 +903,7 @@ module.exports = {
   getYearlyFinancialReportStaffModule,
   getActivityLogs,
   getItemHistoryByItemId,
-  getShopAnalytics
+  getShopAnalytics,
+  getScopeShops,
+  getShopInventoryHistory
 };

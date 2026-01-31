@@ -6,10 +6,14 @@ const {
   loginAdmin,
   loginStaff,
 } = require("../controllers/authController");
-const { registerAdmin } = require("../controllers/adminController");
+const {
+  registerAdmin,
+  searchAdminsByEmail,
+} = require("../controllers/adminController");
 const {
   registerLaundryShop,
   editShop,
+  uploadBusinessDocs,
 } = require("../controllers/shopController");
 const {
   getShopAbout,
@@ -26,7 +30,13 @@ const {
   forgotPasswordStaff,
 } = require("../controllers/auth/authController");
 const { verifyOtp, sendOtp } = require("../controllers/otpController");
-const { verifySuperAdmin, dashboard, superAdminLogin } = require("../controllers/superAdminController");
+const {
+  verifySuperAdmin,
+  dashboard,
+  superAdminLogin,
+} = require("../controllers/superAdminController");
+const { upload } = require("../middlewares/upload");
+const multer = require("multer");
 
 // Public routes that don't need authentication
 router.post("/register", registerUser);
@@ -38,6 +48,14 @@ router.post("/register-laundry-shop", registerLaundryShop);
 router.put("/edit-shop/:shop_id", editShop);
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
+router.get("/admin/search", searchAdminsByEmail);
+
+//________ROUTES FOR UPLOADING BUSINESS DOCS______________
+router.post(
+  "/upload-business-docs",
+  upload.array("business_documents", 10),
+  uploadBusinessDocs,
+);
 
 router.get("/shop-name-slug", getShopNameAndSlug);
 router.get("/shop-slug/:slug", getShopBySlug);
@@ -55,6 +73,6 @@ router.post("/reset-password", resetPassword);
 
 //-----SUPER ADMIN LOGIN(Google OAuth) API's-------//
 router.get("/dashboard", verifySuperAdmin, dashboard);
-router.post('/super-admin/login', superAdminLogin);
+router.post("/super-admin/login", superAdminLogin);
 
 module.exports = router;

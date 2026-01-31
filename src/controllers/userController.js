@@ -15,6 +15,38 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getUsersByShopScope = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing user_id parameters",
+      });
+    }
+
+    const users = await User.findUsersByShopScope(shop_id);
+    if (users.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Users not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 const editUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -142,7 +174,7 @@ const updateStaffByUserIdShopId = async (req, res) => {
     const updatedStaffData = await User.editCustomerByUserIdShopId(
       user_id,
       shop_id,
-      req.body
+      req.body,
     );
 
     if (!updatedStaffData) {
@@ -169,6 +201,7 @@ const updateStaffByUserIdShopId = async (req, res) => {
 
 module.exports = {
   getAllUsers,
+  getUsersByShopScope,
   editUser,
   getUsersByIdOrNameWithCustomerRole,
   getUserByIdAndShopId,

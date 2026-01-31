@@ -24,6 +24,7 @@ const {
   getUserByIdAndShopId,
   getUserByUserIdShopIdRole,
   updateStaffByUserIdShopId,
+  getUsersByShopScope,
 } = require("../controllers/userController");
 const {
   getAllShops,
@@ -46,6 +47,11 @@ const {
   updateTransPaymentStatusCash,
   getItemHistoryByItemId,
   getShopAnalytics,
+  getBusinessDocsByShop,
+  updateShopStatus,
+  registerLaundryShopBranch,
+  getScopeShops,
+  getShopInventoryHistory,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -93,7 +99,8 @@ router.post("/logout", logoutUser);
 router.post("/register-admin", registerAdmin);
 router.get("/laundry-shops", getAllShops);
 router.get("/users", getAllUsers);
-router.post("/register-laundry-shop", registerLaundryShop);
+router.get("/users-by-shop-scope/:shop_id", getUsersByShopScope);
+router.post("/register-laundry-shop-branch", registerLaundryShopBranch);
 router.put("/edit-shop/:shop_id", editShop);
 router.get("/admins", getAllAdmins);
 router.put("/edit-user/:userId", editUser);
@@ -103,6 +110,10 @@ router.get("/users/search/:shop_id", getUsersByIdOrNameWithCustomerRole);
 router.get("/users/search/:shop_id/:user_id", getUserByIdAndShopId);
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
+
+//-----SHOP DOCS VIEWING AND UPDATE STATUS API's-------//
+router.get("/business-docs/:shop_id", getBusinessDocsByShop);
+router.put("/update-shop-stat/:shop_id", updateShopStatus);
 
 //-----SHOP INVENTORY API's-------//
 router.post("/add-shop-inventory", addShopInventory);
@@ -142,17 +153,17 @@ router.post(
       next(); // Continue to controller if no upload errors
     });
   },
-  addShopService
+  addShopService,
 );
 router.get("/get-all-services/:shop_id", getAllServicesByShopId);
 router.put(
   "/update-service/:service_id",
   upload.single("image"),
-  updateShopService
+  updateShopService,
 );
 router.put(
   "/update-services-display-settings/:shop_id",
-  updateServicesDisplaySettings
+  updateServicesDisplaySettings,
 );
 
 //-----SHOP PRICES MANAGEMENT API's-------//
@@ -182,17 +193,17 @@ router.post(
       next(); // Continue to controller if no upload errors
     });
   },
-  addShopPrices
+  addShopPrices,
 );
 router.get("/get-all-prices/:shop_id", getAllPricesByShopId);
 router.put(
   "/update-price/:pricing_id",
   upload.single("image"),
-  updateShopPrice
+  updateShopPrice,
 );
 router.put(
   "/update-prices-display-settings/:shop_id",
-  updatePricesDisplaySettings
+  updatePricesDisplaySettings,
 );
 
 //-----SHOP PAYMENT METHODS MANAGEMENT API's-------//
@@ -223,16 +234,16 @@ router.post(
       next(); // Continue to controller if no upload errors
     });
   },
-  addPaymentMethod
+  addPaymentMethod,
 );
 router.put(
   "/update-payment-method/:pm_id",
   upload.single("image"),
-  updateShopPaymentMethod
+  updateShopPaymentMethod,
 );
 router.put(
   "/update-mp-display-settings/:shop_id",
-  updatePaymentMethodDisplaySettings
+  updatePaymentMethodDisplaySettings,
 );
 
 //-----SMS NOTIFICATION-------//
@@ -270,16 +281,19 @@ router.get("/get-all-on-service-trans/:shop_id", getPendingServiceTrans);
 // -----------STAFF PENDING PAYMENT STATUS TRANSACTION
 router.get(
   "/get-pending-payment-status-trans/:shop_id",
-  getPendingPaymentStatusTrans
+  getPendingPaymentStatusTrans,
 );
 router.put("/update-payment-status/:laundryId", updateTransPaymentStatus);
-router.put("/update-payment-status-cash/:laundryId", updateTransPaymentStatusCash);
+router.put(
+  "/update-payment-status-cash/:laundryId",
+  updateTransPaymentStatusCash,
+);
 
 //-----------STAFF READY TO PICK UP SERVICE STATUS TRANSACTION
 router.get("/get-ready-to-pick-up-trans/:shop_id", getReadyToPickUpTrans);
 router.put(
   "/update-ready-to-pick-up-trans/:laundryId",
-  updateReadyToPickUpIfPaidTrans
+  updateReadyToPickUpIfPaidTrans,
 );
 
 //-----------STAFF LAUNDRY DONE OR COMPLETED SERVICE STATUS TRANSACTION
@@ -301,6 +315,9 @@ router.get("/sadmin/dashboard/chart", getSAdminWeeklyChartData);
 router.get("/items-history/:item_id", getItemHistoryByItemId);
 
 router.get("/shop/:shop_id/overview", getShopAnalytics);
+
+router.get("/scope/:shop_id", getScopeShops);
+router.get("/item-history-log/:shop_id", getShopInventoryHistory);
 
 // Protected admin routes
 // router.get('/admins', authenticate, getAllAdmins);

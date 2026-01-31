@@ -115,7 +115,7 @@ class Admin extends BaseModel {
       // Debug log
       console.log(
         "Creating admin with params:",
-        params.map((p) => (p === null ? "NULL" : p))
+        params.map((p) => (p === null ? "NULL" : p)),
       );
 
       return await this.query(sql, params);
@@ -124,55 +124,86 @@ class Admin extends BaseModel {
     }
   }
 
+  static async resolveShopScope(shop_id) {
+    const sql = `
+    SELECT shop_id, parent_shop_id
+    FROM laundry_shops
+    WHERE shop_id = ?
+  `;
+    const results = await this.query(sql, [shop_id]);
+    return results[0] || null;
+  }
+
   static async isShopActive(shop_id) {
     const sql =
       "SELECT shop_status FROM laundry_shops WHERE shop_id = ? LIMIT 1";
     const results = await this.query(sql, [shop_id]);
 
-    if (results.length === 0) return { exists: false, active: false };
+    if (results.length === 0) return { exists: false, status: null };
 
     return {
       exists: true,
-      active: results[0].shop_status === "Active",
+      status: results[0].shop_status,
     };
   }
 
   static async findByEmailOrUsername(shop_id, emailOrUsername) {
-    const sql =
-      "SELECT * FROM users WHERE role = 'ADMIN' AND shop_id = ? AND (email = ? OR username = ?)";
+    const sql = `
+    SELECT u.*
+    FROM users u
+    JOIN laundry_shops s ON s.shop_id = ?
+    WHERE u.role = 'ADMIN'
+      AND (u.shop_id = s.shop_id OR u.shop_id = s.parent_shop_id)
+      AND (u.email = ? OR u.username = ?)
+    LIMIT 1
+  `;
+
     const results = await this.query(sql, [
       shop_id,
       emailOrUsername,
       emailOrUsername,
     ]);
-    return results[0];
+
+    return results[0] || null;
   }
 
   static async login(shop_id, emailOrUsername, password) {
     try {
-      console.log("Login attempt with:", { emailOrUsername, password });
-
       if (!shop_id) {
         return {
           error: "Invalid shop. Please login from the correct shop URL.",
         };
       }
 
-      const shopStatus = await this.isShopActive(shop_id);
+      const shopCheck = await this.isShopActive(shop_id);
 
-      if (!shopStatus.exists) {
+      if (!shopCheck.exists) {
         return { error: "This shop does not exist in our system." };
       }
 
-      if (!shopStatus.active) {
+      if (shopCheck.status === "Pending") {
+        return {
+          error:
+            "Your shop registration is still pending approval. Our team is currently reviewing your business documents.",
+        };
+      }
+
+      if (shopCheck.status !== "Active") {
         return {
           error:
             "This shop's access has been deactivated. Please contact support.",
         };
       }
 
-      const admin = await this.findByEmailOrUsername(shop_id, emailOrUsername);
-      console.log("Found admin:", admin ? "Yes" : "No");
+      const shopScope = await this.resolveShopScope(shop_id);
+      if (!shopScope) {
+        return { error: "Invalid shop." };
+      }
+
+      const admin = await this.findByEmailOrUsername(
+        shopScope.shop_id,
+        emailOrUsername,
+      );
 
       if (!admin) {
         return { error: "Invalid credentials" };
@@ -205,19 +236,21 @@ class Admin extends BaseModel {
           id: admin.user_id,
           username: admin.username,
           role: "admin",
-          shop_id: admin.shop_id,
+          shop_id: shopScope.shop_id,
+          owner_shop_id: admin.shop_id,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "1h" },
       );
 
       return {
         token,
         admin: {
           id: admin.user_id,
-          username: admin.admin_username,
+          username: admin.username,
           email: admin.email,
-          shop_id: admin.shop_id,
+          shop_id: shopScope.shop_id,
+          owner_shop_id: admin.shop_id,
         },
       };
     } catch (error) {
@@ -285,7 +318,7 @@ class Admin extends BaseModel {
       WHERE shop_id = ? 
         AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
       GROUP BY day, DATE(created_at)
-      ORDER BY DATE(created_at) ASC
+      ORDER BY DATE(created_at) DESC
     `;
       return await this.query(sql, [shop_id]);
     } catch (error) {
