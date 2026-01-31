@@ -318,7 +318,7 @@ class Admin extends BaseModel {
       WHERE shop_id = ? 
         AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
       GROUP BY day, DATE(created_at)
-      ORDER BY DATE(created_at) ASC
+      ORDER BY DATE(created_at) DESC
     `;
       return await this.query(sql, [shop_id]);
     } catch (error) {

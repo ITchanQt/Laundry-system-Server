@@ -1049,6 +1049,40 @@ class LaundryShops extends BaseModel {
       transaction_count: count,
     };
   }
+  static async findScopeShops(shopId) {
+    try {
+      const rootSql = `
+      SELECT 
+        CASE
+          WHEN parent_shop_id IS NULL THEN shop_id
+          ELSE parent_shop_id
+        END AS root_shop_id
+      FROM laundry_shops
+      WHERE shop_id = ?
+    `;
+
+      const [root] = await this.query(rootSql, [shopId]);
+
+      if (!root?.root_shop_id) {
+        throw new Error("Invalid shop scope");
+      }
+
+      const rootShopId = root.root_shop_id;
+
+      const scopeSql = `
+      SELECT shop_id, shop_name
+      FROM laundry_shops
+      WHERE shop_id = ?
+         OR parent_shop_id = ?
+      ORDER BY shop_name ASC
+    `;
+
+      return await this.query(scopeSql, [rootShopId, rootShopId]);
+    } catch (error) {
+      console.error("ShopModel.findScopeShops error:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = LaundryShops;
