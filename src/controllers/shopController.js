@@ -1,5 +1,6 @@
 const LaundryShops = require("../models/LaundryShops");
 const { supabase } = require("../config/supabase");
+const { sendShopLinksEmail } = require("../utils/mailer");
 
 const registerLaundryShop = async (req, res) => {
   try {
@@ -237,11 +238,33 @@ const updateShopStatus = async (req, res) => {
       });
     }
 
-    const result = await LaundryShops.setShopStatus(shop_id, shop_status);
+    await LaundryShops.setShopStatus(shop_id, shop_status);
+
+    let emailSent = false;
+
+    if (shop_status === "Active") {
+      const shopData = await LaundryShops.getShopLinksAndEmailAndSend(shop_id);
+
+      if (shopData) {
+        await sendShopLinksEmail(
+          shopData.admin_emailAdd,
+          shopData.shop_name,
+          shopData.links,
+        );
+        emailSent = true;
+      }
+    }
+
     return res.status(200).json({
       success: true,
-      message: "Shop status successfully updated.",
-      data: result,
+      message: emailSent
+        ? "Shop activated and links sent to admin email"
+        : "Shop status updated successfully",
+      data: {
+        shop_id,
+        shop_status,
+        email_sent: emailSent,
+      },
     });
   } catch (error) {
     console.error("Error updating shop status:", error);
@@ -905,5 +928,5 @@ module.exports = {
   getItemHistoryByItemId,
   getShopAnalytics,
   getScopeShops,
-  getShopInventoryHistory
+  getShopInventoryHistory,
 };
