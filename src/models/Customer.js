@@ -126,7 +126,7 @@ class Customer extends BaseModel {
 
       // Fetch customer details first
       const customer = await this.findUserCustomerById(
-        customerReceiptData.userId
+        customerReceiptData.userId,
       );
       if (!customer) {
         throw new Error("Customer not found");
@@ -303,7 +303,7 @@ class Customer extends BaseModel {
     user_id,
     shop_id,
     role,
-    updateData
+    updateData,
   ) {
     try {
       if (!user_id || !shop_id || !role) {
@@ -314,7 +314,7 @@ class Customer extends BaseModel {
       const customer = await this.selectUserByIdShopIdRole(
         user_id,
         shop_id,
-        role
+        role,
       );
       if (!customer) {
         throw new Error("Customer not found");
@@ -577,20 +577,19 @@ class Customer extends BaseModel {
         comment,
       } = ratingsData;
 
+      const checkSql = `SELECT 1 FROM ratings WHERE transaction_id = ? LIMIT 1`;
+      const existing = await this.query(checkSql, [transaction_id]);
+
+      if (existing && existing.length > 0) {
+        const error = new Error("Duplicate Rating Attempt");
+        error.type = "ALREADY_RATED";
+        throw error;
+      }
+
       const sql = `
-                  INSERT INTO
-                  ratings
-                  (shop_id,
-                  transaction_id,
-                  cus_id,
-                  cus_name,
-                  personnel_rating,
-                  personnel,
-                  shop_rating,
-                  comment)
-                  VALUES
-                  (?, ?, ?, ?, ?, ?, ?, ?)
-                  `;
+      INSERT INTO ratings
+      (shop_id, transaction_id, cus_id, cus_name, personnel_rating, personnel, shop_rating, comment)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
       return this.query(sql, [
         shop_id,
@@ -618,7 +617,7 @@ class Customer extends BaseModel {
       const results = await this.query(sql, [user_id]);
       return results;
     } catch (error) {
-       console.error("Model Error (selectActivityLogs):", error);
+      console.error("Model Error (selectActivityLogs):", error);
       throw error;
     }
   }
