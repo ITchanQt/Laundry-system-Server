@@ -281,6 +281,42 @@ class LaundryShops extends BaseModel {
     }
   }
 
+  static async getShopLinksAndEmailAndSend(shop_id) {
+    try {
+      const sql = `
+      SELECT admin_emailAdd, slug, shop_name
+      FROM laundry_shops 
+      WHERE shop_id = ?
+    `;
+
+      const result = await this.query(sql, [shop_id]);
+
+      if (!result || result.length === 0) {
+        throw new Error(`Shop with ID ${shop_id} not found`);
+      }
+
+      const { admin_emailAdd, slug, shop_name } = result[0];
+
+      const links = {
+        admin: `https://laundry-system-admin-module.vercel.app/${slug}`,
+        staff: `https://laundry-system-staff-module.vercel.app/${slug}`,
+        customer: `https://laundry-system-customer-module.vercel.app/${slug}`,
+      };
+
+      return {
+        success: true,
+        shop_id,
+        shop_name,
+        admin_emailAdd,
+        slug,
+        links,
+      };
+    } catch (error) {
+      console.error("Model Error in getShopLinksAndEmailAndSend:", error);
+      throw error;
+    }
+  }
+
   static async getAllShops() {
     try {
       const shopSql = "SELECT * FROM laundry_shops";
