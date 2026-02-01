@@ -106,7 +106,7 @@ class User extends BaseModel {
         contactNum,
         role = "CUSTOMER",
         username = "WALK IN",
-        email = "WALK IN",
+        email = "WALK@IN",
         status = "ACTIVE",
         registered_by,
       } = cus_data;

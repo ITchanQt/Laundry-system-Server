@@ -975,13 +975,15 @@ class LaundryShops extends BaseModel {
   static async selectAverageTransactionsPerStaff(shop_id) {
     const query = `
     SELECT 
-      process_by AS staff_id,
+      ct.process_by AS staff_id,
       COUNT(*) AS total_transactions
-    FROM customer_transactions
-    WHERE shop_id = ? 
-      AND process_by IS NOT NULL 
-      AND process_by != ''
-    GROUP BY process_by
+    FROM customer_transactions ct
+    INNER JOIN users u ON ct.process_by = u.user_id
+    WHERE ct.shop_id = ? 
+      AND ct.process_by IS NOT NULL 
+      AND ct.process_by != ''
+      AND u.role = 'STAFF'
+    GROUP BY ct.process_by
   `;
 
     const rows = await this.query(query, [shop_id]);
@@ -999,7 +1001,6 @@ class LaundryShops extends BaseModel {
       (sum, r) => sum + Number(r.total_transactions),
       0,
     );
-
     const staffCount = rows.length;
     const average = totalTransactions / staffCount;
 
@@ -1017,9 +1018,11 @@ class LaundryShops extends BaseModel {
     SELECT ct.process_by AS staff_id,
            COUNT(*) AS transaction_count
     FROM customer_transactions ct
+    INNER JOIN users u ON ct.process_by = u.user_id
     WHERE ct.shop_id = ?
       AND ct.process_by IS NOT NULL 
       AND ct.process_by != ''
+      AND u.role = 'STAFF' -- Ensures the result is a STAFF member
     GROUP BY ct.process_by
     ORDER BY transaction_count DESC
     LIMIT 1
@@ -1032,7 +1035,7 @@ class LaundryShops extends BaseModel {
     const staffId = rows[0].staff_id;
 
     const userQuery = `
-    SELECT user_id, user_fName, user_lName
+    SELECT user_id, user_fName, user_lName, role
     FROM users
     WHERE user_id = ?
     LIMIT 1
