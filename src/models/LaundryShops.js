@@ -319,7 +319,8 @@ class LaundryShops extends BaseModel {
 
   static async getAllShops() {
     try {
-      const shopSql = "SELECT * FROM laundry_shops ORDER BY date_registered DESC";
+      const shopSql =
+        "SELECT * FROM laundry_shops ORDER BY date_registered DESC";
       const shops = await this.query(shopSql);
 
       const servicesSql =
@@ -1117,6 +1118,7 @@ class LaundryShops extends BaseModel {
       transaction_count: count,
     };
   }
+
   static async findScopeShops(shopId) {
     try {
       const rootSql = `
@@ -1126,13 +1128,14 @@ class LaundryShops extends BaseModel {
           ELSE parent_shop_id
         END AS root_shop_id
       FROM laundry_shops
-      WHERE shop_id = ?
+      WHERE shop_id = ? 
+        AND shop_status = 'Active'
     `;
 
       const [root] = await this.query(rootSql, [shopId]);
 
       if (!root?.root_shop_id) {
-        throw new Error("Invalid shop scope");
+        throw new Error("Invalid shop scope or shop is not Active");
       }
 
       const rootShopId = root.root_shop_id;
@@ -1140,8 +1143,8 @@ class LaundryShops extends BaseModel {
       const scopeSql = `
       SELECT shop_id, shop_name
       FROM laundry_shops
-      WHERE shop_id = ?
-         OR parent_shop_id = ?
+      WHERE shop_status = 'Active' 
+        AND (shop_id = ? OR parent_shop_id = ?)
       ORDER BY shop_name ASC
     `;
 
