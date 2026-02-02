@@ -319,7 +319,7 @@ class LaundryShops extends BaseModel {
 
   static async getAllShops() {
     try {
-      const shopSql = "SELECT * FROM laundry_shops";
+      const shopSql = "SELECT * FROM laundry_shops ORDER BY date_registered DESC";
       const shops = await this.query(shopSql);
 
       const servicesSql =

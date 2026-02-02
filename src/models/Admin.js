@@ -56,7 +56,7 @@ class Admin extends BaseModel {
       // Set default values and validate required fields
       const {
         admin_fName,
-        admin_mName = null, // Optional field
+        admin_mName = "", // Optional field
         admin_lName,
         admin_address,
         admin_username,

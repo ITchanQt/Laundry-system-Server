@@ -47,9 +47,9 @@ class User extends BaseModel {
         email,
         password,
         user_fName,
-        user_mName = null,
+        user_mName = "",
         user_lName,
-        user_address = null,
+        user_address = "",
         contactNum,
         role,
         status = "ACTIVE",
@@ -409,12 +409,12 @@ class User extends BaseModel {
 
       const updatedData = {
         user_fName: updateData.user_fName || user.user_fName,
-        user_mName: updateData.user_mName || user.user_mName,
+        user_mName: updateData.user_mName,
         user_lName: updateData.user_lName || user.user_lName,
         username: updateData.username || user.username,
         email: updateData.email || user.email,
         user_address: updateData.user_address || user.user_address,
-        contactNum: updateData.contactNum || user.contactNum,
+        contactNum: updateData.contactNum,
         role: updateData.role || user.role,
         status: updateData.status || user.status,
       };

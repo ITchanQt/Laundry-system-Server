@@ -47,8 +47,8 @@ const registerAdmin = async (req, res) => {
     // Set default values for optional fields
     const adminData = {
       ...req.body,
-      admin_mName: req.body.admin_mName || null,
-      admin_address: req.body.admin_address || null,
+      admin_mName: req.body.admin_mName || "",
+      admin_address: req.body.admin_address || "",
       role: req.body.role || "Admin",
       status: req.body.status || "Active",
     };
