@@ -66,11 +66,7 @@ const loginStaff = async (req, res) => {
       });
     }
 
-    const result = await User.loginStaff(
-      shop_id,
-      emailOrUsername,
-      password
-    );
+    const result = await User.loginStaff(shop_id, emailOrUsername, password);
 
     if (result.error) {
       return res.status(400).json({ message: result.error });
@@ -90,30 +86,47 @@ const loginStaff = async (req, res) => {
 
 const loginAdmin = async (req, res) => {
   try {
-    const { shop_id, emailOrUsername, password } = req.body;
-    const apiKey = req.headers["x-api-key"];
+    const { emailOrUsername, password, selectedShopId } = req.body;
 
-    if (!apiKey || apiKey !== process.env.API_KEY) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid or missing API key",
+    const result = await Admin.login(emailOrUsername, password);
+    if (result.error) return res.status(400).json({ message: result.error });
+
+    if (selectedShopId) {
+      const token = jwt.sign(
+        { id: result.admin.id, shop_id: selectedShopId, role: "admin" },
+        process.env.JWT_SECRET,
+        { expiresIn: "12h" },
+      );
+
+      return res.json({
+        message: "Login successful",
+        admin: { ...result.admin, shop_id: selectedShopId },
+        token: `Bearer ${token}`,
+        apiKey: process.env.API_KEY,
       });
     }
 
-    const result = await Admin.login(shop_id, emailOrUsername, password);
-
-    if (result.error) {
-      return res.status(400).json({ message: result.error });
+    if (result.shops.length > 1) {
+      return res.json({
+        requiresSelection: true,
+        shops: result.shops,
+        admin: result.admin,
+      });
     }
 
+    const autoShopId = result.shops[0].shop_id;
+    const token = jwt.sign(
+      { id: result.admin.id, shop_id: autoShopId, role: "admin" },
+      process.env.JWT_SECRET,
+      { expiresIn: "12h" },
+    );
+
     return res.json({
-      message: "Admin login successful",
-      admin: result.admin,
-      token: `Bearer ${result.token}`,
+      admin: { ...result.admin, shop_id: autoShopId },
+      token: `Bearer ${token}`,
       apiKey: process.env.API_KEY,
     });
   } catch (error) {
-    console.error("Admin login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
