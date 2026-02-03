@@ -31,7 +31,7 @@ class AuthModel extends BaseModel {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "12h",
         issuer: "laundry-system",
       }
     );
@@ -83,7 +83,7 @@ class AuthModel extends BaseModel {
           role: "super_admin",
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "12h" }
       );
 
       return {

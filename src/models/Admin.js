@@ -167,96 +167,49 @@ class Admin extends BaseModel {
     return results[0] || null;
   }
 
-  static async login(shop_id, emailOrUsername, password) {
-    try {
-      if (!shop_id) {
-        return {
-          error: "Invalid shop. Please login from the correct shop URL.",
-        };
-      }
+  static async findByEmailOrUsernameGlobal(emailOrUsername) {
+    const sql = `
+    SELECT * FROM users 
+    WHERE (email = ? OR username = ?) 
+    AND role = 'ADMIN' 
+    LIMIT 1
+  `;
+    const results = await this.query(sql, [emailOrUsername, emailOrUsername]);
+    return results[0] || null;
+  }
 
-      const shopCheck = await this.isShopActive(shop_id);
+  static async getAdminShops(ownerShopId) {
+    const sql = `
+    SELECT shop_id, shop_name, shop_status 
+    FROM laundry_shops 
+    WHERE (shop_id = ? OR parent_shop_id = ?)
+    AND shop_status = 'Active'
+  `;
+    return await this.query(sql, [ownerShopId, ownerShopId]);
+  }
 
-      if (!shopCheck.exists) {
-        return { error: "This shop does not exist in our system." };
-      }
+  static async login(emailOrUsername, password) {
+    const admin = await this.findByEmailOrUsernameGlobal(emailOrUsername);
+    if (!admin) return { error: "Invalid credentials" };
 
-      if (shopCheck.status === "Pending") {
-        return {
-          error:
-            "Your shop registration is still pending approval. Our team is currently reviewing your business documents.",
-        };
-      }
+    const match = await bcrypt.compare(password, admin.password);
+    if (!match) return { error: "Invalid credentials" };
 
-      if (shopCheck.status !== "Active") {
-        return {
-          error:
-            "This shop's access has been deactivated. Please contact support.",
-        };
-      }
+    const shops = await this.getAdminShops(admin.shop_id);
 
-      const shopScope = await this.resolveShopScope(shop_id);
-      if (!shopScope) {
-        return { error: "Invalid shop." };
-      }
-
-      const admin = await this.findByEmailOrUsername(
-        shopScope.shop_id,
-        emailOrUsername,
-      );
-
-      if (!admin) {
-        return { error: "Invalid credentials" };
-      }
-
-      if (admin.status === "PENDING") {
-        return {
-          error:
-            "Your account is pending approval. Please contact the super admin.",
-        };
-      }
-
-      if (admin.status === "INACTIVE") {
-        return { error: "Your account has been deactivated. Access denied." };
-      }
-
-      const match = await bcrypt.compare(password, admin.password);
-      console.log("Password match:", match ? "Yes" : "No");
-
-      if (!match) {
-        return { error: "Invalid credentials" };
-      }
-
-      if (admin.status !== "ACTIVE") {
-        return { error: "Account is not active." };
-      }
-
-      const token = jwt.sign(
-        {
-          id: admin.user_id,
-          username: admin.username,
-          role: "admin",
-          shop_id: shopScope.shop_id,
-          owner_shop_id: admin.shop_id,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" },
-      );
-
-      return {
-        token,
-        admin: {
-          id: admin.user_id,
-          username: admin.username,
-          email: admin.email,
-          shop_id: shopScope.shop_id,
-          owner_shop_id: admin.shop_id,
-        },
-      };
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
+    if (shops.length === 0) {
+      return { error: "No active shops linked to this account." };
     }
+
+    return {
+      admin: {
+        id: admin.user_id,
+        username: admin.username,
+        email: admin.email,
+        owner_shop_id: admin.shop_id,
+      },
+      shops: shops,
+    };
   }
 
   static async getAllAdmins() {

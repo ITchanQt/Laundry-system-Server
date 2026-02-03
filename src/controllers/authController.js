@@ -6,13 +6,15 @@ const Admin = require("../models/Admin");
 require("dotenv").config();
 const registerUser = async (req, res) => {
   try {
-    const { shop_id, email } = req.body;
+    const { shop_id, email, username, contactNum } = req.body;
 
-    const existingUser = await User.findByEmail(shop_id, email);
-    if (existingUser) {
+    const existingUserEmail = await User.findByEmail(shop_id, email);
+    const existingUserUsername = await User.findByUsername(shop_id, username);
+    const existingContact = await User.findByContactNum(shop_id, contactNum);
+    if (existingUserEmail || existingUserUsername || existingContact) {
       return res
         .status(400)
-        .json({ success: false, message: "Email already exists on this shop" });
+        .json({ success: false, message: "Email, username or phone number already exists on this shop" });
     }
 
     await User.create(req.body);
@@ -26,17 +28,14 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { shop_id, emailOrUsername, password } = req.body;
+    const { emailOrUsername, password } = req.body;
     const apiKey = req.headers["x-api-key"];
 
     if (!apiKey || apiKey !== process.env.API_KEY) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid or missing API key",
-      });
+      return res.status(401).json({ message: "Invalid or missing API key" });
     }
 
-    const result = await User.loginCustomer(shop_id, emailOrUsername, password);
+    const result = await User.loginCustomer(emailOrUsername, password);
 
     if (result.error) {
       return res.status(400).json({ message: result.error });
@@ -50,27 +49,20 @@ const loginUser = async (req, res) => {
     });
   } catch (error) {
     console.error("User Login error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Server error during login." });
   }
 };
 
 const loginStaff = async (req, res) => {
   try {
-    const { shop_id, emailOrUsername, password } = req.body;
+    const { emailOrUsername, password } = req.body;
     const apiKey = req.headers["x-api-key"];
 
     if (!apiKey || apiKey !== process.env.API_KEY) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid or missing API key",
-      });
+      return res.status(401).json({ message: "Invalid or missing API key" });
     }
 
-    const result = await User.loginStaff(
-      shop_id,
-      emailOrUsername,
-      password
-    );
+    const result = await User.loginStaff(emailOrUsername, password);
 
     if (result.error) {
       return res.status(400).json({ message: result.error });
@@ -83,37 +75,53 @@ const loginStaff = async (req, res) => {
       apiKey: process.env.API_KEY,
     });
   } catch (error) {
-    console.error("Admin login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
 const loginAdmin = async (req, res) => {
   try {
-    const { shop_id, emailOrUsername, password } = req.body;
-    const apiKey = req.headers["x-api-key"];
+    const { emailOrUsername, password, selectedShopId } = req.body;
 
-    if (!apiKey || apiKey !== process.env.API_KEY) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid or missing API key",
+    const result = await Admin.login(emailOrUsername, password);
+    if (result.error) return res.status(400).json({ message: result.error });
+
+    if (selectedShopId) {
+      const token = jwt.sign(
+        { id: result.admin.id, shop_id: selectedShopId, role: "admin" },
+        process.env.JWT_SECRET,
+        { expiresIn: "12h" },
+      );
+
+      return res.json({
+        message: "Login successful",
+        admin: { ...result.admin, shop_id: selectedShopId },
+        token: `Bearer ${token}`,
+        apiKey: process.env.API_KEY,
       });
     }
 
-    const result = await Admin.login(shop_id, emailOrUsername, password);
-
-    if (result.error) {
-      return res.status(400).json({ message: result.error });
+    if (result.shops.length > 1) {
+      return res.json({
+        requiresSelection: true,
+        shops: result.shops,
+        admin: result.admin,
+      });
     }
 
+    const autoShopId = result.shops[0].shop_id;
+    const token = jwt.sign(
+      { id: result.admin.id, shop_id: autoShopId, role: "admin" },
+      process.env.JWT_SECRET,
+      { expiresIn: "12h" },
+    );
+
     return res.json({
-      message: "Admin login successful",
-      admin: result.admin,
-      token: `Bearer ${result.token}`,
+      admin: { ...result.admin, shop_id: autoShopId },
+      token: `Bearer ${token}`,
       apiKey: process.env.API_KEY,
     });
   } catch (error) {
-    console.error("Admin login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

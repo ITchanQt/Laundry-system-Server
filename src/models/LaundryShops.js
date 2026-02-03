@@ -299,8 +299,8 @@ class LaundryShops extends BaseModel {
 
       const links = {
         admin: `https://laundry-system-admin-module.vercel.app/${slug}`,
-        staff: `https://laundry-system-staff-module.vercel.app/${slug}`,
-        customer: `https://laundry-system-customer-module.vercel.app/${slug}`,
+        staff: `https://laundry-system-staff-module.vercel.app/${slug}/register`,
+        customer: `https://laundry-system-customer-module.vercel.app/${slug}/register`,
       };
 
       return {
