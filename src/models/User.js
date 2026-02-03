@@ -15,6 +15,18 @@ class User extends BaseModel {
     return results[0];
   }
 
+  static async findByUsername(shop_id, username) {
+    const sql = "SELECT * FROM users WHERE shop_id = ? AND username = ?";
+    const results = await this.query(sql, [shop_id, username]);
+    return results[0];
+  }
+
+  static async findByContactNum(shop_id, contactNum) {
+    const sql = "SELECT * FROM users WHERE shop_id = ? AND contactNum = ?";
+    const results = await this.query(sql, [shop_id, contactNum]);
+    return results[0];
+  }
+
   static async generateUserId() {
     try {
       // Get the highest admin ID

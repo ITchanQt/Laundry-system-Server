@@ -6,13 +6,15 @@ const Admin = require("../models/Admin");
 require("dotenv").config();
 const registerUser = async (req, res) => {
   try {
-    const { shop_id, email } = req.body;
+    const { shop_id, email, username, contactNum } = req.body;
 
-    const existingUser = await User.findByEmail(shop_id, email);
-    if (existingUser) {
+    const existingUserEmail = await User.findByEmail(shop_id, email);
+    const existingUserUsername = await User.findByUsername(shop_id, username);
+    const existingContact = await User.findByContactNum(shop_id, contactNum);
+    if (existingUserEmail || existingUserUsername || existingContact) {
       return res
         .status(400)
-        .json({ success: false, message: "Email already exists on this shop" });
+        .json({ success: false, message: "Email, username or phone number already exists on this shop" });
     }
 
     await User.create(req.body);
