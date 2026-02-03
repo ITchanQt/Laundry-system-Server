@@ -277,7 +277,6 @@ class FilteredReportsController {
           uniqueCustomers: salesSummary.uniqueCustomers || 0,
           avgOrderValue: parseFloat(salesSummary.avgOrderValue || 0),
           inventoryValue: parseFloat(inventorySummary.totalValue || 0),
-          completedOrders: transactionStats.completedOrders || 0,
           ongoingOrders: transactionStats.ongoingOrders || 0,
         },
       });

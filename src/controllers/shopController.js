@@ -818,18 +818,20 @@ const getItemHistoryByItemId = async (req, res) => {
 const getShopAnalytics = async (req, res) => {
   try {
     const { shop_id } = req.params;
+    const { startDate, endDate } = req.query;
 
-    if (!shop_id) {
+    if (!shop_id || !startDate || !endDate) {
       return res.status(400).json({
         success: false,
-        message: "shop_id parameter is required",
+        message: "shop_id, startDate, and endDate are required parameters",
       });
     }
 
-    const avgProcessPerStaff =
-      await LaundryShops.selectAverageTransactionsPerStaff(shop_id);
-    const mostActiveStaff = await LaundryShops.selectMostActiveStaff(shop_id);
-    const peakHourUsage = await LaundryShops.selectPeakSystemHour(shop_id);
+    const [avgProcessPerStaff, mostActiveStaff, peakHourUsage] = await Promise.all([
+      LaundryShops.selectAverageTransactionsPerStaff(shop_id, startDate, endDate),
+      LaundryShops.selectMostActiveStaff(shop_id, startDate, endDate),
+      LaundryShops.selectPeakSystemHour(shop_id, startDate, endDate),
+    ]);
 
     return res.status(200).json({
       success: true,

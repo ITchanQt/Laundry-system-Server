@@ -63,7 +63,6 @@ class FilteredTransactionModel extends BaseModel {
         SUM(total_amount) as totalRevenue,
         AVG(total_amount) as avgTransactionValue,
         COUNT(DISTINCT cus_id) as uniqueCustomers,
-        COUNT(CASE WHEN status = 'Laundry Done' THEN 1 END) as completedOrders,
         COUNT(CASE WHEN status = 'On Service' THEN 1 END) as ongoingOrders,
         COUNT(CASE WHEN payment_status = 'PAID' THEN 1 END) as paidOrders,
         COUNT(CASE WHEN payment_status = 'PENDING' THEN 1 END) as pendingPayments

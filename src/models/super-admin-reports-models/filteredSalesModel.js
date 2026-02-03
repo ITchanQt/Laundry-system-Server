@@ -1,4 +1,4 @@
-const BaseModel = require('../BaseModel');
+const BaseModel = require("../BaseModel");
 
 class FilteredSalesModel extends BaseModel {
   static async getSalesByShop(shopId, startDate, endDate) {
@@ -21,17 +21,31 @@ class FilteredSalesModel extends BaseModel {
 
   static async getSalesSummaryByShop(shopId, startDate, endDate) {
     const query = `
-      SELECT 
-        SUM(total_amount) as totalSales,
-        COUNT(*) as totalOrders,
-        AVG(total_amount) as avgOrderValue,
-        COUNT(DISTINCT cus_id) as uniqueCustomers
-      FROM customer_transactions
-      WHERE shop_id = ?
-        AND DATE(created_at) BETWEEN ? AND ?
-    `;
+    SELECT 
+      SUM(total_amount) as totalSales,
+      COUNT(*) as totalOrders,
+      AVG(total_amount) as avgOrderValue,
+      (
+        SELECT COUNT(*) 
+        FROM users 
+        WHERE shop_id = ? 
+          AND role = 'CUSTOMER'
+          AND DATE(date_registered) BETWEEN ? AND ?
+      ) as uniqueCustomers
+    FROM customer_transactions
+    WHERE shop_id = ?
+      AND DATE(created_at) BETWEEN ? AND ?
+  `;
 
-    const rows = await this.query(query, [shopId, startDate, endDate]);
+    const rows = await this.query(query, [
+      shopId,
+      startDate,
+      endDate,
+      shopId,
+      startDate,
+      endDate,
+    ]);
+
     return rows[0];
   }
 
