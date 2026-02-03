@@ -1008,8 +1008,8 @@ class LaundryShops extends BaseModel {
     return results;
   }
 
-  // 1) Average transaction process per staff
-  static async selectAverageTransactionsPerStaff(shop_id) {
+  // 1) Average Transactions Per Staff
+  static async selectAverageTransactionsPerStaff(shop_id, startDate, endDate) {
     const query = `
     SELECT 
       ct.process_by AS staff_id,
@@ -1017,13 +1017,14 @@ class LaundryShops extends BaseModel {
     FROM customer_transactions ct
     INNER JOIN users u ON ct.process_by = u.user_id
     WHERE ct.shop_id = ? 
+      AND DATE(ct.created_at) BETWEEN ? AND ?
       AND ct.process_by IS NOT NULL 
       AND ct.process_by != ''
       AND u.role = 'STAFF'
     GROUP BY ct.process_by
   `;
 
-    const rows = await this.query(query, [shop_id]);
+    const rows = await this.query(query, [shop_id, startDate, endDate]);
 
     if (!rows.length) {
       return {
@@ -1049,35 +1050,29 @@ class LaundryShops extends BaseModel {
     };
   }
 
-  // 2) Most active staff
-  static async selectMostActiveStaff(shop_id) {
+  // 2) Most Active Staff
+  static async selectMostActiveStaff(shop_id, startDate, endDate) {
     const query = `
     SELECT ct.process_by AS staff_id,
            COUNT(*) AS transaction_count
     FROM customer_transactions ct
     INNER JOIN users u ON ct.process_by = u.user_id
     WHERE ct.shop_id = ?
+      AND DATE(ct.created_at) BETWEEN ? AND ?
       AND ct.process_by IS NOT NULL 
       AND ct.process_by != ''
-      AND u.role = 'STAFF' -- Ensures the result is a STAFF member
+      AND u.role = 'STAFF'
     GROUP BY ct.process_by
     ORDER BY transaction_count DESC
     LIMIT 1
   `;
 
-    const rows = await this.query(query, [shop_id]);
+    const rows = await this.query(query, [shop_id, startDate, endDate]);
 
     if (!rows.length) return null;
 
     const staffId = rows[0].staff_id;
-
-    const userQuery = `
-    SELECT user_id, user_fName, user_lName, role
-    FROM users
-    WHERE user_id = ?
-    LIMIT 1
-  `;
-
+    const userQuery = `SELECT user_id, user_fName, user_lName, role FROM users WHERE user_id = ? LIMIT 1`;
     const userRows = await this.query(userQuery, [staffId]);
 
     return {
@@ -1087,27 +1082,26 @@ class LaundryShops extends BaseModel {
     };
   }
 
-  // 3) Peak system hour usage
-  static async selectPeakSystemHour(shop_id) {
+  // 3) Peak System Hour usage
+  static async selectPeakSystemHour(shop_id, startDate, endDate) {
     const query = `
     SELECT 
       HOUR(created_at) AS hour_slot,
       COUNT(*) AS transaction_count
     FROM customer_transactions
     WHERE shop_id = ?
+      AND DATE(created_at) BETWEEN ? AND ?
       AND created_at IS NOT NULL
     GROUP BY hour_slot
     ORDER BY transaction_count DESC
     LIMIT 1
   `;
 
-    const rows = await this.query(query, [shop_id]);
+    const rows = await this.query(query, [shop_id, startDate, endDate]);
 
     if (!rows.length) return null;
 
     const hour = rows[0].hour_slot;
-    const count = rows[0].transaction_count;
-
     const formatted = formatHourRange(hour);
 
     return {
@@ -1115,7 +1109,7 @@ class LaundryShops extends BaseModel {
       peak_hour_label: formatted.label,
       peak_hour_range: formatted.range,
       day_period: getDayPeriod(hour),
-      transaction_count: count,
+      transaction_count: rows[0].transaction_count,
     };
   }
 
