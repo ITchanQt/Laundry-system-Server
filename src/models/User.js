@@ -182,68 +182,61 @@ class User extends BaseModel {
     };
   }
 
-  static async loginCustomer(shop_id, emailOrUsername, password) {
+  static async findByEmailOrUsernameCustomerRole(emailOrUsername) {
+    const sql = `
+      SELECT * FROM users 
+      WHERE role = 'CUSTOMER' 
+      AND (email = ? OR username = ?) 
+      LIMIT 1
+    `;
+    const results = await this.query(sql, [emailOrUsername, emailOrUsername]);
+    return results[0] || null;
+  }
+
+  static async loginCustomer(emailOrUsername, password) {
     try {
-      console.log("Login attempt with:", { emailOrUsername, password });
-
-      if (!shop_id) {
-        return {
-          error: "Invalid shop. Please login from the correct shop URL.",
-        };
-      }
-      
-      if(emailOrUsername === 'WALK IN' || password === "NULL" || password === " ") {
-        return { error: "Error login" };
+      // 1. Prevent "WALK IN" or empty logins
+      if (
+        emailOrUsername === "WALK IN" ||
+        !password ||
+        password.trim() === ""
+      ) {
+        return { error: "Invalid login attempt." };
       }
 
-      const shopCheck = await this.isShopActive(shop_id);
-
-      if (!shopCheck.exists) {
-        return { error: "This shop does not exist in our system." };
-      }
-
-      if (shopCheck.status === "Pending") {
-        return {
-          error:
-            "Your shop registration is still pending approval. Our team is currently reviewing your business documents.",
-        };
-      }
-
-      if (shopCheck.status !== "Active") {
-        return {
-          error:
-            "This shop's access has been deactivated. Please contact support.",
-        };
-      }
-
-      const user = await this.findByEmailOrUsername(shop_id, emailOrUsername);
-      console.log("Found user:", user ? "Yes" : "No");
-
+      // 2. Find the customer globally
+      const user =
+        await this.findByEmailOrUsernameCustomerRole(emailOrUsername);
       if (!user) {
         return { error: "Invalid credentials" };
       }
 
-      if (user.status === "PENDING") {
+      const shopCheck = await this.isShopActive(user.shop_id);
+
+      if (!shopCheck.exists) {
         return {
-          error:
-            "Your account is pending approval. Please contact the super admin or admin.",
+          error: "The shop associated with your account no longer exists.",
         };
       }
 
+      if (shopCheck.status !== "Active") {
+        const statusMsgs = {
+          Pending: "This shop's registration is pending approval.",
+          Inactive: "This shop's access has been deactivated.",
+        };
+        return { error: statusMsgs[shopCheck.status] || "Shop access denied." };
+      }
+
+      if (user.status === "PENDING") {
+        return { error: "Your account is pending approval." };
+      }
+
       if (user.status === "INACTIVE") {
-        return { error: "Your account has been deactivated. Access denied." };
+        return { error: "Your account has been deactivated." };
       }
 
       const match = await bcrypt.compare(password, user.password);
-      console.log("Password match:", match ? "Yes" : "No");
-
-      if (!match) {
-        return { error: "Invalid credentials" };
-      }
-
-      if (user.status !== "ACTIVE") {
-        return { error: "Account is not active." };
-      }
+      if (!match) return { error: "Invalid credentials" };
 
       const token = jwt.sign(
         {
@@ -254,7 +247,7 @@ class User extends BaseModel {
           shop_id: user.shop_id,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" },
+        { expiresIn: "12h" },
       );
 
       return {
@@ -284,66 +277,52 @@ class User extends BaseModel {
     return results[0];
   }
 
-  static async loginStaff(shop_id, emailOrUsername, password) {
+  static async findByEmailOrUsernameStaffGlobal(emailOrUsername) {
+    const sql = `
+    SELECT * FROM users 
+    WHERE role = 'STAFF' 
+    AND (email = ? OR username = ?) 
+    LIMIT 1
+  `;
+    const results = await this.query(sql, [emailOrUsername, emailOrUsername]);
+    return results[0] || null;
+  }
+
+  static async loginStaff(emailOrUsername, password) {
     try {
-      console.log("Login attempt with:", { emailOrUsername, password });
-
-      if (!shop_id) {
-        return {
-          error: "Invalid shop. Please login from the correct shop URL.",
-        };
-      }
-
-      const shopCheck = await this.isShopActive(shop_id);
-
-      if (!shopCheck.exists) {
-        return { error: "This shop does not exist in our system." };
-      }
-
-      if (shopCheck.status === "Pending") {
-        return {
-          error:
-            "Your shop registration is still pending approval. Our team is currently reviewing your business documents.",
-        };
-      }
-
-      if (shopCheck.status !== "Active") {
-        return {
-          error:
-            "This shop's access has been deactivated. Please contact support.",
-        };
-      }
-
-      const user = await this.findByEmailOrUsernameStaffRole(
-        shop_id,
-        emailOrUsername,
-      );
-      console.log("Found user:", user ? "Yes" : "No");
+      const user = await this.findByEmailOrUsernameStaffGlobal(emailOrUsername);
 
       if (!user) {
         return { error: "Invalid credentials" };
       }
 
-      if (user.status === "PENDING") {
+      const shopCheck = await this.isShopActive(user.shop_id);
+
+      if (!shopCheck.exists) {
         return {
-          error:
-            "Your account is pending approval. Please contact the super admin.",
+          error: "The shop associated with this account no longer exists.",
         };
       }
 
+      if (shopCheck.status !== "Active") {
+        const statusMsgs = {
+          Pending: "This shop's registration is pending approval.",
+          Inactive: "This shop's access has been deactivated.",
+        };
+        return { error: statusMsgs[shopCheck.status] || "Shop access denied." };
+      }
+
+      if (user.status === "PENDING") {
+        return { error: "Your account is pending approval." };
+      }
+
       if (user.status === "INACTIVE") {
-        return { error: "Your account has been deactivated. Access denied." };
+        return { error: "Your account has been deactivated." };
       }
 
       const match = await bcrypt.compare(password, user.password);
-      console.log("Password match:", match ? "Yes" : "No");
-
       if (!match) {
         return { error: "Invalid credentials" };
-      }
-
-      if (user.status !== "ACTIVE") {
-        return { error: "Account is not active." };
       }
 
       const token = jwt.sign(
@@ -355,7 +334,7 @@ class User extends BaseModel {
           shop_id: user.shop_id,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" },
+        { expiresIn: "12h" },
       );
 
       return {
@@ -369,7 +348,7 @@ class User extends BaseModel {
         },
       };
     } catch (error) {
-      console.error("User Login error:", error);
+      console.error("Staff Login Error:", error);
       throw error;
     }
   }

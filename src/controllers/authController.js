@@ -26,17 +26,14 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { shop_id, emailOrUsername, password } = req.body;
+    const { emailOrUsername, password } = req.body;
     const apiKey = req.headers["x-api-key"];
 
     if (!apiKey || apiKey !== process.env.API_KEY) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid or missing API key",
-      });
+      return res.status(401).json({ message: "Invalid or missing API key" });
     }
 
-    const result = await User.loginCustomer(shop_id, emailOrUsername, password);
+    const result = await User.loginCustomer(emailOrUsername, password);
 
     if (result.error) {
       return res.status(400).json({ message: result.error });
@@ -50,23 +47,20 @@ const loginUser = async (req, res) => {
     });
   } catch (error) {
     console.error("User Login error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Server error during login." });
   }
 };
 
 const loginStaff = async (req, res) => {
   try {
-    const { shop_id, emailOrUsername, password } = req.body;
+    const { emailOrUsername, password } = req.body;
     const apiKey = req.headers["x-api-key"];
 
     if (!apiKey || apiKey !== process.env.API_KEY) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid or missing API key",
-      });
+      return res.status(401).json({ message: "Invalid or missing API key" });
     }
 
-    const result = await User.loginStaff(shop_id, emailOrUsername, password);
+    const result = await User.loginStaff(emailOrUsername, password);
 
     if (result.error) {
       return res.status(400).json({ message: result.error });
@@ -79,7 +73,6 @@ const loginStaff = async (req, res) => {
       apiKey: process.env.API_KEY,
     });
   } catch (error) {
-    console.error("Admin login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
