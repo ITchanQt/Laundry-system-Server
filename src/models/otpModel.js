@@ -29,7 +29,9 @@ class OtpModel extends BaseModel {
 
   // Mark OTP as used
   static async markOtpUsed(id) {
-    return this.query("UPDATE email_otps SET is_verified = 1 WHERE id = ?", [id]);
+    return this.query("UPDATE email_otps SET is_verified = 1 WHERE id = ?", [
+      id,
+    ]);
   }
 
   // Check if email is verified before registration
