@@ -29,7 +29,11 @@ const {
   forgotPasswordCustomer,
   forgotPasswordStaff,
 } = require("../controllers/auth/authController");
-const { verifyOtp, sendOtp } = require("../controllers/otpController");
+const {
+  verifyOtp,
+  sendOtp,
+  sendOtpAdmin,
+} = require("../controllers/otpController");
 const {
   verifySuperAdmin,
   dashboard,
@@ -46,6 +50,7 @@ router.post("/admin/login", loginAdmin);
 router.post("/register-admin", registerAdmin);
 router.post("/register-laundry-shop", registerLaundryShop);
 router.put("/edit-shop/:shop_id", editShop);
+router.post("/send-otp-admin", sendOtpAdmin);
 router.post("/send-otp", sendOtp);
 router.post("/verify-otp", verifyOtp);
 router.get("/admin/search", searchAdminsByEmail);
