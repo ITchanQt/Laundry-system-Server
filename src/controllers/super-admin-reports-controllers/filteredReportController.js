@@ -2,6 +2,39 @@ const FilteredSalesModel = require("../../models/super-admin-reports-models/filt
 const FilteredInventoryModel = require("../../models/super-admin-reports-models/filteredInventoryModel");
 const FilteredTransactionModel = require("../../models/super-admin-reports-models/filteredTransactionModel");
 
+// Simple in-memory cache with TTL
+class QueryCache {
+  constructor(ttlMs = 30000) { // 30 second default TTL
+    this.cache = new Map();
+    this.ttl = ttlMs;
+  }
+
+  get(key) {
+    const item = this.cache.get(key);
+    if (!item) return null;
+    
+    if (Date.now() > item.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
+    
+    return item.data;
+  }
+
+  set(key, data) {
+    this.cache.set(key, {
+      data,
+      expiry: Date.now() + this.ttl
+    });
+  }
+
+  clear() {
+    this.cache.clear();
+  }
+}
+
+const cache = new QueryCache(30000); // 30 second cache
+
 class FilteredReportsController {
   // Sales endpoints
   static async getSalesByShop(req, res) {
@@ -15,20 +48,32 @@ class FilteredReportsController {
         });
       }
 
+      // Check cache first
+      const cacheKey = `sales_${shopId}_${startDate}_${endDate}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return res.json({ success: true, data: cached, cached: true });
+      }
+
       const data = await FilteredSalesModel.getSalesByShop(
         shopId,
         startDate,
         endDate
       );
 
+      const result = data.map((row) => ({
+        date: row.date,
+        service: row.service,
+        amount: parseFloat(row.amount),
+        orders: row.orders,
+      }));
+
+      // Cache the result
+      cache.set(cacheKey, result);
+
       res.json({
         success: true,
-        data: data.map((row) => ({
-          date: row.date,
-          service: row.service,
-          amount: parseFloat(row.amount),
-          orders: row.orders,
-        })),
+        data: result,
       });
     } catch (error) {
       console.error("Filtered Sales Error:", error);
@@ -47,20 +92,30 @@ class FilteredReportsController {
         });
       }
 
+      const cacheKey = `sales_summary_${shopId}_${startDate}_${endDate}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return res.json({ success: true, data: cached, cached: true });
+      }
+
       const summary = await FilteredSalesModel.getSalesSummaryByShop(
         shopId,
         startDate,
         endDate
       );
 
+      const result = {
+        totalSales: parseFloat(summary.totalSales || 0),
+        totalOrders: summary.totalOrders || 0,
+        avgOrderValue: parseFloat(summary.avgOrderValue || 0),
+        uniqueCustomers: summary.uniqueCustomers || 0,
+      };
+
+      cache.set(cacheKey, result);
+
       res.json({
         success: true,
-        data: {
-          totalSales: parseFloat(summary.totalSales || 0),
-          totalOrders: summary.totalOrders || 0,
-          avgOrderValue: parseFloat(summary.avgOrderValue || 0),
-          uniqueCustomers: summary.uniqueCustomers || 0,
-        },
+        data: result,
       });
     } catch (error) {
       console.error("Filtered Sales Summary Error:", error);
@@ -79,19 +134,29 @@ class FilteredReportsController {
         });
       }
 
+      const cacheKey = `revenue_day_${shopId}_${startDate}_${endDate}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return res.json({ success: true, data: cached, cached: true });
+      }
+
       const data = await FilteredSalesModel.getRevenueByDayByShop(
         shopId,
         startDate,
         endDate
       );
 
+      const result = data.map((row) => ({
+        date: row.date,
+        orders: row.orders,
+        revenue: parseFloat(row.revenue),
+      }));
+
+      cache.set(cacheKey, result);
+
       res.json({
         success: true,
-        data: data.map((row) => ({
-          date: row.date,
-          orders: row.orders,
-          revenue: parseFloat(row.revenue),
-        })),
+        data: result,
       });
     } catch (error) {
       console.error("Revenue By Day Error:", error);
@@ -110,6 +175,12 @@ class FilteredReportsController {
         });
       }
 
+      const cacheKey = `top_customers_${shopId}_${startDate}_${endDate}_${limit}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return res.json({ success: true, data: cached, cached: true });
+      }
+
       const data = await FilteredSalesModel.getTopCustomersByShop(
         shopId,
         startDate,
@@ -117,14 +188,18 @@ class FilteredReportsController {
         limit
       );
 
+      const result = data.map((row) => ({
+        customerId: row.cus_id,
+        customer: row.customer,
+        totalOrders: row.totalOrders,
+        totalSpent: parseFloat(row.totalSpent),
+      }));
+
+      cache.set(cacheKey, result);
+
       res.json({
         success: true,
-        data: data.map((row) => ({
-          customerId: row.cus_id,
-          customer: row.customer,
-          totalOrders: row.totalOrders,
-          totalSpent: parseFloat(row.totalSpent),
-        })),
+        data: result,
       });
     } catch (error) {
       console.error("Top Customers Error:", error);
@@ -144,20 +219,30 @@ class FilteredReportsController {
         });
       }
 
+      const cacheKey = `inventory_${shopId}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return res.json({ success: true, data: cached, cached: true });
+      }
+
       const data = await FilteredInventoryModel.getInventoryByShop(shopId);
+
+      const result = data.map((row) => ({
+        id: row.item_id,
+        item: row.item_name,
+        category: row.item_category,
+        description: row.item_description,
+        current: row.current,
+        threshold: row.threshold,
+        unitPrice: parseFloat(row.unitPrice),
+        lastOrdered: row.lastOrdered,
+      }));
+
+      cache.set(cacheKey, result);
 
       res.json({
         success: true,
-        data: data.map((row) => ({
-          id: row.item_id,
-          item: row.item_name,
-          category: row.item_category,
-          description: row.item_description,
-          current: row.current,
-          threshold: row.threshold,
-          unitPrice: parseFloat(row.unitPrice),
-          lastOrdered: row.lastOrdered,
-        })),
+        data: result,
       });
     } catch (error) {
       console.error("Filtered Inventory Error:", error);
@@ -206,6 +291,12 @@ class FilteredReportsController {
         });
       }
 
+      const cacheKey = `transactions_${shopId}_${startDate}_${endDate}_${limit}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return res.json({ success: true, data: cached, cached: true });
+      }
+
       const data = await FilteredTransactionModel.getTransactionsByShop(
         shopId,
         startDate,
@@ -213,23 +304,27 @@ class FilteredReportsController {
         limit
       );
 
+      const result = data.map((row) => ({
+        id: row.id,
+        date: new Date(row.date).toLocaleString("en-US", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        customer: row.customer,
+        service: row.service,
+        amount: `$${parseFloat(row.amount).toFixed(2)}`,
+        status: row.status,
+        payment: row.payment,
+      }));
+
+      cache.set(cacheKey, result);
+
       res.json({
         success: true,
-        data: data.map((row) => ({
-          id: row.id,
-          date: new Date(row.date).toLocaleString("en-US", {
-            month: "short",
-            day: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          customer: row.customer,
-          service: row.service,
-          amount: `$${parseFloat(row.amount).toFixed(2)}`,
-          status: row.status,
-          payment: row.payment,
-        })),
+        data: result,
       });
     } catch (error) {
       console.error("Filtered Transactions Error:", error);
@@ -237,7 +332,7 @@ class FilteredReportsController {
     }
   }
 
-  // Dashboard summary
+  // OPTIMIZED: Dashboard summary with sequential execution to reduce connection pressure
   static async getDashboardSummaryByShop(req, res) {
     try {
       const { shopId, startDate, endDate } = req.query;
@@ -249,39 +344,58 @@ class FilteredReportsController {
         });
       }
 
-      const [
-        salesSummary,
-        inventorySummary,
-        transactionStats,
-        lowStockCount,
-        pendingPaymentsCount,
-      ] = await Promise.all([
+      const cacheKey = `dashboard_summary_${shopId}_${startDate}_${endDate}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return res.json({ success: true, data: cached, cached: true });
+      }
+
+      // Execute in batches instead of all at once to reduce connection pool pressure
+      // Batch 1: Critical sales data
+      const [salesSummary, inventorySummary] = await Promise.all([
         FilteredSalesModel.getSalesSummaryByShop(shopId, startDate, endDate),
         FilteredInventoryModel.getInventorySummaryByShop(shopId),
-        FilteredTransactionModel.getTransactionStatsByShop(
-          shopId,
-          startDate,
-          endDate
-        ),
+      ]);
+
+      // Small delay to allow connection pool to recover
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Batch 2: Secondary metrics
+      const [transactionStats, lowStockCount, pendingPaymentsCount] = await Promise.all([
+        FilteredTransactionModel.getTransactionStatsByShop(shopId, startDate, endDate),
         FilteredInventoryModel.getLowStockCountByShop(shopId),
         FilteredTransactionModel.getPendingPaymentsCountByShop(shopId),
       ]);
 
+      const result = {
+        totalSales: parseFloat(salesSummary.totalSales || 0),
+        totalOrders: salesSummary.totalOrders || 0,
+        lowStockItems: lowStockCount.count || 0,
+        pendingPayments: pendingPaymentsCount.count || 0,
+        uniqueCustomers: salesSummary.uniqueCustomers || 0,
+        avgOrderValue: parseFloat(salesSummary.avgOrderValue || 0),
+        inventoryValue: parseFloat(inventorySummary.totalValue || 0),
+        ongoingOrders: transactionStats.ongoingOrders || 0,
+      };
+
+      cache.set(cacheKey, result);
+
       res.json({
         success: true,
-        data: {
-          totalSales: parseFloat(salesSummary.totalSales || 0),
-          totalOrders: salesSummary.totalOrders || 0,
-          lowStockItems: lowStockCount.count || 0,
-          pendingPayments: pendingPaymentsCount.count || 0,
-          uniqueCustomers: salesSummary.uniqueCustomers || 0,
-          avgOrderValue: parseFloat(salesSummary.avgOrderValue || 0),
-          inventoryValue: parseFloat(inventorySummary.totalValue || 0),
-          ongoingOrders: transactionStats.ongoingOrders || 0,
-        },
+        data: result,
       });
     } catch (error) {
       console.error("Dashboard Summary Error:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+
+  // Clear cache endpoint (optional - for admin use)
+  static async clearCache(req, res) {
+    try {
+      cache.clear();
+      res.json({ success: true, message: "Cache cleared" });
+    } catch (error) {
       res.status(500).json({ success: false, error: error.message });
     }
   }
