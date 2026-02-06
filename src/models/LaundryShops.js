@@ -879,7 +879,8 @@ class LaundryShops extends BaseModel {
                   FROM customer_transactions
                   WHERE status = 'Laundry Done'
                   AND payment_status = 'PAID'  
-                  AND shop_id = ?`;
+                  AND shop_id = ?
+                  ORDER BY created_at DESC`;
       const results = await this.query(sql, [shop_id]);
       return results;
     } catch (error) {
@@ -887,6 +888,28 @@ class LaundryShops extends BaseModel {
         "Error fetching laundry done or completed service status transactions:",
         error,
       );
+      throw error;
+    }
+  }
+
+  static async selectCompletedTransactionForThisMonth(shop_id) {
+    try {
+      const sql = `
+      SELECT 
+        laundryId, shop_id, cus_id, service, total_amount, status, created_at, updated_at
+      FROM customer_transactions
+      WHERE status = 'Laundry Done'
+        AND payment_status = 'PAID'  
+        AND shop_id = ?
+        /* Filter for current month and year */
+        AND MONTH(created_at) = MONTH(CURRENT_DATE())
+        AND YEAR(created_at) = YEAR(CURRENT_DATE())
+      ORDER BY created_at DESC`;
+
+      const results = await this.query(sql, [shop_id]);
+      return results;
+    } catch (error) {
+      console.error("Error fetching monthly transactions:", error);
       throw error;
     }
   }

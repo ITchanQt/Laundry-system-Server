@@ -718,6 +718,35 @@ const getCompletedTransaction = async (req, res) => {
   }
 };
 
+const getCompletedTransactionForThisMonth = async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+    if (!shop_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID paramaters is required!",
+      });
+    }
+
+    const transactions = await LaundryShops.selectCompletedTransactionForThisMonth(shop_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Completed transactions fetch successfully!",
+      data: transactions,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching Laundry Done or completed service status transactions:",
+      error,
+    );
+    return res.status(500).json({
+      success: false,
+      message: "Server error.",
+    });
+  }
+};
+
 const getYearlyFinancialReportStaffModule = async (req, res) => {
   try {
     const { shop_id } = req.params;
@@ -827,11 +856,16 @@ const getShopAnalytics = async (req, res) => {
       });
     }
 
-    const [avgProcessPerStaff, mostActiveStaff, peakHourUsage] = await Promise.all([
-      LaundryShops.selectAverageTransactionsPerStaff(shop_id, startDate, endDate),
-      LaundryShops.selectMostActiveStaff(shop_id, startDate, endDate),
-      LaundryShops.selectPeakSystemHour(shop_id, startDate, endDate),
-    ]);
+    const [avgProcessPerStaff, mostActiveStaff, peakHourUsage] =
+      await Promise.all([
+        LaundryShops.selectAverageTransactionsPerStaff(
+          shop_id,
+          startDate,
+          endDate,
+        ),
+        LaundryShops.selectMostActiveStaff(shop_id, startDate, endDate),
+        LaundryShops.selectPeakSystemHour(shop_id, startDate, endDate),
+      ]);
 
     return res.status(200).json({
       success: true,
@@ -925,6 +959,7 @@ module.exports = {
   getReadyToPickUpTrans,
   updateReadyToPickUpIfPaidTrans,
   getCompletedTransaction,
+  getCompletedTransactionForThisMonth,
   getYearlyFinancialReportStaffModule,
   getActivityLogs,
   getItemHistoryByItemId,
