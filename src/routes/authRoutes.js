@@ -52,6 +52,7 @@ const {
   registerLaundryShopBranch,
   getScopeShops,
   getShopInventoryHistory,
+  getCompletedTransactionForThisMonth,
 } = require("../controllers/shopController");
 const {
   insertShopAbout,
@@ -298,6 +299,7 @@ router.put(
 
 //-----------STAFF LAUNDRY DONE OR COMPLETED SERVICE STATUS TRANSACTION
 router.get("/get-completed-transactions/:shop_id", getCompletedTransaction);
+router.get("/get-completed-transactions-this-month/:shop_id", getCompletedTransactionForThisMonth);
 
 //-----------STAFF YEARLY REPORT(WITH DATA FOR BAR GRAPH)
 router.get("/get-yearly-report/:shop_id", getYearlyFinancialReportStaffModule);
