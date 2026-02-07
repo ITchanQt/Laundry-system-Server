@@ -44,13 +44,13 @@ const sendOtp = async (req, res) => {
   try {
     const { shop_id, email, username, contactNum } = req.body;
 
-    const existingUserEmail = await User.findByEmail(shop_id, email);
-    const existingUserUsername = await User.findByUsername(shop_id, username);
+    const existingUserEmail = await User.findByEmail(email);
+    const existingUserUsername = await User.findByUsername(username);
     const existingContact = await User.findByContactNum(shop_id, contactNum);
     if (existingUserEmail || existingUserUsername || existingContact) {
       return res.status(400).json({
         success: false,
-        message: "Email, username or phone number already exists on this shop",
+        message: "Email, username or phone number is unvailable! Try to use other email, username or phone number",
       });
     }
 

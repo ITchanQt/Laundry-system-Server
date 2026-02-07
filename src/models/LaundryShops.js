@@ -1200,6 +1200,33 @@ class LaundryShops extends BaseModel {
       throw error;
     }
   }
+
+  static async SelectAllActiveShopForUserRegistration() {
+    try {
+      const sql = `SELECT 
+                      shop_id,
+                      parent_shop_id,
+                      admin_id,
+                      admin_fName,
+                      admin_lName,
+                      admin_emailAdd,
+                      admin_contactNum,
+                      shop_address,
+                      shop_name 
+                  FROM laundry_shops 
+                  WHERE shop_status = 'Active' 
+                  ORDER BY date_registered DESC`;
+
+      const result = await this.query(sql);
+      return result;
+    } catch (error) {
+      console.error(
+        "LaundryShop.SelectAllActiveShopForUserRegistration error:",
+        error,
+      );
+      throw error;
+    }
+  }
 }
 
 module.exports = LaundryShops;
