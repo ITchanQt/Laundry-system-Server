@@ -14,6 +14,7 @@ const {
   registerLaundryShop,
   editShop,
   uploadBusinessDocs,
+  getAllActiveShopForUserRegistration,
 } = require("../controllers/shopController");
 const {
   getShopAbout,
@@ -79,5 +80,7 @@ router.post("/reset-password", resetPassword);
 //-----SUPER ADMIN LOGIN(Google OAuth) API's-------//
 router.get("/dashboard", verifySuperAdmin, dashboard);
 router.post("/super-admin/login", superAdminLogin);
+
+router.get("/active-shops", getAllActiveShopForUserRegistration);
 
 module.exports = router;

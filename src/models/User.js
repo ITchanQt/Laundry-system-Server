@@ -9,15 +9,15 @@ class User extends BaseModel {
     return results[0];
   }
 
-  static async findByEmail(shop_id, email) {
-    const sql = "SELECT * FROM users WHERE shop_id = ? AND email = ?";
-    const results = await this.query(sql, [shop_id, email]);
+  static async findByEmail(email) {
+    const sql = "SELECT * FROM users WHERE email = ?";
+    const results = await this.query(sql, [email]);
     return results[0];
   }
 
-  static async findByUsername(shop_id, username) {
-    const sql = "SELECT * FROM users WHERE shop_id = ? AND username = ?";
-    const results = await this.query(sql, [shop_id, username]);
+  static async findByUsername(username) {
+    const sql = "SELECT * FROM users WHERE username = ?";
+    const results = await this.query(sql, [username]);
     return results[0];
   }
 

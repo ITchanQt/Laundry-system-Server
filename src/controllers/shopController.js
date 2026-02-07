@@ -728,7 +728,8 @@ const getCompletedTransactionForThisMonth = async (req, res) => {
       });
     }
 
-    const transactions = await LaundryShops.selectCompletedTransactionForThisMonth(shop_id);
+    const transactions =
+      await LaundryShops.selectCompletedTransactionForThisMonth(shop_id);
 
     res.status(200).json({
       success: true,
@@ -937,6 +938,24 @@ const getShopInventoryHistory = async (req, res) => {
   }
 };
 
+const getAllActiveShopForUserRegistration = async (req, res) => {
+  try {
+    const activeShops =
+      await LaundryShops.SelectAllActiveShopForUserRegistration();
+    res.status(200).json({
+      success: true,
+      message: "Active shops fetch successfuly!",
+      data: activeShops,
+    });
+  } catch (error) {
+    console.error("Getting all active shop error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch all active shop",
+    });
+  }
+};
+
 // Add getAllShops to exports
 module.exports = {
   registerLaundryShop,
@@ -966,4 +985,5 @@ module.exports = {
   getShopAnalytics,
   getScopeShops,
   getShopInventoryHistory,
+  getAllActiveShopForUserRegistration,
 };
