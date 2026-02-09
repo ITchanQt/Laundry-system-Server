@@ -1022,6 +1022,7 @@ class LaundryShops extends BaseModel {
   static async selectItemHistoryByItemId(item_id) {
     const sql = `SELECT 
                   ih.*, 
+                  CONCAT(u.user_fName, ' ', u.user_lName) AS full_name,
                   u.role AS user_role
                   FROM inventory_history ih
                   JOIN users u ON ih.user_id = u.user_id
@@ -1179,6 +1180,7 @@ class LaundryShops extends BaseModel {
         ih.id,
         ih.item_id,
         ih.user_id,
+        CONCAT(u.user_fName, ' ', u.user_lName) AS full_name,
         u.role AS user_role,
         ih.action_type,
         ih.quantity_change,
