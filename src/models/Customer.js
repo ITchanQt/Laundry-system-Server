@@ -111,9 +111,9 @@ class Customer extends BaseModel {
     }
   }
 
-  static async findUserCustomerById(userId) {
-    const sql = "SELECT * FROM users WHERE user_id = ?";
-    const results = await this.query(sql, [userId]);
+  static async findUserCustomerById(userId, shop_id) {
+    const sql = "SELECT * FROM users WHERE user_id = ? AND shop_id = ?";
+    const results = await this.query(sql, [userId, shop_id]);
     return results[0];
   }
 
@@ -127,6 +127,7 @@ class Customer extends BaseModel {
       // Fetch customer details first
       const customer = await this.findUserCustomerById(
         customerReceiptData.userId,
+        customerReceiptData.shop_id,
       );
       if (!customer) {
         throw new Error("Customer not found");
