@@ -437,7 +437,9 @@ const updateMultipleInventoryItems = async (req, res) => {
       }
 
       const oldQty = Number(existingItem.item_quantity);
-      const newQty = Number(item.item_quantity || item.qty);
+      const newQty = Number(
+        item.item_quantity !== undefined ? item.item_quantity : item.qty,
+      );
       const qtyChange = newQty - oldQty;
 
       const existingReorder = parseInt(existingItem.item_reorderLevel) || 0;
