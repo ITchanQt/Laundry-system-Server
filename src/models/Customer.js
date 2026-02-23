@@ -152,6 +152,7 @@ class Customer extends BaseModel {
         cleaning_products,
         total_amount = "0",
         payment_status,
+        payment_mode,
         process_by,
       } = customerReceiptData;
 
@@ -177,8 +178,9 @@ class Customer extends BaseModel {
                 cleaning_products,
                 total_amount,
                 payment_status,
+                mode_of_payment,
                 process_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       await this.query(sql, [
         newLaundryId,
@@ -201,6 +203,7 @@ class Customer extends BaseModel {
         cleaning_products,
         total_amount,
         payment_status,
+        payment_mode,
         process_by,
       ]);
 
