@@ -778,7 +778,7 @@ class LaundryShops extends BaseModel {
     try {
       const sql = `
                   UPDATE customer_transactions
-                  SET payment_status = ?, updated_at = NOW()
+                  SET payment_status = ?, mode_of_payment = 'GCASH', updated_at = NOW()
                   WHERE laundryId = ?
                   `;
       await this.query(sql, [payment_status, laundryId]);
@@ -801,7 +801,7 @@ class LaundryShops extends BaseModel {
     try {
       const sql = `
                   UPDATE customer_transactions
-                  SET payment_status = ?, updated_at = NOW()
+                  SET payment_status = ?, mode_of_payment = 'CASH', updated_at = NOW()
                   WHERE laundryId = ?
                   `;
       await this.query(sql, [payment_status, laundryId]);
