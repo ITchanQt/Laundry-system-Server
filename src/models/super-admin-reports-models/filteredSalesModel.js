@@ -10,6 +10,7 @@ class FilteredSalesModel extends BaseModel {
         COUNT(*) as orders
       FROM customer_transactions
       WHERE shop_id = ?
+        AND payment_status = 'PAID'
         AND DATE(created_at) BETWEEN ? AND ?
       GROUP BY DATE(created_at), service
       ORDER BY date DESC, service
@@ -34,6 +35,7 @@ class FilteredSalesModel extends BaseModel {
       ) as uniqueCustomers
     FROM customer_transactions
     WHERE shop_id = ?
+      AND payment_status = 'PAID'
       AND DATE(created_at) BETWEEN ? AND ?
   `;
 
