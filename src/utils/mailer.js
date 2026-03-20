@@ -55,7 +55,7 @@ async function sendResetEmail(toEmail, resetUrl) {
       <tr>
         <td style="border-top: 1px solid #eee; padding-top: 25px; font-size: 13px; color: #888;">
           <p style="margin-bottom: 8px;">Thank you,</p>
-          <p style="font-weight: bold; color: #555;">Wise Wash Inteligence Laundry Management System Team</p>
+          <p style="font-weight: bold; color: #555;">Wash Wise Inteligence Laundry Management System Team</p>
         </td>
       </tr>
 
@@ -69,7 +69,7 @@ async function sendResetEmail(toEmail, resetUrl) {
   `;
 
   return transporter.sendMail({
-    from: `"Wise Wash Inteligence Laundry Management System" <${process.env.GMAIL_USER}>`,
+    from: `"Wash Wise Inteligence Laundry Management System" <${process.env.GMAIL_USER}>`,
     to: toEmail,
     subject: "Reset Your Password",
     html,
@@ -138,7 +138,7 @@ async function sendOtpEmail(toEmail, otpCode) {
       <tr>
         <td style="border-top: 1px solid #eee; padding-top: 25px; font-size: 13px; color: #888;">
           <p style="margin-bottom: 8px;">Thank you,</p>
-          <p style="font-weight: bold; color: #555;">Wise Wash Inteligence Laundry Management System Team</p>
+          <p style="font-weight: bold; color: #555;">Wash Wash Inteligence Laundry Management System Team</p>
         </td>
       </tr>
 
@@ -151,7 +151,7 @@ async function sendOtpEmail(toEmail, otpCode) {
   `;
 
   await OTPtransporter.sendMail({
-    from: `"Wise Wash Inteligence Laundry Management System" <${process.env.GMAIL_USER}>`,
+    from: `"Wash Wise Inteligence Laundry Management System" <${process.env.GMAIL_USER}>`,
     to: toEmail,
     subject: "Your Verification Code",
     html,
@@ -166,7 +166,7 @@ async function sendShopLinksEmail(toEmail, shopName, links) {
       
       <tr>
         <td style="text-align: center;">
-          <h2 style="color: #333; margin-bottom: 10px; font-size: 24px;">Welcome to Wise Wash!</h2>
+          <h2 style="color: #333; margin-bottom: 10px; font-size: 24px;">Welcome to Wash Wise!</h2>
           <p style="color: #555; font-size: 15px; margin-bottom: 30px;">
             Your laundry shop <strong>${shopName}</strong> is now ready. Use the buttons below to log in, or <strong>copy the URLs</strong> for your records.
           </p>
@@ -199,7 +199,7 @@ async function sendShopLinksEmail(toEmail, shopName, links) {
       <tr>
         <td style="padding-top: 25px; font-size: 13px; color: #888;">
           <p style="margin-bottom: 8px;">Thank you,</p>
-          <p style="font-weight: bold; color: #555;">Wise Wash Intelligence Team</p>
+          <p style="font-weight: bold; color: #555;">Wash Wise Intelligence Team</p>
         </td>
       </tr>
     </table>
@@ -207,7 +207,7 @@ async function sendShopLinksEmail(toEmail, shopName, links) {
   `;
 
   return transporter.sendMail({
-    from: `"Wise Wash Intelligence" <${process.env.GMAIL_USER}>`,
+    from: `"Wash Wise Intelligence" <${process.env.GMAIL_USER}>`,
     to: toEmail,
     subject: `Your ${shopName} Shop Links`,
     html,
