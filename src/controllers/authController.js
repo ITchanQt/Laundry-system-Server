@@ -4,6 +4,7 @@ const db = require("../config/db");
 const User = require("../models/User");
 const Admin = require("../models/Admin");
 require("dotenv").config();
+
 const registerUser = async (req, res) => {
   try {
     const { shop_id, email, username, contactNum } = req.body;
@@ -26,16 +27,51 @@ const registerUser = async (req, res) => {
   }
 };
 
+/**
+ * Two-step customer login:
+ *
+ * Step 1  — body: { emailOrUsername, password }  (no selected_shop_id)
+ *   → validates credentials, returns { requiresShopSelection: true, registeredShopId }
+ *     so the frontend can open the shop-selection dialog and highlight the
+ *     customer's registered branch.
+ *
+ * Step 2  — body: { emailOrUsername, password, selected_shop_id }
+ *   → re-validates credentials (stateless/safe), issues a JWT whose
+ *     shop_id reflects the shop the customer chose.
+ */
 const loginUser = async (req, res) => {
   try {
-    const { emailOrUsername, password } = req.body;
+    const { emailOrUsername, password, selected_shop_id } = req.body;
     const apiKey = req.headers["x-api-key"];
 
     if (!apiKey || apiKey !== process.env.API_KEY) {
       return res.status(401).json({ message: "Invalid or missing API key" });
     }
 
-    const result = await User.loginCustomer(emailOrUsername, password);
+    // ── Step 1: preflight — validate credentials, return registered shop ──
+    if (!selected_shop_id) {
+      const preflight = await User.preflightLoginCustomer(
+        emailOrUsername,
+        password,
+      );
+
+      if (preflight.error) {
+        return res.status(400).json({ message: preflight.error });
+      }
+
+      // Credentials are valid; ask the frontend to pick a shop
+      return res.json({
+        requiresShopSelection: true,
+        registeredShopId: preflight.registeredShopId,
+      });
+    }
+
+    // ── Step 2: full login with the chosen shop ───────────────────────────
+    const result = await User.loginCustomer(
+      emailOrUsername,
+      password,
+      selected_shop_id,
+    );
 
     if (result.error) {
       return res.status(400).json({ message: result.error });
@@ -127,9 +163,8 @@ const loginAdmin = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-  res.clearCookie("token"); // Fixed typo from clearCookies to clearCookie
+  res.clearCookie("token");
   res.json({
-    // Fixed typo from jsom to json
     message: "Logged out successfully",
   });
 };
