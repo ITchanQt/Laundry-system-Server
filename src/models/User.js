@@ -194,6 +194,16 @@ class User extends BaseModel {
     };
   }
 
+  /**
+   * Permanently updates the customer's shop_id in the database.
+   * Called when a customer logs in to a branch different from their
+   * registered one, so subsequent logins default to the new branch.
+   */
+  static async updateShopId(user_id, shop_id) {
+    const sql = "UPDATE users SET shop_id = ? WHERE user_id = ?";
+    return this.query(sql, [shop_id, user_id]);
+  }
+
   static async findByEmailOrUsernameCustomerRole(emailOrUsername) {
     const sql = `
       SELECT * FROM users 
@@ -205,7 +215,71 @@ class User extends BaseModel {
     return results[0] || null;
   }
 
-  static async loginCustomer(emailOrUsername, password) {
+  /**
+   * Validates credentials only — does NOT issue a token.
+   * Used as step 1 of the two-step login flow so the frontend can
+   * show the shop selection dialog with the customer's registered
+   * shop highlighted before a session is created.
+   *
+   * Returns:
+   *   { valid: true, registeredShopId: string } on success
+   *   { error: string }                          on failure
+   */
+  static async preflightLoginCustomer(emailOrUsername, password) {
+    try {
+      if (
+        emailOrUsername === "WALK IN" ||
+        !password ||
+        password.trim() === ""
+      ) {
+        return { error: "Invalid login attempt." };
+      }
+
+      const user =
+        await this.findByEmailOrUsernameCustomerRole(emailOrUsername);
+      if (!user) return { error: "Invalid credentials" };
+
+      if (user.status === "PENDING")
+        return { error: "Your account is pending approval." };
+      if (user.status === "INACTIVE")
+        return { error: "Your account has been deactivated." };
+
+      const shopCheck = await this.isShopActive(user.shop_id);
+      if (!shopCheck.exists)
+        return {
+          error: "The shop associated with your account no longer exists.",
+        };
+      if (shopCheck.status !== "Active") {
+        const statusMsgs = {
+          Pending: "This shop's registration is pending approval.",
+          Inactive: "This shop's access has been deactivated.",
+        };
+        return { error: statusMsgs[shopCheck.status] || "Shop access denied." };
+      }
+
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) return { error: "Invalid credentials" };
+
+      // Credentials are valid — return registered shop so the UI can highlight it
+      return { valid: true, registeredShopId: user.shop_id };
+    } catch (error) {
+      console.error("preflightLoginCustomer error:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Full login — issues a signed JWT.
+   *
+   * @param {string} emailOrUsername
+   * @param {string} password
+   * @param {string|null} selected_shop_id  — shop chosen by the customer in
+   *   the shop selection dialog. When provided and active, this shop_id is
+   *   embedded in the token instead of the customer's registered shop_id,
+   *   effectively "switching" the active branch for the session.
+   *   When null the customer's registered shop_id is used (original behaviour).
+   */
+  static async loginCustomer(emailOrUsername, password, selected_shop_id = null) {
     try {
       // 1. Prevent "WALK IN" or empty logins
       if (
@@ -223,6 +297,7 @@ class User extends BaseModel {
         return { error: "Invalid credentials" };
       }
 
+      // 3. Check the customer's registered shop
       const shopCheck = await this.isShopActive(user.shop_id);
 
       if (!shopCheck.exists) {
@@ -250,13 +325,33 @@ class User extends BaseModel {
       const match = await bcrypt.compare(password, user.password);
       if (!match) return { error: "Invalid credentials" };
 
+      // 4. Determine which shop_id to embed in the token
+      let sessionShopId = user.shop_id; // default: registered shop
+
+      if (selected_shop_id && selected_shop_id !== user.shop_id) {
+        // Validate the selected shop before switching
+        const selectedShopCheck = await this.isShopActive(selected_shop_id);
+        if (!selectedShopCheck.exists || selectedShopCheck.status !== "Active") {
+          return {
+            error: "The selected shop is not available. Please choose another.",
+          };
+        }
+        sessionShopId = selected_shop_id;
+
+        // Persist the new shop_id to the database so future logins default
+        // to the branch the customer just chose.
+        await this.updateShopId(user.user_id, selected_shop_id);
+      }
+
+      // 5. Issue token
       const token = jwt.sign(
         {
           id: user.user_id,
           user_lName: user.user_lName,
           user_fName: user.user_fName,
           role: user.role,
-          shop_id: user.shop_id,
+          shop_id: sessionShopId,
+          registered_shop_id: user.shop_id, // always the original registered shop
         },
         process.env.JWT_SECRET,
         { expiresIn: "12h" },
@@ -269,7 +364,8 @@ class User extends BaseModel {
           user_lName: user.user_lName,
           user_fName: user.user_fName,
           role: user.role,
-          shop_id: user.shop_id,
+          shop_id: sessionShopId,
+          registered_shop_id: user.shop_id, // expose so frontend can persist it
         },
       };
     } catch (error) {
